@@ -4,7 +4,7 @@ This project is a backend system designed to clean, process, and store traffic d
 
 --------------------------------------------------
 
-Project Structure
+## 📁 Project Structure
 
 SMART_FOOT_TRAFFIC/
 ├── backend/
