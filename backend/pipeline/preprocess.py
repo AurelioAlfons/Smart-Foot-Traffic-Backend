@@ -38,9 +38,11 @@ FOLDER_ICONS = {
 # ========================================
 # 🔍 Extract location name from file name
 # ========================================
+# vehicle-count---footscray-library-car-park__2022.csv
 def extract_location(filename):
     name = filename.lower().split('---')[-1]
     location = name.split('__')[0].replace('-', ' ').strip()
+    # Result -> Footscray Library Car Park
     return location.title()
 
 # ========================================
@@ -70,7 +72,13 @@ def preprocess_data():
     }
 
     # 📂 Find all CSVs and count total rows
+    # TRAFFIC_TYPES is declared on top
     for traffic in TRAFFIC_TYPES:
+        # Combine base path with traffic type folder
+        # e.g. data/Pedestrian Count
+        # e.g. data/Cyclist Count
+        # e.g. data/Vehicle Count
+        # e.g. data/Vehicle Count/vehicle-count---footscray-library-car-park__2022.csv
         folder = os.path.join(base_path, traffic)
         if not os.path.exists(folder):
             continue

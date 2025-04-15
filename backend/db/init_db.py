@@ -1,12 +1,18 @@
+# =====================================================
+# 0. Initialize Database Tables
+# This file is used to create the database table from scratch
+# So it checks if the database already has the tables or not
+# Helps automate the process of setting up the database
+# Instead of manually running SQL query in MySQL all the time when re run
+# =====================================================
 import mysql.connector  # Used to connect to MySQL database
 import sys, os  # Needed to fix import path for subprocess runs
 
-# 🛠️ Add project root to sys.path so 'backend' module is found when run directly
+# 🛠️ Makes sure we can import stuff from the main project folder wherever we are in the directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # 🔌 Database login details
 from backend.config import DB_CONFIG
-
 
 # 🗑️ Step 1: List of SQL commands to delete old tables (clean reset)
 # ⚠️ Order matters because some tables depend on others
@@ -72,30 +78,54 @@ def initialize_database():
     try:
         # Connect to the MySQL server
         conn = mysql.connector.connect(**DB_CONFIG)
+        # This acts as a cursor to execute SQL commands
+        # It allows us to run SQL queries and fetch results
+        # Cursor is like a pointer to the current position in the database
         cursor = conn.cursor()
 
-        # Step A: Drop old tables if they exist
+        # =====================================================
+        # 🗑️ Step A: Drop old tables if they exist
+        # =====================================================
+        print("\n========================================")
         print("🗑️ Dropping old tables (if any)...")
+        print("========================================")
+        # Loop through each query in the DROP_QUERIES list
+        # Remember it has the drop (4) tables 
         for query in DROP_QUERIES:
+            # Execute using the cursor, query == DROP_QUERIES contents
             cursor.execute(query)
 
-        # Step B: Create new tables fresh
+        # =====================================================
+        # 🛠️ Step B: Create new tables fresh
+        # =====================================================
+        print("\n========================================")
         print("🛠️ Creating new tables...")
+        print("========================================")
+        # Loop through each query in the CREATE_QUERIES list - same like DROP_QUERIES
+        # This time it will create (4) tables
         for query in CREATE_QUERIES:
+            # Execute using the cursor, query == CREATE_QUERIES contents
             cursor.execute(query)
 
         # Save all changes to the database
+        # This is important because without it, nothing will be saved
         conn.commit()
-        print("✅ Tables have been dropped and recreated successfully.")
-
-    # If something goes wrong, print the error
+        # Log success message
+        print("\n✅ Tables have been dropped and recreated successfully.")
+    
+    # Error handling so it won't crash if something goes wrong
+    # This will catch any MySQL errors that occur during the process
+    # It will print the error message to the console
     except mysql.connector.Error as err:
-        print(f"❌ MySQL Error: {err}")
-
-    # Step C: Close the connection when done
+        print(f"\n❌ MySQL Error: {err}")
+    
+    # This runs wherever, it program succeeds or fail (both)
     finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
+        # Always close connection
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 # 🏁 Only run this if the file is executed directly
 if __name__ == "__main__":
