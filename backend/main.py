@@ -9,7 +9,7 @@ python_exec = sys.executable
 # 1. Delete old tables (if they exist)
 # 2. Create new empty tables for fresh data
 print("\n🛠️  Initializing database tables...")
-subprocess.run([python_exec, "backend/init_db.py"])
+subprocess.run([python_exec, "backend/db/init_db.py"])
 
 # --- Step 1: Preprocess the raw CSV data ---
 # This will:
@@ -17,7 +17,7 @@ subprocess.run([python_exec, "backend/init_db.py"])
 # - Format timestamps
 # - Add to processed_data and traffic_counts tables
 print("\n🔄 Running preprocess.py...")
-subprocess.run([python_exec, "backend/preprocess.py"])
+subprocess.run([python_exec, "backend/pipeline/preprocess.py"])
 
 # --- Step 2: Add weather and season data ---
 # This will:
@@ -25,7 +25,7 @@ subprocess.run([python_exec, "backend/preprocess.py"])
 # - Assign weather (sunny, cloudy, etc.) and season (summer, winter, etc.)
 # - Save to weather_season_data table
 print("\n🍂 Running assign_weather_season.py...")
-subprocess.run([python_exec, "backend/assign_weather_season.py"])
+subprocess.run([python_exec, "backend/pipeline/assign_weather_season.py"])
 
 # 🎉 Final message when all steps are done
 print("\n✅ All steps completed.")

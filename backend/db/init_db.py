@@ -1,12 +1,12 @@
 import mysql.connector  # Used to connect to MySQL database
+import sys, os  # Needed to fix import path for subprocess runs
+
+# 🛠️ Add project root to sys.path so 'backend' module is found when run directly
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # 🔌 Database login details
-DB_CONFIG = {
-    "host": "localhost",      # Database is on your computer
-    "user": "root",           # Default MySQL username
-    "password": "",           # Use your own password here if you set one
-    "database": "smart_foot_traffic"  # The database you're using
-}
+from backend.config import DB_CONFIG
+
 
 # 🗑️ Step 1: List of SQL commands to delete old tables (clean reset)
 # ⚠️ Order matters because some tables depend on others

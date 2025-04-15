@@ -5,7 +5,12 @@ import os                 # for working with folders and file paths
 import time               # to track how long each file takes
 import pandas as pd       # to load and clean CSV files
 import mysql.connector    # to connect and insert into MySQL
-from config import DB_CONFIG  # your database login config
+
+# 🔧 Fix for running as subprocess (enables importing backend.config)
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from backend.config import DB_CONFIG  # your database login config
+
 import logging            # to show logs in the terminal
 from datetime import datetime
 from collections import defaultdict  # for tracking missing hours
@@ -42,7 +47,7 @@ def extract_location(filename):
 # 🚀 MAIN FUNCTION TO PROCESS ALL DATA
 # ========================================
 def preprocess_data():
-    base_path = os.path.join(os.path.dirname(__file__), 'data')
+    base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data'))
 
     # 🔌 Connect to the database
     try:

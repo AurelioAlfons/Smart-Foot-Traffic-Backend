@@ -10,12 +10,7 @@ from datetime import datetime
 # =====================================================
 # 🔌 DATABASE CONFIGURATION
 # =====================================================
-DB_CONFIG = {
-    "host": "localhost",  # Database host
-    "user": "root",       # Database user
-    "password": "",       # Database password
-    "database": "smart_foot_traffic"  # Database name
-}
+from backend.config import DB_CONFIG
 
 # =====================================================
 # 📍 COORDINATES FOR ALL SENSOR LOCATIONS
@@ -235,7 +230,7 @@ def generate_heatmap(date_filter, time_filter):
 
     # Save map as HTML file
     os.makedirs("backend/heatmaps", exist_ok=True)
-    filename = f"backend/heatmaps/heatmap_{date_filter}_{time_filter.replace(':', '-')}.html"
+    filename = os.path.join("heatmaps", f"heatmap_{date_filter}_{time_filter.replace(':', '-')}.html")
     base_map.save(filename)
 
     # Store the output record in the database

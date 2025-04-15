@@ -7,6 +7,10 @@ from datetime import datetime
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 from rich.console import Console
 
+# 🔧 Fix for running as subprocess (enables importing backend.config)
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 # ========================================
 # 🛠️ SETUP LOGGING AND RICH CONSOLE
 # ========================================
@@ -16,12 +20,7 @@ console = Console()
 # ========================================
 # 🗄️ DATABASE CONNECTION SETTINGS
 # ========================================
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "smart_foot_traffic"
-}
+from backend.config import DB_CONFIG
 
 # ========================================
 # 🍁 FUNCTION TO DETERMINE SEASON FROM MONTH
