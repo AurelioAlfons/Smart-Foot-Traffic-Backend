@@ -3,3 +3,6 @@ mysql-connector-python
 python-dotenv
 requests
 rich
+folium
+matplotlib
+
