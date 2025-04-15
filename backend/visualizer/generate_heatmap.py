@@ -1,4 +1,5 @@
 import os
+import sys
 import folium
 from folium.plugins import HeatMap
 from folium.features import CustomIcon
@@ -6,6 +7,9 @@ import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
+
+# 🛠 Add the project root to sys.path (2 levels up from this script)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # =====================================================
 # 🔌 DATABASE CONFIGURATION
@@ -237,4 +241,6 @@ def generate_heatmap(date_filter, time_filter):
     insert_heatmap_record(date_filter, time_filter, "All", filename.replace("\\", "/"))
 
 # ▶️ Test run
-generate_heatmap("2025-03-03", "12:55:00")
+# generate_heatmap("2025-03-03", "12:55:00")
+# generate_heatmap("2025-01-27", "09:10:00")
+generate_heatmap("2024-11-06", "14:15:00")

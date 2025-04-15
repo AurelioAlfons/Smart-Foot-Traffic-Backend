@@ -156,9 +156,47 @@ def preprocess_data():
             # Fill missing value with median
             df['value'] = df['value'].fillna(df['value'].median())
 
-            # Sort by time and calculate interval count
+            # Sort by time
             df.sort_values(by='Date_Time', inplace=True)
-            df['Interval_Count'] = df.groupby('Date')['value'].diff().fillna(df['value']).clip(lower=0).astype(int)
+
+            # Reset interval count list
+            interval_counts = []
+
+            # Track per-location and traffic-type last values
+            last_timestamp = {}
+            last_total = {}
+
+            # ⏱️ Max time allowed between records before reset (in minutes)
+            MAX_ALLOWED_MINUTES = 60
+
+            # 📅 Track first Date_Time per day to apply "new day = reset" rule
+            first_entries_per_day = df.groupby('Date')['Date_Time'].transform('min')
+
+            for i, row in df.iterrows():
+                current_time = datetime.strptime(row['Date_Time'], "%Y-%m-%d %H:%M:%S")
+                current_total = row['value']
+                key = (location, traffic)
+
+                is_first_of_day = row['Date_Time'] == first_entries_per_day[i]
+
+                if key in last_timestamp:
+                    time_diff = (current_time - last_timestamp[key]).total_seconds() / 60  # in minutes
+
+                    if is_first_of_day:
+                        interval = int(current_total)  # 🌙 First row of the day → count full
+                    elif time_diff > MAX_ALLOWED_MINUTES:
+                        interval = 0  # ⏱️ Too big a gap, reset
+                    else:
+                        interval = max(0, int(current_total - last_total[key]))
+                else:
+                    # Very first row ever for this location+traffic
+                    interval = int(current_total) if is_first_of_day else 0
+
+                interval_counts.append(interval)
+                last_timestamp[key] = current_time
+                last_total[key] = current_total
+
+            df['Interval_Count'] = interval_counts
 
             inserted = 0
             failed_processed = 0
