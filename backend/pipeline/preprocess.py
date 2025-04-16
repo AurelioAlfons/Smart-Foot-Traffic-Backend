@@ -163,38 +163,50 @@ def preprocess_data():
             interval_counts = []
 
             # Track per-location and traffic-type last values
+            # 🧠 Keep track of the last time and total count we saw for each location and traffic type
             last_timestamp = {}
             last_total = {}
 
-            # ⏱️ Max time allowed between records before reset (in minutes)
+            # ⏱️ Max time between data points (in minutes) before we consider it a "gap"
             MAX_ALLOWED_MINUTES = 60
 
-            # 📅 Track first Date_Time per day to apply "new day = reset" rule
+            # 📅 Find the first time of each day for special handling
             first_entries_per_day = df.groupby('Date')['Date_Time'].transform('min')
 
+            # 🔁 Loop through each row of data
             for i, row in df.iterrows():
+                # Turn the Date_Time into a real datetime object
                 current_time = datetime.strptime(row['Date_Time'], "%Y-%m-%d %H:%M:%S")
-                current_total = row['value']
-                key = (location, traffic)
+                current_total = row['value']  # The traffic counter at this moment
+                key = (location, traffic)     # Unique key per location and traffic type (e.g., Footscray + Pedestrian)
 
+                # 🌓 Check if this row is the first entry for that day
                 is_first_of_day = row['Date_Time'] == first_entries_per_day[i]
 
                 if key in last_timestamp:
-                    time_diff = (current_time - last_timestamp[key]).total_seconds() / 60  # in minutes
+                    # ⌛ Calculate how many minutes since we last saw a value for this key
+                    time_diff = (current_time - last_timestamp[key]).total_seconds() / 60
 
                     if is_first_of_day:
-                        interval = int(current_total)  # 🌙 First row of the day → count full
+                        # 🌅 If it's the first time we see this key today, take the full count
+                        interval = int(current_total)
                     elif time_diff > MAX_ALLOWED_MINUTES:
-                        interval = 0  # ⏱️ Too big a gap, reset
+                        # 🕳️ If too much time has passed, treat it as a reset
+                        interval = 0
                     else:
+                        # 🔄 Otherwise, subtract last total from current to get interval count
                         interval = max(0, int(current_total - last_total[key]))
                 else:
-                    # Very first row ever for this location+traffic
+                    # 🌱 First ever row for this key — only set interval if it's the first of the day
                     interval = int(current_total) if is_first_of_day else 0
 
+                # 🧾 Save the interval so we can store it later
                 interval_counts.append(interval)
+
+                # 📝 Remember this time and count for the next row
                 last_timestamp[key] = current_time
                 last_total[key] = current_total
+
 
             df['Interval_Count'] = interval_counts
 

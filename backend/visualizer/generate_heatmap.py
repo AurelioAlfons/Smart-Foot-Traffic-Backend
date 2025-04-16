@@ -96,8 +96,18 @@ def fetch_latest_data_per_location(date_filter, time_filter, max_age_minutes=30)
 
         for row in cursor.fetchall():
             parsed_time = row["Time"]
-            total_minutes = (parsed_time.hour * 60 + parsed_time.minute) if isinstance(parsed_time, datetime) \
-                            else int(datetime.strptime(parsed_time, "%H:%M:%S").hour) * 60 + int(datetime.strptime(parsed_time, "%H:%M:%S").minute)
+
+            # Fix: handle both datetime.time and timedelta safely
+            if isinstance(parsed_time, timedelta):
+                total_minutes = parsed_time.total_seconds() // 60
+            elif isinstance(parsed_time, datetime):
+                total_minutes = parsed_time.hour * 60 + parsed_time.minute
+            elif isinstance(parsed_time, str):
+                parsed_time_obj = datetime.strptime(parsed_time, "%H:%M:%S")
+                total_minutes = parsed_time_obj.hour * 60 + parsed_time_obj.minute
+            else:
+                total_minutes = parsed_time.hour * 60 + parsed_time.minute  # fallback for time object
+
             age_minutes = selected_time.hour * 60 + selected_time.minute - total_minutes
             if age_minutes <= max_age_minutes:
                 location_type_rows.append(row)
