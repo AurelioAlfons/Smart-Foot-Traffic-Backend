@@ -1,3 +1,13 @@
+# =====================================================
+# Rules of this script:
+# 1. Shows data closest / recent to the selected time
+# 2. If exact time doesnt exist, shows data from the last 30 minutes (max)
+# 3. Display heatmap in Pie chart format (per location)
+# 4. Save the map as an HTML file in the backend/heatmaps folder
+
+# =====================================================
+# 📦 IMPORTS & SETUP
+# =====================================================
 import os
 import sys
 import folium
@@ -6,18 +16,23 @@ from folium.features import CustomIcon
 import mysql.connector
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
+from datetime import datetime, timedelta
+from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
+from rich.console import Console
+
+# Styled console output instance
+console = Console()
 
 # 🛠 Add the project root to sys.path (2 levels up from this script)
+# So we can import backend modules from any subdirectory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-# =====================================================
-# 🔌 DATABASE CONFIGURATION
-# =====================================================
+# 🔌 Load database login config
 from backend.config import DB_CONFIG
 
 # =====================================================
-# 📍 COORDINATES FOR ALL SENSOR LOCATIONS
+# 📍 SENSOR LOCATIONS (Name → Lat, Lng)
+# Used to place pie chart markers on the map
 # =====================================================
 LOCATION_COORDINATES = {
     "Footscray Library Car Park": (-37.800791, 144.897828),
@@ -34,70 +49,67 @@ LOCATION_COORDINATES = {
 }
 
 # =====================================================
-# 🥧 CREATE PIE CHART IMAGE FOR EACH LOCATION
+# 🥧 GENERATE PIE CHART ICON (per location)
+# Creates a PNG image showing traffic distribution
 # =====================================================
 def create_pie_chart_icon(counts, location_name, output_folder="icons"):
-    # Create folder if not exists
     os.makedirs(output_folder, exist_ok=True)
-    
     labels = ['Pedestrian', 'Cyclist', 'Vehicle']
-    colors = ['#3bffc1', '#ffe53b', '#8b4dff']  # Pedestrian, Cyclist, Vehicle
+    colors = ['#3bffc1', '#ffe53b', '#8b4dff']
     total = sum(counts)
     percentages = [(c / total) * 100 if total else 0 for c in counts]
     pie_labels = [f'{p:.1f}%' if p > 0 else '' for p in percentages]
 
-    # Generate pie chart with proportional slices
     fig, ax = plt.subplots(figsize=(1.6, 1.6), dpi=100)
     ax.pie(counts, labels=pie_labels, colors=colors, startangle=90, autopct=None,
            textprops={'fontsize': 10, 'fontweight': 'bold', 'color': 'black'})
     ax.axis('equal')
-
-    # Save the pie chart as a transparent image
     file_path = os.path.join(output_folder, f"{location_name}.png")
     plt.savefig(file_path, transparent=True)
     plt.close()
     return file_path
 
 # =====================================================
-# 📊 FETCH LATEST TRAFFIC DATA FOR EACH LOCATION
+# 🔍 FETCH LATEST DATA (per traffic type and location)
+# Returns only recent entries (max 30 min old) for selected time
 # =====================================================
-def fetch_latest_data_per_location(date_filter, time_filter):
-    # Connect to MySQL and get the most recent time entry per location
+def fetch_latest_data_per_location(date_filter, time_filter, max_age_minutes=30):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT Location, MAX(Time) as MaxTime
-        FROM processed_data
-        WHERE Date = %s AND Time <= %s
-        GROUP BY Location
-    """, (date_filter, time_filter))
-    latest_times = cursor.fetchall()
+    traffic_types = ['Pedestrian Count', 'Cyclist Count', 'Vehicle Count']
+    location_type_rows = []
+    selected_time = datetime.strptime(time_filter, "%H:%M:%S")
 
-    # If no results, return empty DataFrame
-    if not latest_times:
-        conn.close()
-        return pd.DataFrame()
+    for t_type in traffic_types:
+        cursor.execute("""
+            SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time
+            FROM processed_data pd
+            JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
+            WHERE pd.Date = %s AND tc.Traffic_Type = %s AND pd.Time <= %s
+              AND pd.Time = (
+                  SELECT MAX(pd2.Time)
+                  FROM processed_data pd2
+                  JOIN traffic_counts tc2 ON pd2.Data_ID = tc2.Data_ID
+                  WHERE pd2.Date = %s AND pd2.Location = pd.Location AND tc2.Traffic_Type = %s AND pd2.Time <= %s
+              )
+        """, (date_filter, t_type, time_filter, date_filter, t_type, time_filter))
 
-    # Construct WHERE clause to fetch only the latest entry per location
-    conditions = " OR ".join([
-        f"(pd.Location = '{row['Location']}' AND pd.Time = '{row['MaxTime']}')" for row in latest_times
-    ])
+        for row in cursor.fetchall():
+            parsed_time = row["Time"]
+            total_minutes = (parsed_time.hour * 60 + parsed_time.minute) if isinstance(parsed_time, datetime) \
+                            else int(datetime.strptime(parsed_time, "%H:%M:%S").hour) * 60 + int(datetime.strptime(parsed_time, "%H:%M:%S").minute)
+            age_minutes = selected_time.hour * 60 + selected_time.minute - total_minutes
+            if age_minutes <= max_age_minutes:
+                location_type_rows.append(row)
 
-    # Join processed data with traffic counts using Data_ID foreign key
-    df = pd.read_sql(f"""
-        SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time
-        FROM processed_data pd
-        JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
-        WHERE pd.Date = %s AND ({conditions})
-    """, conn, params=(date_filter,))
     conn.close()
-    return df
+    return pd.DataFrame(location_type_rows)
 
 # =====================================================
-# 🗃️ SAVE HEATMAP GENERATION RECORD IN DATABASE
+# 💾 INSERT HEATMAP GENERATION RECORD
+# Saves map metadata to MySQL (used for tracking outputs)
 # =====================================================
 def insert_heatmap_record(date_filter, time_filter, traffic_type, heatmap_url):
-    # Log generated heatmap metadata into the database
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
     cursor.execute("""
@@ -109,22 +121,16 @@ def insert_heatmap_record(date_filter, time_filter, traffic_type, heatmap_url):
     conn.close()
 
 # =====================================================
-# 📝 CREATE DESCRIPTION BOX ON THE LEFT SIDE
+# 📋 DESCRIPTION BOX + LEGEND (for map UI)
+# Shows date, time, traffic types, legend & pie chart explanation
 # =====================================================
 def generate_description_box(date_filter, time_filter, traffic_types, included_locations):
     traffic_string = ', '.join(traffic_types)
-
-    # ✅ Sort by length first, then alphabetically
     sorted_locations = sorted(included_locations, key=lambda loc: (len(loc), loc.lower()))
-
-    # ✅ Checklist layout with no bullets, aligned to the top-left
     locations_html = ''.join(
-        f'''
-        <li style="margin-bottom: 6px; list-style: none; display: flex; align-items: flex-start;">
-            <span style="margin-right: 6px;">✅</span>
-            <span>{loc}</span>
-        </li>
-        ''' for loc in sorted_locations)
+        f'''<li style="margin-bottom: 6px; list-style: none; display: flex; align-items: flex-start;">
+                <span style="margin-right: 6px;">✅</span><span>{loc}</span>
+            </li>''' for loc in sorted_locations)
 
     return folium.Element(f'''
         <div style="position: fixed; top: 90px; left: 30px; width: 280px; background-color: white;
@@ -136,111 +142,98 @@ def generate_description_box(date_filter, time_filter, traffic_types, included_l
             <b>Included Locations:</b>
             <ul style="margin-top: 5px; padding-left: 0px;">{locations_html}</ul>
         </div>
+        <div style="position: fixed; bottom: 30px; left: 30px; width: 220px; background-color: white;
+             border: 2px solid #444; z-index:9999; font-size: 14px; padding: 10px;">
+            <b style="color:#0275d8;">🔍 Legend</b><br>
+            <hr style="margin: 8px 0; border: none; height: 2px; background-color: black;">
+            <div><span style="display:inline-block; width:16px; height:16px; background-color:#3bffc1; margin-right:8px;"></span> Pedestrian</div>
+            <div><span style="display:inline-block; width:16px; height:16px; background-color:#ffe53b; margin-right:8px;"></span> Cyclist</div>
+            <div><span style="display:inline-block; width:16px; height:16px; background-color:#8b4dff; margin-right:8px;"></span> Vehicle</div>
+            <hr style="margin: 8px 0; border: none; height: 2px; background-color: black;">
+            <div style="margin-top:8px;"><b>🥧 Pie chart</b>: shows traffic type breakdown per location</div>
+        </div>
     ''')
 
-
 # =====================================================
-# 🔥 GENERATE THE HEATMAP + PIE CHART ICONS
+# 🔥 GENERATE HEATMAP (Main Function)
 # =====================================================
 def generate_heatmap(date_filter, time_filter):
-    df = fetch_latest_data_per_location(date_filter, time_filter)
+    console.print("\n[bold yellow]📌 Starting Heatmap Generation[/bold yellow]")
 
-    # Each sensor location is defined with its latitude and longitude.
-    # You can adjust the coordinates slightly to move marker position visually:
-    #   ↑ Move Up    → Increase Latitude    (e.g. -37.8000 → -37.7990)
-    #   ↓ Move Down  → Decrease Latitude    (e.g. -37.8000 → -37.8010)
-    #   ← Move Left  → Decrease Longitude   (e.g. 144.9000 → 144.8990)
-    #   → Move Right → Increase Longitude   (e.g. 144.9000 → 144.9010)
-    # Initialize Folium base map centered around Footscray
-    # =====================================================
-    base_map = folium.Map(
-        location=[-37.7975, 144.8876],  # Central coordinate of the map
-        zoom_start=15.7,
-        tiles='cartodbpositron'
+    progress = Progress(
+        TextColumn("[bold cyan]📍 Heatmap Progress"),
+        BarColumn(bar_width=None, complete_style="green"),
+        "[progress.percentage]{task.percentage:>3.1f}%",
+        TimeElapsedColumn(),
+        console=console
     )
 
-    # Custom CSS to prevent scrollbars and fit map
-    base_map.get_root().header.add_child(folium.Element('''
-        <style>
-            html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
-            #map { position: absolute; width: 100%; height: 100%; }
-        </style>
-    '''))
+    with progress:
+        task = progress.add_task("🔍 Fetching data...", total=5)
 
-    # Prepare traffic data
-    traffic_types = ["Pedestrian Count", "Cyclist Count", "Vehicle Count"]
-    location_counts = {loc: [0, 0, 0] for loc in LOCATION_COORDINATES}
-    heat_data = []
+        # Step 1: Fetch latest traffic data
+        df = fetch_latest_data_per_location(date_filter, time_filter)
+        df["Time"] = pd.to_datetime(df["Time"], errors='coerce').dt.strftime("%H:%M:%S")
+        progress.update(task, advance=1, description="🗺️ Creating base map...")
 
-    # Aggregate counts per location and type
-    for traffic_type in traffic_types:
-        subset = df[df["Traffic_Type"] == traffic_type]
-        idx = traffic_types.index(traffic_type)
-        for _, row in subset.iterrows():
-            loc = row["Location"]
-            cnt = row["Interval_Count"]
-            if loc in location_counts:
-                location_counts[loc][idx] += cnt
-                coords = LOCATION_COORDINATES[loc]
-                heat_data.append([coords[0], coords[1], cnt])
+        # Step 2: Create the base map object
+        base_map = folium.Map(location=[-37.7975, 144.8876], zoom_start=15.7, tiles='cartodbpositron')
+        base_map.get_root().header.add_child(folium.Element('''<style>html, body { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; } #map { position: absolute; width: 100%; height: 100%; }</style>'''))
 
-    # Add pie chart icons (one per location with traffic)
-    for loc, counts in location_counts.items():
-        if sum(counts) == 0:
-            continue
-        coords = LOCATION_COORDINATES[loc]
-        icon_path = create_pie_chart_icon(counts, loc.replace(" ", "_"))
-        pie_icon = CustomIcon(icon_image=icon_path, icon_size=(100, 100))
+        # Step 3: Calculate location-wise counts
+        progress.update(task, advance=1, description="🔥 Processing traffic data...")
+        traffic_types = ["Pedestrian Count", "Cyclist Count", "Vehicle Count"]
+        location_counts = {loc: [0, 0, 0] for loc in LOCATION_COORDINATES}
+        heat_data = []
 
-        tooltip_html = folium.Tooltip(f"""
-        <div style="font-size: 20px; font-weight: bold;">
-            📍 <b>{loc}</b><br>
-            <hr style="margin: 8px 0; border: none; height: 2px; background-color: black;">
-            <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; margin-right:6px;"></span> Pedestrian: {counts[0]}<br>
-            <span style="display:inline-block; width:14px; height:14px; background-color:#ffe53b; margin-right:6px;"></span> Cyclist: {counts[1]}<br>
-            <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; margin-right:6px;"></span> Vehicle: {counts[2]}
-        </div>
-    """, sticky=True)
+        for traffic_type in traffic_types:
+            subset = df[df["Traffic_Type"] == traffic_type]
+            idx = traffic_types.index(traffic_type)
+            for _, row in subset.iterrows():
+                loc = row["Location"]
+                cnt = row["Interval_Count"]
+                if loc in location_counts:
+                    location_counts[loc][idx] += cnt
+                    coords = LOCATION_COORDINATES[loc]
+                    heat_data.append([coords[0], coords[1], cnt])
 
+        # Step 4: Add pie chart icons as custom markers
+        progress.update(task, advance=1, description="📍 Adding pie chart markers...")
+        for loc, counts in location_counts.items():
+            if sum(counts) == 0:
+                continue
+            coords = LOCATION_COORDINATES[loc]
+            icon_path = create_pie_chart_icon(counts, loc.replace(" ", "_"))
+            pie_icon = CustomIcon(icon_image=icon_path, icon_size=(100, 100))
 
-        folium.Marker(location=coords, icon=pie_icon, tooltip=tooltip_html).add_to(base_map)
+            tooltip_html = folium.Tooltip(f"""
+            <div style=\"font-size: 18px; font-weight: bold;\">
+                📍 <b>{loc}</b><br>
+                <hr style=\"margin: 8px 0; border: none; height: 2px; background-color: black;\">
+                <span style=\"display:inline-block; width:14px; height:14px; background-color:#3bffc1; margin-right:6px;\"></span> Pedestrian: {counts[0]}<br><br>
+                <span style=\"display:inline-block; width:14px; height:14px; background-color:#ffe53b; margin-right:6px;\"></span> Cyclist: {counts[1]}<br><br>
+                <span style=\"display:inline-block; width:14px; height:14px; background-color:#8b4dff; margin-right:6px;\"></span> Vehicle: {counts[2]}
+            </div>
+            """, sticky=True)
 
-    # Add heatmap layer to visualize density across Footscray
-    HeatMap(heat_data, radius=25).add_to(base_map)
+            folium.Marker(location=coords, icon=pie_icon, tooltip=tooltip_html).add_to(base_map)
 
-    # Add heatmap legend with larger colored squares
-    base_map.get_root().html.add_child(folium.Element('''
-        <div style="position: fixed; bottom: 30px; left: 30px; width: 230px; background-color: white;
-        border:2px solid grey; z-index:9999; font-size:14px; padding: 10px;">
-        <b>Heatmap Legend</b><br>
-        <hr style="margin: 8px 0; border: none; height: 2px; background-color: #000;">
-        <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; margin-right:6px;"></span> Pedestrian<br>
-        <span style="display:inline-block; width:14px; height:14px; background-color:#ffe53b; margin-right:6px;"></span> Cyclist<br>
-        <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; margin-right:6px;"></span> Vehicle
-        <hr style="margin: 8px 0; border: none; height: 2px; background-color: #000;">
-        🥧 Pie Chart: Distribution per sensor<br>
-        Gradient: Density level
-        </div>
-    '''))
+        # Step 5: Finalize the map — add heat layer, info box, and save
+        progress.update(task, advance=1, description="💾 Saving map and logging...")
+        HeatMap(heat_data, radius=25).add_to(base_map)
+        info_box = generate_description_box(date_filter, time_filter, df["Traffic_Type"].unique(), df["Location"].unique())
+        base_map.get_root().html.add_child(info_box)
 
-    # Add information sidebar showing metadata
-    info_box = generate_description_box(
-        date_filter,
-        time_filter,
-        df["Traffic_Type"].unique(),
-        df["Location"].unique()
-    )
-    base_map.get_root().html.add_child(info_box)
+        filename = os.path.join("heatmaps", f"heatmap_{date_filter}_{time_filter.replace(':', '-')}.html")
+        os.makedirs("backend/heatmaps", exist_ok=True)
+        base_map.save(filename)
+        insert_heatmap_record(date_filter, time_filter, "All", filename.replace("\\", "/"))
+        progress.update(task, advance=1)
 
-    # Save map as HTML file
-    os.makedirs("backend/heatmaps", exist_ok=True)
-    filename = os.path.join("heatmaps", f"heatmap_{date_filter}_{time_filter.replace(':', '-')}.html")
-    base_map.save(filename)
+    console.print("\n✅ [bold green]Heatmap generated and saved successfully.[/bold green]\n")
 
-    # Store the output record in the database
-    insert_heatmap_record(date_filter, time_filter, "All", filename.replace("\\", "/"))
-
-# ▶️ Test run
-# generate_heatmap("2025-03-03", "12:55:00")
+# ▶️ Sample test run (comment/uncomment different days for debugging)
+generate_heatmap("2025-03-03", "12:55:00")
+# generate_heatmap("2024-12-25", "08:30:00")
 # generate_heatmap("2025-01-27", "09:10:00")
-generate_heatmap("2024-11-06", "14:15:00")
+# generate_heatmap("2024-11-06", "14:15:00")
