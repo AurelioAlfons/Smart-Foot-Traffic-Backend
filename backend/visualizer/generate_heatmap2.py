@@ -17,7 +17,7 @@ from rich.console import Console
 
 console = Console()
 
-# Allow relative imports
+# ✅ Allow relative imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from backend.config import DB_CONFIG
 from backend.visualizer.utils.description_box import generate_description_box
@@ -61,7 +61,9 @@ def fetch_traffic_data(date_filter, time_filter, selected_type, max_age_minutes=
             location_rows.append(row)
 
     conn.close()
-    return pd.DataFrame(location_rows)
+
+    # ✅ Ensure required columns are in correct format
+    return pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date"])
 
 # 🔥 MAIN FUNCTION: GENERATE HEATMAP
 def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count"):
@@ -79,8 +81,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
         task = progress.add_task("Fetching data...", total=4)
 
         df = fetch_traffic_data(date_filter, time_filter, selected_type)
-        df["Time"] = pd.to_datetime(df["Time"], errors='coerce').dt.strftime("%H:%M:%S")
-        df["DateTime_String"] = df["Date"].astype(str) + " " + df["Time"].astype(str)
+        df["DateTime_String"] = pd.to_datetime(df["Date"].astype(str) + " " + df["Time"].astype(str), errors='coerce').dt.strftime("%Y-%m-%d %H:%M:%S")
 
         progress.update(task, advance=1, description="Creating map...")
 
@@ -148,5 +149,5 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
 
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
-# 🔢 Run test
-generate_heatmap("2025-03-03", "12:55:00", "Pedestrian Count")
+# 🔢 Run test using 12:00 (aligned with hourly bucket)
+generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
