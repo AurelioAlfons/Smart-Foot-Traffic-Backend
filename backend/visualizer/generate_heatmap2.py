@@ -28,6 +28,8 @@ from backend.visualizer.utils.description_box import generate_description_box
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES, LOCATION_ZONES
 from backend.visualizer.utils.tooltip_box import generate_tooltip_html
 from backend.visualizer.utils.heatmap_colors import get_color_by_count
+from backend.visualizer.utils.marker_helpers import add_center_marker
+from backend.visualizer.utils.map_shapes import add_zone_polygon
 
 # 🔍 Get traffic data for the selected date, time, and type
 def fetch_traffic_data(date_filter, time_filter, selected_type, max_age_minutes=30):
@@ -123,16 +125,6 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
                 datetime_string = dt_string + ("<br><span style='color: #888;'>No data available</span>" if cnt == 0 else "")
             )
 
-            # 🟪 Add filled polygon zone instead of a circle
-            folium.Polygon(
-                locations=[[lat, lon] for lon, lat in LOCATION_ZONES[loc]],  # Flip (lon, lat) to (lat, lon)
-                color=fill_color,
-                fill=True,
-                fill_color=fill_color,
-                fill_opacity=1.0,
-                tooltip=folium.Tooltip(tooltip_html, sticky=True)
-            ).add_to(base_map)
-
             # 🔵 Determine fill color and text contrast
             fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"
 
@@ -141,24 +133,11 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
             }
             text_color = "#000000" if fill_color in bright_colors else "#FFFFFF"
 
-            # 🧭 Add center marker with proper contrast
-            folium.Marker(
-                location=coords,
-                icon=folium.DivIcon(
-                    icon_size=(40, 20),
-                    icon_anchor=(20, 10),
-                    html=f"""
-                        <div style="
-                            font-size: 14px;
-                            font-weight: 800;
-                            color: {text_color};
-                            text-align: center;
-                        ">
-                            {cnt}
-                        </div>
-                    """
-                )
-            ).add_to(base_map)
+            # 🟪 Add filled polygon zone from utility
+            add_zone_polygon(base_map, loc, fill_color, tooltip_html, LOCATION_ZONES)
+
+            # 🧭 Add center count marker with dynamic text color
+            add_center_marker(base_map, coords, cnt, fill_color)
 
         progress.update(task, advance=1, description="Saving file...")
 
@@ -182,7 +161,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
 # ▶️ Run example
-# generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
-generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
+generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
+# generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
