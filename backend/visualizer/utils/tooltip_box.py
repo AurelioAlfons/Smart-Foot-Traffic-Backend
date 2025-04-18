@@ -1,15 +1,56 @@
-def generate_tooltip_html(location, traffic_type, count, datetime_string):
-    # 🎨 Choose a color for the traffic type badge
+import pandas as pd
+
+def generate_tooltip_html(location, traffic_type, count, datetime_string, season="Unknown", weather="Unknown"):
+    # 🎨 Color for each traffic type
     type_color_map = {
-        "Pedestrian": "#3bffc1",  # Cyan
-        "Cyclist": "#ffe53b",     # Yellow
-        "Vehicle": "#8b4dff"      # Purple
+        "Pedestrian": "#3bffc1",
+        "Cyclist": "#ffe53b",
+        "Vehicle": "#8b4dff"
     }
 
-    # 🟪 Default to grey if type is unknown
     color = type_color_map.get(traffic_type, "#ccc")
 
-    # 🧱 Build the full HTML structure of the tooltip
+    # 🗓️ Season to month range
+    season_ranges = {
+        "Summer": "December – February",
+        "Autumn": "March – May",
+        "Winter": "June – August",
+        "Spring": "September – November"
+    }
+
+    is_season_mode = season in season_ranges
+
+    # ✅ Ensure datetime string format
+    safe_datetime_str = str(datetime_string) if pd.notna(datetime_string) else "N/A"
+
+    # ✅ Extract date and time
+    if isinstance(safe_datetime_str, str) and " " in safe_datetime_str:
+        parts = safe_datetime_str.split(" ")
+        date_part = parts[0]
+        time_part = parts[-1]
+    else:
+        date_part = safe_datetime_str
+        time_part = "N/A"
+
+    # 🍂 Auto-infer season if not provided
+    if season == "Unknown" and pd.notna(date_part) and "-" in date_part:
+        try:
+            month = int(date_part.split("-")[1])
+            if month in [12, 1, 2]:
+                season = "Summer"
+            elif month in [3, 4, 5]:
+                season = "Autumn"
+            elif month in [6, 7, 8]:
+                season = "Winter"
+            elif month in [9, 10, 11]:
+                season = "Spring"
+        except:
+            season = "Unknown"
+
+    show_time = "Unknown" if is_season_mode else time_part
+    show_date = date_part
+    show_season = season if season in season_ranges else "Unknown"
+
     return f"""
     <div style="
         font-size: 14px;
@@ -22,14 +63,10 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string):
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         width: 350px;
     ">
-
-        <!-- 🏷️ Location title (bold and big) -->
         <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 {location}</div>
 
-        <!-- Line break separator -->
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
 
-        <!-- 🚦 Show traffic type with a colored box -->
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
@@ -38,17 +75,27 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string):
             </span>
         </div>
 
-        <!-- 🔢 Show the traffic count -->
         <div style="display: flex; justify-content: space-between;">
             <span><b>🔢 Count:</b></span> <span>{count}</span>
         </div>
 
-        <!-- 🕒 Show the time and any extra note -->
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🕒 Time:</b></span> <span>{datetime_string.replace(" ", " | ") if datetime_string else 'N/A'}</span>
+            <span><b>📅 Date:</b></span> <span>{show_date}</span>
         </div>
 
-        <!-- Footer with grey note -->
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>{show_time}</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>{show_season}</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>{weather}</span>
+        </div>
+
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
         <div style="font-size: 14px; color: #888; text-align: center;">
             Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗

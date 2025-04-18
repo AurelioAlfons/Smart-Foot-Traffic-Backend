@@ -5,6 +5,15 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
     traffic_label = selected_type.replace(" Count", "")
     all_locations = sorted(LOCATION_COORDINATES.keys())
 
+    # Determine season range (month span) for display if using season mode
+    season_ranges = {
+        "Summer": "December – February",
+        "Autumn": "March – May",
+        "Winter": "June – August",
+        "Spring": "September – November"
+    }
+    season_range = season_ranges.get(date_filter, "")
+
     # ⛳ Build HTML for each location
     loc_list_html = ''
     for loc in all_locations:
@@ -30,9 +39,10 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
     ">
         <b style="color:#0275d8;">ℹ️ Heatmap Info</b><br>
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
-        <b>Date:</b> {date_filter}<br>
-        <b>Time:</b> {time_filter}<br>
-        <b>Type:</b> {traffic_label}<br>
+        <b>🌦️ Season:</b> {date_filter if date_filter in season_ranges else "N/A"}<br>
+        <b>🗓️ Date:</b> {season_range if season_range else date_filter}<br>
+        <b>🕒 Time:</b> {time_filter}<br>
+        <b>📊 Type:</b> {traffic_label}<br>
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
         <b>📍 Locations:</b>
         <ul style="padding-left: 10px; margin-top: 5px;">
@@ -45,7 +55,5 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
             <span style="display:inline-block;width:12px;height:12px;background:#ffe53b;margin-right:6px;"></span>Cyclist<br>
             <span style="display:inline-block;width:12px;height:12px;background:#8b4dff;margin-right:6px;"></span>Vehicle
         </div>
-        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
-        <div><b>🥧 Pie:</b> shows traffic split per location</div>
     </div>
 """)

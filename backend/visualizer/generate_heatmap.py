@@ -14,7 +14,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 import folium                      # 📍 For map creation
-import mysql.connector            # 🗃️ To connect to MySQL
+import mysql.connector            # 🗓️ To connect to MySQL
 import pandas as pd               # 📊 For working with data tables
 from datetime import datetime, timedelta
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
@@ -31,51 +31,72 @@ from backend.visualizer.utils.heatmap_colors import get_color_by_count
 from backend.visualizer.utils.marker_helpers import add_center_marker
 from backend.visualizer.utils.map_shapes import add_zone_polygon
 
-# 🔍 Get traffic data for the selected date, time, and type
-def fetch_traffic_data(date_filter, time_filter, selected_type, max_age_minutes=30):
+# 🔍 Get traffic data for the selected date, time, and type (or by season)
+def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicle Count", season_filter=None, max_age_minutes=30):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor(dictionary=True)
 
-    location_rows = []
-    selected_time = datetime.strptime(time_filter, "%H:%M:%S")
+    if season_filter:
+        cursor.execute("""
+            SELECT pd.Location, tc.Traffic_Type, SUM(tc.Total_Count) AS Interval_Count
+            FROM traffic_counts tc
+            JOIN weather_season_data wsd ON tc.Data_ID = wsd.Data_ID
+            JOIN processed_data pd ON tc.Data_ID = pd.Data_ID
+            WHERE wsd.Season = %s AND tc.Traffic_Type = %s
+            GROUP BY pd.Location, tc.Traffic_Type
+        """, (season_filter, selected_type))
 
-    # 📦 SQL: Get the most recent record for each location before the selected time
-    cursor.execute("""
-        SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time, pd.Date
-        FROM processed_data pd
-        JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
-        WHERE pd.Date = %s AND tc.Traffic_Type = %s AND pd.Time <= %s
-          AND pd.Time = (
-              SELECT MAX(pd2.Time)
-              FROM processed_data pd2
-              JOIN traffic_counts tc2 ON pd2.Data_ID = tc2.Data_ID
-              WHERE pd2.Date = %s AND pd2.Location = pd.Location AND tc2.Traffic_Type = %s AND pd2.Time <= %s
-          )
-    """, (date_filter, selected_type, time_filter, date_filter, selected_type, time_filter))
+        rows = cursor.fetchall()
+        df = pd.DataFrame(rows, columns=["Location", "Traffic_Type", "Interval_Count"])
+        df["Date"] = season_filter
+        df["Time"] = "All"
+        df["DateTime_String"] = "Unknown"
+    else:
+        location_rows = []
+        selected_time = datetime.strptime(time_filter, "%H:%M:%S")
 
-    # 📊 Filter rows to make sure they are recent enough
-    for row in cursor.fetchall():
-        parsed_time = row["Time"]
-        if isinstance(parsed_time, timedelta):
-            total_minutes = parsed_time.total_seconds() // 60
-        elif isinstance(parsed_time, str):
-            parsed_time_obj = datetime.strptime(parsed_time, "%H:%M:%S")
-            total_minutes = parsed_time_obj.hour * 60 + parsed_time_obj.minute
-        elif isinstance(parsed_time, datetime):
-            total_minutes = parsed_time.hour * 60 + parsed_time.minute
-        else:
-            total_minutes = parsed_time.hour * 60 + parsed_time.minute
+        cursor.execute("""
+            SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time, pd.Date
+            FROM processed_data pd
+            JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
+            WHERE pd.Date = %s AND tc.Traffic_Type = %s AND pd.Time <= %s
+              AND pd.Time = (
+                  SELECT MAX(pd2.Time)
+                  FROM processed_data pd2
+                  JOIN traffic_counts tc2 ON pd2.Data_ID = tc2.Data_ID
+                  WHERE pd2.Date = %s AND pd2.Location = pd.Location AND tc2.Traffic_Type = %s AND pd2.Time <= %s
+              )
+        """, (date_filter, selected_type, time_filter, date_filter, selected_type, time_filter))
 
-        age_minutes = selected_time.hour * 60 + selected_time.minute - total_minutes
-        if age_minutes <= max_age_minutes:
-            location_rows.append(row)
+        for row in cursor.fetchall():
+            parsed_time = row["Time"]
+            if isinstance(parsed_time, timedelta):
+                total_minutes = parsed_time.total_seconds() // 60
+            elif isinstance(parsed_time, str):
+                parsed_time_obj = datetime.strptime(parsed_time, "%H:%M:%S")
+                total_minutes = parsed_time_obj.hour * 60 + parsed_time_obj.minute
+            elif isinstance(parsed_time, datetime):
+                total_minutes = parsed_time.hour * 60 + parsed_time.minute
+            else:
+                total_minutes = parsed_time.hour * 60 + parsed_time.minute
+
+            age_minutes = selected_time.hour * 60 + selected_time.minute - total_minutes
+            if age_minutes <= max_age_minutes:
+                location_rows.append(row)
+
+        df = pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date"])
+        df["DateTime_String"] = df.apply(
+            lambda row: f"{row['Date']} {row['Time']}" if pd.notna(row['Date']) and pd.notna(row['Time']) else "N/A",
+            axis=1
+        )
 
     conn.close()
-    return pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date"])
+    return df
 
 # 🔥 Main function to generate the heatmap and save as HTML
-def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count"):
-    console.print(f"\n📌 Generating heatmap for: [bold magenta]{selected_type}[/bold magenta]")
+def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestrian Count", season_filter=None):
+    label = season_filter if season_filter else date_filter
+    console.print(f"\n📌 Generating heatmap for: [bold magenta]{selected_type}[/bold magenta] at [cyan]{label}[/cyan]")
 
     progress = Progress(
         TextColumn("[bold cyan]🔄 Progress"),
@@ -89,18 +110,14 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
         task = progress.add_task("Fetching data...", total=4)
 
         # 📊 Load and prepare the data
-        df = fetch_traffic_data(date_filter, time_filter, selected_type)
-        df["DateTime_String"] = pd.to_datetime(
-            df["Date"].astype(str) + " " + df["Time"].astype(str), errors='coerce'
-        ).dt.strftime("%Y-%m-%d %H:%M:%S")
+        df = fetch_traffic_data(date_filter=date_filter, time_filter=time_filter, selected_type=selected_type, season_filter=season_filter)
 
         progress.update(task, advance=1, description="Creating map...")
 
-        # 🗺️ Create base map centered around Footscray
+        # 📜 Base map around Footscray
         base_map = folium.Map(location=[-37.7975, 144.8876], zoom_start=15.7, tiles='cartodbpositron')
         progress.update(task, advance=1, description="Adding markers...")
 
-        # 📍 Loop through all sensor locations and add a circle
         for loc, coords in LOCATION_COORDINATES.items():
             row_data = df[df["Location"] == loc]
 
@@ -108,49 +125,35 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
                 cnt = row_data.iloc[0]["Interval_Count"]
                 cnt = cnt if pd.notna(cnt) else 0
                 dt_string = row_data.iloc[0]["DateTime_String"]
-                dt_string = dt_string if pd.notna(dt_string) else f"{date_filter} {time_filter}"
             else:
                 cnt = 0
-                dt_string = f"{date_filter} {time_filter}"
+                dt_string = "Unknown"
 
-            # 🔵 Customize circle size and color
-            radius = max(5, min(cnt * 0.3, 25))
-            fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"  # dark grey if no data
+            fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"
 
-            # 📝 Create tooltip with a new line for "no data"
+            # 📅 Build tooltip with proper logic
             tooltip_html = generate_tooltip_html(
                 location=loc,
                 traffic_type=selected_type.replace(' Count', ''),
                 count=cnt,
-                datetime_string = dt_string + ("<br><span style='color: #888;'>No data available</span>" if cnt == 0 else "")
+                datetime_string="Unknown" if season_filter else dt_string,
+                season=season_filter if season_filter else "Unknown",
+                weather="Unknown"
             )
 
-            # 🔵 Determine fill color and text contrast
-            fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"
-
-            bright_colors = {
-                "#FFEB33", "#FFF066", "#FFF599", "#FFFACB","#F0F9A3"
-            }
-            text_color = "#000000" if fill_color in bright_colors else "#FFFFFF"
-
-            # 🟪 Add filled polygon zone from utility
             add_zone_polygon(base_map, loc, fill_color, tooltip_html, LOCATION_ZONES)
-
-            # 🧭 Add center count marker with dynamic text color
             add_center_marker(base_map, coords, cnt, fill_color)
 
         progress.update(task, advance=1, description="Saving file...")
 
-        # 📋 Add floating info box on the map
         base_map.get_root().html.add_child(
-            generate_description_box(date_filter, time_filter, selected_type, df["Location"].unique())
+            generate_description_box(label, time_filter or "All", selected_type, df["Location"].unique())
         )
 
-        # 💾 Save map to HTML file
         os.makedirs("heatmaps", exist_ok=True)
         filename = os.path.join(
             "heatmaps",
-            f"heatmap_{date_filter}_{time_filter.replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
+            f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
         )
 
         with open(filename, "w", encoding="utf-8", errors="ignore") as f:
@@ -165,3 +168,4 @@ generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
 # generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
+generate_heatmap(None, None, "Vehicle Count", "Autumn")
