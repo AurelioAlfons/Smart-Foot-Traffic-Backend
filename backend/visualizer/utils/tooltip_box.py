@@ -1,13 +1,15 @@
 def generate_tooltip_html(location, traffic_type, count, datetime_string):
-    # 🎨 Assign badge color based on traffic type
+    # 🎨 Choose a color for the traffic type badge
     type_color_map = {
         "Pedestrian": "#3bffc1",  # Cyan
         "Cyclist": "#ffe53b",     # Yellow
         "Vehicle": "#8b4dff"      # Purple
     }
 
+    # 🟪 Default to grey if type is unknown
     color = type_color_map.get(traffic_type, "#ccc")
 
+    # 🧱 Build the full HTML structure of the tooltip
     return f"""
     <div style="
         font-size: 14px;
@@ -21,13 +23,13 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string):
         width: 350px;
     ">
 
-        <!-- 📍 Location Title -->
+        <!-- 🏷️ Location title (bold and big) -->
         <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 {location}</div>
 
-        <!-- Divider -->
+        <!-- Line break separator -->
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
 
-        <!-- 🚦 Traffic Type -->
+        <!-- 🚦 Show traffic type with a colored box -->
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
@@ -36,17 +38,17 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string):
             </span>
         </div>
 
-        <!-- 🔢 Count -->
+        <!-- 🔢 Show the traffic count -->
         <div style="display: flex; justify-content: space-between;">
             <span><b>🔢 Count:</b></span> <span>{count}</span>
         </div>
 
-        <!-- 🕒 Time -->
+        <!-- 🕒 Show the time and any extra note -->
         <div style="display: flex; justify-content: space-between;">
             <span><b>🕒 Time:</b></span> <span>{datetime_string if datetime_string else 'N/A'}</span>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer with grey note -->
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
         <div style="font-size: 14px; color: #888; text-align: center;">
             Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
