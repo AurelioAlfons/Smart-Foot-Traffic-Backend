@@ -18,7 +18,7 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string):
         padding: 14px 16px;
         background-color: #ffffff;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        width: 280px;
+        width: 350px;
     ">
 
         <!-- 📍 Location Title -->
