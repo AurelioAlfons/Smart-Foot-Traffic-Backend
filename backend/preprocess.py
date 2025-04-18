@@ -1,15 +1,15 @@
 # ========================================
 # 📦 IMPORT MODULES
 # ========================================
-import os                 # for working with folders and file paths
-import time               # to track how long each file takes
-import pandas as pd       # to load and clean CSV files
-import mysql.connector    # to connect and insert into MySQL
-from config import DB_CONFIG  # your database login config
-import logging            # to show logs in the terminal
+import os                 
+import time               
+import pandas as pd       
+import mysql.connector    
+from config import DB_CONFIG  
+import logging            
 from datetime import datetime
-from collections import defaultdict  # for tracking missing hours
-from rich.console import Console     # to print colored progress
+from collections import defaultdict  
+from rich.console import Console     
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 
 # ========================================
@@ -22,8 +22,6 @@ console = Console()
 # 🛑 TYPES OF TRAFFIC WE CARE ABOUT
 # ========================================
 TRAFFIC_TYPES = ['Pedestrian Count', 'Cyclist Count', 'Vehicle Count']
-
-# Add emojis for fun and clarity in logs
 FOLDER_ICONS = {
     'Pedestrian Count': '🚶‍♂️',
     'Cyclist Count': '🚴‍♀️',
@@ -39,12 +37,12 @@ def extract_location(filename):
     return location.title()
 
 # ========================================
-# 🚀 MAIN FUNCTION TO PROCESS ALL DATA
+# 🚀 MAIN PROCESSING FUNCTION
 # ========================================
 def preprocess_data():
     base_path = os.path.join(os.path.dirname(__file__), 'data')
 
-    # 🔌 Connect to the database
+    # 🔌 Database connection
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
@@ -53,24 +51,21 @@ def preprocess_data():
         logging.error(f"❌ Connection failed: {e}")
         return
 
-    # Prepare to track all files and rows
+    # File processing setup
     total_rows = 0
     file_map = []
-
-    # Limit max files per traffic type
     max_files = {
         'Pedestrian Count': 11,
         'Cyclist Count': 11,
         'Vehicle Count': 9
     }
 
-    # 📂 Find all CSVs and count total rows
+    # 📂 Count total rows
     for traffic in TRAFFIC_TYPES:
         folder = os.path.join(base_path, traffic)
         if not os.path.exists(folder):
             continue
 
-        # Grab the first N files only
         files = sorted([f for f in os.listdir(folder) if f.endswith('.csv')])[:max_files[traffic]]
         for file in files:
             path = os.path.join(folder, file)
@@ -81,11 +76,11 @@ def preprocess_data():
             except:
                 continue
 
-    # For keeping track of how many files we processed
+    # Progress tracking
     traffic_seen = set()
     file_index_tracker = {t: 0 for t in TRAFFIC_TYPES}
 
-    # 🎯 Setup progress bar with Rich
+    # 🎯 Progress bar setup
     progress = Progress(
         TextColumn("[bold green]📈 Preprocessing Progress"),
         BarColumn(bar_width=None, complete_style="green"),
@@ -95,13 +90,12 @@ def preprocess_data():
     )
 
     # ========================================
-    # 🔄 LOOP THROUGH ALL FILES AND INSERT DATA
+    # 🔄 PROCESS ALL FILES
     # ========================================
     with progress:
         task = progress.add_task("Processing...", total=total_rows)
 
         for traffic, path in file_map:
-            # Show section header per traffic type
             if traffic not in traffic_seen:
                 traffic_seen.add(traffic)
                 console.print(f"\n[bold yellow]{FOLDER_ICONS[traffic]} Starting {traffic}[/bold yellow]\n")
@@ -115,129 +109,79 @@ def preprocess_data():
             console.print("=" * 60)
             start_time = time.time()
 
-            # Try reading the CSV
+            # Read and clean data
             try:
                 df = pd.read_csv(path)
-            except Exception as e:
-                logging.error(f"❌ Couldn't read file: {e}")
-                continue
+                if 'date' not in df.columns or 'value' not in df.columns:
+                    logging.warning("⚠️ Skipping — missing 'date' or 'value'")
+                    continue
 
-            # Check required columns exist
-            if 'date' not in df.columns or 'value' not in df.columns:
-                logging.warning("⚠️ Skipping — missing 'date' or 'value'")
-                continue
+                df.drop_duplicates(inplace=True)
+                location = extract_location(path)
 
-            df.drop_duplicates(inplace=True)  # Remove repeated rows
-            location = extract_location(path)  # Get location name
+                # Convert and adjust timezone
+                df['Date_Time'] = pd.to_datetime(df['date'], errors='coerce', utc=True)
+                df['Date_Time'] = df['Date_Time'].dt.tz_convert('Australia/Melbourne').dt.tz_localize(None)
+                df.dropna(subset=['Date_Time'], inplace=True)
 
-            # Convert date to datetime and adjust to Melbourne timezone
-            df['Date_Time'] = pd.to_datetime(df['date'], errors='coerce', utc=True)
-            df['Date_Time'] = df['Date_Time'].dt.tz_convert('Australia/Melbourne').dt.tz_localize(None)
-            df.dropna(subset=['Date_Time'], inplace=True)
+                # Create date/time columns
+                df['Date'] = df['Date_Time'].dt.date.astype(str)
+                df['Time'] = df['Date_Time'].dt.time.astype(str)
+                df['Date_Time'] = df['Date_Time'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
-            # Split into Date and Time columns
-            df['Date'] = df['Date_Time'].dt.date.astype(str)
-            df['Time'] = df['Date_Time'].dt.time.astype(str)
-            df['Date_Time'] = df['Date_Time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+                # Clean traffic count values
+                df['value'] = df['value'].fillna(df['value'].median()).astype(int)
+                df.sort_values(by='Date_Time', inplace=True)
 
-            # Fill missing value with median
-            df['value'] = df['value'].fillna(df['value'].median())
+                # Process each row
+                inserted = 0
+                failed_processed = 0
+                failed_traffic = 0
 
-            # Sort by time and calculate interval count
-            df.sort_values(by='Date_Time', inplace=True)
-            df['Interval_Count'] = df.groupby('Date')['value'].diff().fillna(df['value']).clip(lower=0).astype(int)
-
-            inserted = 0
-            failed_processed = 0
-            failed_traffic = 0
-
-            # 🧾 Insert each row into MySQL
-            for _, row in df.iterrows():
-                try:
-                    # Insert into processed_data table
-                    cursor.execute("""
-                        INSERT INTO processed_data (Date_Time, Date, Time, Location)
-                        VALUES (%s, %s, %s, %s)
-                    """, (row['Date_Time'], row['Date'], row['Time'], location))
-                    data_id = cursor.lastrowid  # Get ID for traffic_counts
-
+                for _, row in df.iterrows():
                     try:
-                        # Insert into traffic_counts table
+                        # Insert into processed_data
+                        cursor.execute("""
+                            INSERT INTO processed_data (Date_Time, Date, Time, Location)
+                            VALUES (%s, %s, %s, %s)
+                        """, (row['Date_Time'], row['Date'], row['Time'], location))
+                        data_id = cursor.lastrowid
+
+                        # CORRECTED: Using Total_Count instead of Traffic_Count
                         cursor.execute("""
                             INSERT INTO traffic_counts (Data_ID, Traffic_Type, Total_Count, Interval_Count)
                             VALUES (%s, %s, %s, %s)
-                        """, (
-                            data_id,
-                            traffic,
-                            int(row['value']),
-                            int(row['Interval_Count'])
-                        ))
+                        """, (data_id, traffic, int(row['value']), int(row['Interval_Count'])))
                         inserted += 1
 
                     except mysql.connector.Error as e:
-                        conn.rollback()  # Cancel the last insert if traffic_counts fails
+                        conn.rollback()
                         failed_traffic += 1
-                        logging.error(f"❌ Insert failed for traffic_counts → Data_ID {data_id}: {e}")
+                        logging.error(f"❌ Insert failed for Data_ID {data_id}: {e}")
+                        continue
 
-                except mysql.connector.Error as e:
-                    failed_processed += 1
-                    logging.error(f"❌ Insert failed for processed_data: {e}")
-                    continue
+                    progress.update(task, advance=1)
 
-                # Update progress bar
-                progress.update(task, advance=1)
+                # Show file results
+                elapsed = round(time.time() - start_time, 2)
+                console.print(f"\n[green]✅ [INSERTED][/green] {inserted} rows")
+                console.print(f"⏱️ [italic]Took {elapsed} seconds[/italic]")
+                if failed_processed or failed_traffic:
+                    console.print(f"[red]❌ [FAILED][/red] Processed: {failed_processed}, Traffic: {failed_traffic}")
+                console.print("[grey70]" + "-" * 60 + "[/grey70]")
 
-            # Show final status per file
-            elapsed = round(time.time() - start_time, 2)
-            console.print(f"\n[green]✅ [INSERTED][/green] {inserted} rows from: {file_name}")
-            console.print(f"⏱️ [italic]Took {elapsed} seconds[/italic]")
+            except Exception as e:
+                logging.error(f"❌ File processing failed: {e}")
+                continue
 
-            if failed_processed or failed_traffic:
-                console.print(f"[red]❌ [FAILED][/red] Processed: {failed_processed}, Traffic: {failed_traffic}")
-
-            console.print("[grey70]" + "-" * 60 + "[/grey70]")
-
-    # ✅ Commit everything at the end
+    # Final commit and cleanup
     conn.commit()
-    logging.info("📦 Finished inserting all CSV data.")
-
-    # ✅ Run check to see if we have full hour data
-    logging.info("🔎 Checking for missing hours by day/location...")
-    check_missing_hours(cursor)
-
-    # Close the connection
     cursor.close()
     conn.close()
-    logging.info("🌟 All data saved to MySQL successfully!")
+    logging.info("🌟 All data saved successfully!")
 
 # ========================================
-# 🕒 CHECK IF WE HAVE MISSING HOURS PER DAY
-# ========================================
-def check_missing_hours(cursor):
-    query = """
-    SELECT Date, Time, Location
-    FROM processed_data
-    WHERE Location = 'Footscray Library Car Park'
-    ORDER BY Date, Time
-    """
-    cursor.execute(query)
-    rows = cursor.fetchall()
-
-    time_data = defaultdict(list)
-
-    for date, time, _ in rows:
-        full_dt = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
-        time_data[date].append(full_dt.hour)
-
-    for date, hours in time_data.items():
-        missing_hours = sorted(set(range(24)) - set(hours))
-        if missing_hours:
-            logging.warning(f"🕒 {date} is missing hours: {missing_hours}")
-        else:
-            logging.info(f"✅ {date} has full 24-hour coverage")
-
-# ========================================
-# ▶️ START THE WHOLE PROGRAM
+# ▶️ ENTRY POINT
 # ========================================
 if __name__ == "__main__":
     preprocess_data()

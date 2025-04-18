@@ -1,15 +1,35 @@
+# backend/run_pipeline.py
 import subprocess
 import sys
+from preprocess import main as preprocess_data
+from assign_weather_season import main as assign_weather
 
-# Get the current Python interpreter (from venv)
 python_exec = sys.executable
 
-# --- Step 1: Run preprocessing ---
-print("\n🔄 Running preprocess.py...")
-subprocess.run([python_exec, "backend/preprocess.py"])
+def run_pipeline():
+    try:
+        print("\n🚀 Starting Data Pipeline")
+        
+        # Step 1: Preprocessing
+        print("\n🔄 Step 1/3: Data Preprocessing")
+        subprocess.run([python_exec, "backend/preprocess.py"], check=True)
+        
+        # Step 2: Weather/Season
+        print("\n🌦️ Step 2/3: Weather Assignment")
+        subprocess.run([python_exec, "backend/assign_weather_season.py"], check=True)
+        
+        # Step 3: ML Training
+        print("\n🤖 Step 3/3: Model Training")
+        subprocess.run([python_exec, "backend/model_pipeline.py"], check=True)
+        
+        print("\n✅ All pipeline steps completed successfully!")
+        
+    except subprocess.CalledProcessError as e:
+        print(f"\n❌ Pipeline failed at step: {e.cmd}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n⚠️ Unexpected error: {str(e)}")
+        sys.exit(1)
 
-# --- Step 2: Run season assignment ---
-print("\n🍂 Running assign_weather_season.py...")
-subprocess.run([python_exec, "backend/assign_weather_season.py"])
-
-print("\n✅ All steps completed.")
+if __name__ == '__main__':
+    run_pipeline()
