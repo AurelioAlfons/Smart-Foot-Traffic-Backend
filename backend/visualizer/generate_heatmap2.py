@@ -1,13 +1,17 @@
 # =====================================================
-# 🌟 Updated Heatmap: Reusable Description Box + Table Tooltip
+# 🌟 Updated Heatmap: Dynamic Colors & Radius + Tooltip
 # =====================================================
 # Shows heatmap for selected traffic type only.
-# Circle marker radius scales with count.
+# Color changes by traffic intensity (count).
+# Radius scales with interval count.
 # Tooltip styled like a mini table, shows date + time.
 # =====================================================
 
 import os
 import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 import folium
 import mysql.connector
 import pandas as pd
@@ -18,10 +22,65 @@ from rich.console import Console
 console = Console()
 
 # ✅ Allow relative imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from backend.config import DB_CONFIG
 from backend.visualizer.utils.description_box import generate_description_box
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
+from backend.visualizer.utils.tooltip_box import generate_tooltip_html
+
+# 🎨 Traffic color scheme based on count thresholds
+def get_color_by_count(count):
+    if count > 900:
+        return "#A23BEC"  # 🟣 Reddish Purple (softer)
+    elif count >= 850:
+        return "#C965E9"  # 🟣 Lighter Red-Purple
+    elif count >= 800:
+        return "#DB70E3"  # 🟣 Light Red-Purple
+    elif count >= 750:
+        return "#B22222"  # 🔴 Firebrick
+    elif count >= 701:
+        return "#C62828"  # 🔴 Strong Red
+    elif count >= 660:
+        return "#E53935"  # 🔴 Mid Red
+    elif count >= 620:
+        return "#F44336"  # 🔴 Bright Red
+    elif count >= 590:
+        return "#FF5252"  # 🔴 Light Red
+    elif count >= 560:
+        return "#FF6E6E"  # 🔴 Soft Red
+    elif count >= 530:
+        return "#FF7A7A"  # 🔴 Rose Red
+    elif count >= 500:
+        return "#FF8A65"  # 🟧 Red-Orange
+    elif count >= 470:
+        return "#FF7043"  # 🟧 Rich Orange
+    elif count >= 440:
+        return "#FF5722"  # 🟧 Deep Orange
+    elif count >= 410:
+        return "#FF6F00"  # 🟧 Darker Amber
+    elif count >= 370:
+        return "#FF8C42"  # 🟧 Dark Orange
+    elif count >= 330:
+        return "#FFA500"  # 🟧 Orange
+    elif count >= 290:
+        return "#FFB347"  # 🟧 Light Orange
+    elif count >= 250:
+        return "#FFD180"  # 🟧 Soft Peach
+    elif count >= 210:
+        return "#FFD700"  # 🟡 Dark Yellow
+    elif count >= 160:
+        return "#FFFF00"  # 🟡 Yellow
+    elif count >= 120:
+        return "#FFFF66"  # 🟡 Light Yellow
+    elif count >= 70:
+        return "#ADFF2F"  # 🟢 Yellow-Green
+    elif count >= 40:
+        return "#99FF99"  # 🟩 Light Green
+    elif count >= 11:
+        return "#CCFFCC"  # 🟩 Very Light Green
+    elif count >= 1:
+        return "#E5FFE5"  # 🟩 Faintest Green
+    else:
+        return "#F0F0F0"  # ⚪ No Data
 
 # 🔍 FETCH TRAFFIC DATA (Recent)
 def fetch_traffic_data(date_filter, time_filter, selected_type, max_age_minutes=30):
@@ -61,8 +120,6 @@ def fetch_traffic_data(date_filter, time_filter, selected_type, max_age_minutes=
             location_rows.append(row)
 
     conn.close()
-
-    # ✅ Ensure required columns are in correct format
     return pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date"])
 
 # 🔥 MAIN FUNCTION: GENERATE HEATMAP
@@ -97,39 +154,23 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
                 continue
 
             radius = max(5, min(cnt * 0.3, 25))
-            tooltip_html = f"""
-                <div style="
-                    font-size: 14px;
-                    font-weight: normal;
-                    line-height: 1.5;
-                    border: 1px solid #ccc;
-                    border-radius: 8px;
-                    padding: 10px 12px;
-                    background-color: white;
-                    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-                    width: 280px;
-                ">
-                    <div style="font-weight: bold; margin-bottom: 6px;">{loc}</div>
-                    <hr style="margin: 6px 0;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span><b>Type:</b></span> <span>{selected_type.replace(' Count', '')}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span><b>Count:</b></span> <span>{cnt}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span><b>Time:</b></span> <span>{row['DateTime_String']}</span>
-                    </div>
-                </div>
-            """
+            fill_color = get_color_by_count(cnt)
+
+            tooltip_html = generate_tooltip_html(
+                location=loc,
+                traffic_type=selected_type.replace(' Count', ''),
+                count=cnt,
+                datetime_string=row['DateTime_String']
+            )
+
 
             folium.CircleMarker(
                 location=coords,
                 radius=radius,
-                color='#3bffc1',
+                color=fill_color,
                 fill=True,
-                fill_color='#3bffc1',
-                fill_opacity=0.6,
+                fill_color=fill_color,
+                fill_opacity=0.7,
                 tooltip=folium.Tooltip(tooltip_html, sticky=True)
             ).add_to(base_map)
 
@@ -149,5 +190,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
 
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
-# 🔢 Run test using 12:00 (aligned with hourly bucket)
-generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
+# 🔢 Run for test case
+# generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
+# generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
+generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
