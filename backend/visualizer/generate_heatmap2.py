@@ -137,7 +137,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
             fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"
 
             bright_colors = {
-                "#FFEB33", "#FFF066", "#FFF599", "#FFFACB"
+                "#FFEB33", "#FFF066", "#FFF599", "#FFFACB","#F0F9A3"
             }
             text_color = "#000000" if fill_color in bright_colors else "#FFFFFF"
 
@@ -182,6 +182,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
 # ▶️ Run example
-generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
+# generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
+generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
