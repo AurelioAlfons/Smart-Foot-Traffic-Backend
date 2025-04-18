@@ -45,7 +45,7 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string):
 
         <!-- 🕒 Show the time and any extra note -->
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🕒 Time:</b></span> <span>{datetime_string if datetime_string else 'N/A'}</span>
+            <span><b>🕒 Time:</b></span> <span>{datetime_string.replace(" ", " | ") if datetime_string else 'N/A'}</span>
         </div>
 
         <!-- Footer with grey note -->

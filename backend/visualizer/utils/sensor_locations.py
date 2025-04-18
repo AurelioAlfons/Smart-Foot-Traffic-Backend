@@ -14,3 +14,19 @@ LOCATION_COORDINATES = {
     "Snap Fitness": (-37.799949, 144.899409),
     "Salt Water Child Care Centre": (-37.795044, 144.900284)
 }
+
+# 🧱 Helper: Create a square polygon (GeoJSON-style) around the sensor
+def create_default_zone(lat, lon, size=0.0005):
+    return [
+        [lon - size, lat - size],  # bottom-left
+        [lon - size, lat + size],  # top-left
+        [lon + size, lat + size],  # top-right
+        [lon + size, lat - size],  # bottom-right
+        [lon - size, lat - size]   # close loop
+    ]
+
+# 📦 Generate zones for all sensors
+LOCATION_ZONES = {
+    name: create_default_zone(lat, lon)
+    for name, (lat, lon) in LOCATION_COORDINATES.items()
+}

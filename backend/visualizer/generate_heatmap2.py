@@ -25,7 +25,7 @@ console = Console()
 # ✅ Import helper functions and settings
 from backend.config import DB_CONFIG
 from backend.visualizer.utils.description_box import generate_description_box
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
+from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES, LOCATION_ZONES
 from backend.visualizer.utils.tooltip_box import generate_tooltip_html
 from backend.visualizer.utils.heatmap_colors import get_color_by_count
 
@@ -123,15 +123,33 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
                 datetime_string = dt_string + ("<br><span style='color: #888;'>No data available</span>" if cnt == 0 else "")
             )
 
-            # ⚪ Add the marker to the map
-            folium.CircleMarker(
-                location=coords,
-                radius=radius,
+            # 🟪 Add filled polygon zone instead of a circle
+            folium.Polygon(
+                locations=[[lat, lon] for lon, lat in LOCATION_ZONES[loc]],  # Flip (lon, lat) to (lat, lon)
                 color=fill_color,
                 fill=True,
                 fill_color=fill_color,
-                fill_opacity=0.7,
+                fill_opacity=0.6,
                 tooltip=folium.Tooltip(tooltip_html, sticky=True)
+            ).add_to(base_map)
+
+            # 🧭 Add center marker at the original sensor point
+            folium.Marker(
+                location=coords,
+                icon=folium.DivIcon(
+                    icon_size=(40, 20),  # size of your div (adjust if needed)
+                    icon_anchor=(20, 10),  # center horizontally and vertically
+                    html=f"""
+                        <div style="
+                            font-size: 14px;
+                            font-weight: 800;
+                            color: white;
+                            text-align: center;
+                        ">
+                            {cnt}
+                        </div>
+                    """
+                )
             ).add_to(base_map)
 
         progress.update(task, advance=1, description="Saving file...")
@@ -157,5 +175,5 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
 
 # ▶️ Run example
 generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
-# generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
-# generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
+generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
+generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
