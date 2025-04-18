@@ -129,21 +129,29 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
                 color=fill_color,
                 fill=True,
                 fill_color=fill_color,
-                fill_opacity=0.6,
+                fill_opacity=1.0,
                 tooltip=folium.Tooltip(tooltip_html, sticky=True)
             ).add_to(base_map)
 
-            # 🧭 Add center marker at the original sensor point
+            # 🔵 Determine fill color and text contrast
+            fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"
+
+            bright_colors = {
+                "#FFEB33", "#FFF066", "#FFF599", "#FFFACB"
+            }
+            text_color = "#000000" if fill_color in bright_colors else "#FFFFFF"
+
+            # 🧭 Add center marker with proper contrast
             folium.Marker(
                 location=coords,
                 icon=folium.DivIcon(
-                    icon_size=(40, 20),  # size of your div (adjust if needed)
-                    icon_anchor=(20, 10),  # center horizontally and vertically
+                    icon_size=(40, 20),
+                    icon_anchor=(20, 10),
                     html=f"""
                         <div style="
                             font-size: 14px;
                             font-weight: 800;
-                            color: white;
+                            color: {text_color};
                             text-align: center;
                         ">
                             {cnt}
