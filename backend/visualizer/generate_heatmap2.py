@@ -6,7 +6,6 @@
 # Radius scales with interval count.
 # Tooltip styled like a mini table, shows date + time.
 # =====================================================
-
 import os
 import sys
 
@@ -82,7 +81,7 @@ def get_color_by_count(count):
     else:
         return "#F0F0F0"  # ⚪ No Data
 
-# 🔍 FETCH TRAFFIC DATA (Recent)
+# 🔍 Fetch latest traffic data per location
 def fetch_traffic_data(date_filter, time_filter, selected_type, max_age_minutes=30):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor(dictionary=True)
@@ -122,7 +121,7 @@ def fetch_traffic_data(date_filter, time_filter, selected_type, max_age_minutes=
     conn.close()
     return pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date"])
 
-# 🔥 MAIN FUNCTION: GENERATE HEATMAP
+# 🔥 Generate and save the heatmap
 def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count"):
     console.print(f"\n📌 Generating heatmap for: [bold magenta]{selected_type}[/bold magenta]")
 
@@ -138,31 +137,38 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
         task = progress.add_task("Fetching data...", total=4)
 
         df = fetch_traffic_data(date_filter, time_filter, selected_type)
-        df["DateTime_String"] = pd.to_datetime(df["Date"].astype(str) + " " + df["Time"].astype(str), errors='coerce').dt.strftime("%Y-%m-%d %H:%M:%S")
+        df["DateTime_String"] = pd.to_datetime(
+            df["Date"].astype(str) + " " + df["Time"].astype(str), errors='coerce'
+        ).dt.strftime("%Y-%m-%d %H:%M:%S")
 
         progress.update(task, advance=1, description="Creating map...")
 
         base_map = folium.Map(location=[-37.7975, 144.8876], zoom_start=15.7, tiles='cartodbpositron')
         progress.update(task, advance=1, description="Adding markers...")
 
-        for _, row in df.iterrows():
-            loc = row["Location"]
-            cnt = row["Interval_Count"]
-            coords = LOCATION_COORDINATES.get(loc)
+        # Loop through all sensor locations
+        for loc, coords in LOCATION_COORDINATES.items():
+            # Check if this location has any data in the result
+            row_data = df[df["Location"] == loc]
 
-            if not coords or cnt == 0:
-                continue
+            if not row_data.empty:
+                cnt = row_data.iloc[0]["Interval_Count"]
+                cnt = cnt if pd.notna(cnt) else 0
+                dt_string = row_data.iloc[0]["DateTime_String"]
+                dt_string = dt_string if pd.notna(dt_string) else f"{date_filter} {time_filter}"
+            else:
+                cnt = 0
+                dt_string = f"{date_filter} {time_filter}"
 
             radius = max(5, min(cnt * 0.3, 25))
-            fill_color = get_color_by_count(cnt)
+            fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"
 
             tooltip_html = generate_tooltip_html(
                 location=loc,
                 traffic_type=selected_type.replace(' Count', ''),
                 count=cnt,
-                datetime_string=row['DateTime_String']
+                datetime_string = dt_string + ("<br><span style='color: #888;'>No data available</span>" if cnt == 0 else "")
             )
-
 
             folium.CircleMarker(
                 location=coords,
@@ -181,7 +187,10 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
         )
 
         os.makedirs("heatmaps", exist_ok=True)
-        filename = os.path.join("heatmaps", f"heatmap_{date_filter}_{time_filter.replace(':', '-')}_{selected_type.replace(' ', '_')}.html")
+        filename = os.path.join(
+            "heatmaps",
+            f"heatmap_{date_filter}_{time_filter.replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
+        )
 
         with open(filename, "w", encoding="utf-8", errors="ignore") as f:
             f.write(base_map.get_root().render())
@@ -191,6 +200,6 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
 # 🔢 Run for test case
+generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
-generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")

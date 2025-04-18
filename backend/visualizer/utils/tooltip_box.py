@@ -48,7 +48,7 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string):
 
         <!-- Footer -->
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
-        <div style="font-size: 12px; color: #888; text-align: center;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
             Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
         </div>
     </div>
