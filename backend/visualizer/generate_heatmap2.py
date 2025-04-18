@@ -175,5 +175,5 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count")
 
 # ▶️ Run example
 generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
-generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
-generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
+# generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
+# generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
