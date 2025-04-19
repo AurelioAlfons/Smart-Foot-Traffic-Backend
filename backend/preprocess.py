@@ -19,16 +19,16 @@ console = Console()
 # ========================================
 # 🛑 TYPES OF TRAFFIC WE CARE ABOUT
 # ========================================
-# Map folder names to database enum values
+# Folder names must match exactly what's on disk
 TRAFFIC_TYPES = {
-    'Pedestrian Count': 'Pedestrian_Count',
-    'Cyclist Count': 'Cyclist_Count',
-    'Vehicle Count': 'Vehicle_Count'
+    'Pedestrian Count': 'Pedestrian Count',
+    'Cyclist Count': 'Cyclist Count',
+    'Vehicle Count': 'Vehicle Count'
 }
 FOLDER_ICONS = {
-    'Pedestrian Count': '🚶‍♂️',
-    'Cyclist Count': '🚴‍♀️',
-    'Vehicle Count': '🚗'
+    'Pedestrian': '🚶‍♂️',
+    'Cyclist': '🚴‍♀️',
+    'Vehicle': '🚗'
 }
 
 # ========================================
@@ -58,9 +58,9 @@ def preprocess_data():
     total_rows = 0
     file_map = []
     max_files = {
-        'Pedestrian Count': 11,
-        'Cyclist Count': 11,
-        'Vehicle Count': 9
+        'Pedestrian': 11,
+        'Cyclist': 11,
+        'Vehicle': 9
     }
 
     # 📂 Count total rows
@@ -76,7 +76,8 @@ def preprocess_data():
                 df = pd.read_csv(path)
                 total_rows += len(df)
                 file_map.append((traffic_folder, path))
-            except:
+            except Exception as e:
+                logging.error(f"❌ Failed to read {file}: {str(e)}")
                 continue
 
     # Progress tracking
@@ -115,16 +116,17 @@ def preprocess_data():
             # Read and clean data
             try:
                 df = pd.read_csv(path)
-                df.columns = df.columns.str.strip().str.lower()  # Standardize column names
+                df.columns = df.columns.str.strip().str.lower()
 
-                # Handle missing Interval_Count
+                # Handle missing columns
                 if 'interval_count' not in df.columns:
                     df['interval_count'] = 1  # Default value
+                    logging.info(f"ℹ️ Added missing Interval_Count to {file_name}")
 
                 # Validate required columns
                 required_columns = ['date', 'value']
                 if not all(col in df.columns for col in required_columns):
-                    logging.warning(f"⚠️ Skipping {file_name} — missing required columns")
+                    logging.error(f"❌ Skipping {file_name} - missing required columns")
                     continue
 
                 # Clean data
@@ -158,20 +160,25 @@ def preprocess_data():
                         """, (row['date_time'], row['date'], row['time'], location))
                         data_id = cursor.lastrowid
 
-                        # Map traffic type to database enum
+                        # Get database enum value
                         traffic_db = TRAFFIC_TYPES[traffic_folder]
+
+                        # Validate data before insertion
+                        if not isinstance(row['value'], (int, float)) or row['value'] < 0:
+                            raise ValueError(f"Invalid value: {row['value']}")
 
                         # Insert into traffic_counts
                         cursor.execute("""
-                            INSERT INTO traffic_counts (Data_ID, Traffic_Type, Total_Count, Interval_Count)
+                            INSERT INTO traffic_counts 
+                            (Data_ID, Traffic_Type, Total_Count, Interval_Count)
                             VALUES (%s, %s, %s, %s)
                         """, (data_id, traffic_db, row['value'], row['interval_count']))
                         inserted += 1
 
-                    except mysql.connector.Error as e:
+                    except Exception as e:
                         conn.rollback()
                         failed_rows += 1
-                        logging.error(f"❌ Insert failed: {e}")
+                        logging.error(f"❌ Row insert failed: {str(e)}")
                         continue
 
                     progress.update(task, advance=1)
