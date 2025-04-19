@@ -1,8 +1,6 @@
 # backend/run_pipeline.py
 import subprocess
 import sys
-from preprocess import main as preprocess_data
-from assign_weather_season import main as assign_weather
 
 python_exec = sys.executable
 
