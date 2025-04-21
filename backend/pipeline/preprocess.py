@@ -128,20 +128,25 @@ def preprocess_data():
             df['value'] = df['value'].fillna(df['value'].median())
             df.sort_values(by='Date_Time', inplace=True)
 
-            # 🔁 Compute interval count
-            interval_counts = []
-            last_total = None
+            # 🧠 Reset interval count logic grouped by date
+            df['Date_Only'] = pd.to_datetime(df['Date_Time']).dt.date
+            interval_list = []
 
-            for _, row in df.iterrows():
-                current_total = row['value']
-                if last_total is None:
-                    interval = int(current_total)
-                else:
-                    interval = max(0, int(current_total - last_total))
-                interval_counts.append(interval)
-                last_total = current_total
+            for _, group in df.groupby('Date_Only'):
+                group = group.sort_values(by='Date_Time')
+                last_total = None
+                for _, row in group.iterrows():
+                    current_total = row['value']
+                    if last_total is None:
+                        interval = int(current_total)
+                    else:
+                        interval = max(0, int(current_total - last_total))
+                    interval_list.append(interval)
+                    last_total = current_total
 
-            df['Interval_Count'] = interval_counts
+            # ✅ Assign interval counts
+            df['Interval_Count'] = interval_list
+            df.drop(columns=['Date_Only'], inplace=True)
 
             inserted = 0
             failed_processed = 0
