@@ -51,15 +51,18 @@ CREATE_QUERIES = [
     # Table to store weather and season info
     """
     CREATE TABLE weather_season_data (
-        Forecast_ID INT AUTO_INCREMENT PRIMARY KEY, -- Unique ID
-        Data_ID INT,                                -- Link to processed_data
-        Weather VARCHAR(50),                        -- e.g. Sunny, Rainy
-        Season VARCHAR(20),                         -- e.g. Summer, Winter
-        FOREIGN KEY (Data_ID) REFERENCES processed_data(Data_ID)
-    );
-    """,
-
+            Weather_ID INT AUTO_INCREMENT PRIMARY KEY,
+            Data_ID INT NOT NULL,
+            Weather VARCHAR(50) NOT NULL,
+            Temperature FLOAT,
+            Season VARCHAR(50) NOT NULL,
+            FOREIGN KEY (Data_ID) REFERENCES processed_data(Data_ID),
+            INDEX idx_season (Season),
+            INDEX idx_weather (Weather)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+        """,
     # Table to store saved heatmaps
+
     """
     CREATE TABLE heatmaps (
         Heatmap_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
