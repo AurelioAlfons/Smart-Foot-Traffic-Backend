@@ -8,6 +8,10 @@ import random
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 from rich.console import Console
 
+# 🔧 Fix for running as subprocess (enables importing backend.config)
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 # ========================================
 # 🛠️ SETUP LOGGING AND RICH CONSOLE
 # ========================================
@@ -17,12 +21,7 @@ console = Console()
 # ========================================
 # 🗄️ DATABASE CONNECTION SETTINGS
 # ========================================
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "smart_foot_traffic"
-}
+from backend.config import DB_CONFIG
 
 # ========================================
 # 🌦️ WEATHER & SEASON CONFIGURATION (ENHANCED)
@@ -106,8 +105,7 @@ def assign_weather_and_season():
                 Season VARCHAR(50) NOT NULL,
                 FOREIGN KEY (Data_ID) REFERENCES processed_data(Data_ID),
                 INDEX idx_season (Season),
-                INDEX idx_weather (Weather_Condition)
-            )
+                INDEX idx_weather (Weather_Condition) )
         """)
         
         logging.info("🌦️ Starting smart weather/season assignment...")
