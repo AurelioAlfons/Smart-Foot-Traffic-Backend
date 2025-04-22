@@ -40,7 +40,6 @@ def extract_location(filename):
 # for one specific location (editable inside query)
 # =====================================================
 from rich.console import Console
-from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 from collections import defaultdict
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 

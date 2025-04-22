@@ -14,7 +14,7 @@ from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from backend.config import DB_CONFIG
-from backend.pipeline.helpers import (
+from backend.pipeline.helpers.helpers import (
     extract_location, check_missing_hours,
     TRAFFIC_TYPES, FOLDER_ICONS
 )
