@@ -37,7 +37,7 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
 
     if season_filter:
         cursor.execute("""
-            SELECT pd.Location, tc.Traffic_Type, SUM(tc.Total_Count) AS Interval_Count, MAX(wsd.Weather) AS Weather
+            SELECT pd.Location, tc.Traffic_Type, SUM(tc.Total_Count) AS Interval_Count, MAX(wsd.Weather) AS Weather, MAX(wsd.Temperature) AS Temperature
             FROM traffic_counts tc
             JOIN weather_season_data wsd ON tc.Data_ID = wsd.Data_ID
             JOIN processed_data pd ON tc.Data_ID = pd.Data_ID
@@ -46,7 +46,7 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
         """, (season_filter, selected_type))
 
         rows = cursor.fetchall()
-        df = pd.DataFrame(rows, columns=["Location", "Traffic_Type", "Interval_Count", "Weather"])
+        df = pd.DataFrame(rows, columns=["Location", "Traffic_Type", "Interval_Count", "Weather", "Temperature"])
         df["Date"] = season_filter
         df["Time"] = "All"
         df["DateTime_String"] = "Unknown"
@@ -55,7 +55,7 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
         selected_time = datetime.strptime(time_filter, "%H:%M:%S")
 
         cursor.execute("""
-            SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time, pd.Date, wsd.Weather
+            SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time, pd.Date, wsd.Weather, wsd.Temperature
             FROM processed_data pd
             JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
             JOIN weather_season_data wsd ON pd.Data_ID = wsd.Data_ID
@@ -84,7 +84,7 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
             if age_minutes <= max_age_minutes:
                 location_rows.append(row)
 
-        df = pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date", "Weather"])
+        df = pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date", "Weather", "Temperature"])
         df["DateTime_String"] = df.apply(
             lambda row: f"{row['Date']} {row['Time']}" if pd.notna(row['Date']) and pd.notna(row['Time']) else "N/A",
             axis=1
@@ -126,6 +126,7 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
                 cnt = cnt if pd.notna(cnt) else 0
                 dt_string = row_data.iloc[0]["DateTime_String"]
                 weather = row_data.iloc[0]["Weather"] if "Weather" in row_data.columns else "Unknown"
+                temperature = row_data.iloc[0]["Temperature"] if "Temperature" in row_data.columns else "?"
             else:
                 cnt = 0
                 dt_string = "Unknown"
@@ -140,7 +141,8 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
                 count=cnt,
                 datetime_string="Unknown" if season_filter else dt_string,
                 season=season_filter if season_filter else "Unknown",
-                weather=weather
+                weather=weather,
+                temperature=temperature
             )
 
             add_zone_polygon(base_map, loc, fill_color, tooltip_html, LOCATION_ZONES)
@@ -167,8 +169,9 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
 
 # ▶️ Run example
 generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
+generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
 # generate_heatmap("2025-03-03", "01:00:00", "Vehicle Count")
 # generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
-generate_heatmap(None, None, "Vehicle Count", "Autumn")
+# generate_heatmap(None, None, "Vehicle Count", "Autumn")

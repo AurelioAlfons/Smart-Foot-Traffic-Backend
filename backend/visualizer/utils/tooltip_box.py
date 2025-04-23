@@ -1,6 +1,7 @@
 import pandas as pd
 
-def generate_tooltip_html(location, traffic_type, count, datetime_string, season="Unknown", weather="Unknown"):
+def generate_tooltip_html(location, traffic_type, count, datetime_string, 
+                          season="Unknown", weather="Unknown", temperature="?"):
     # 🎨 Color for each traffic type
     type_color_map = {
         "Pedestrian": "#3bffc1",
@@ -94,6 +95,10 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string, season
 
         <div style="display: flex; justify-content: space-between;">
             <span><b>☁️ Weather:</b></span> <span>{weather}</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>{temperature}°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
