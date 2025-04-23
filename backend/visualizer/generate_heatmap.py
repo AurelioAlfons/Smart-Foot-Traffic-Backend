@@ -1,5 +1,5 @@
 # =====================================================
-# 🌟 Updated Heatmap: Dynamic Colors & Radius + Tooltip
+# 🍝 Updated Heatmap: Dynamic Colors & Radius + Tooltip
 # =====================================================
 # - Shows heatmap for selected traffic type (Pedestrian, Cyclist, Vehicle)
 # - Circle color changes with count (more traffic = warmer color)
@@ -37,7 +37,7 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
 
     if season_filter:
         cursor.execute("""
-            SELECT pd.Location, tc.Traffic_Type, SUM(tc.Total_Count) AS Interval_Count
+            SELECT pd.Location, tc.Traffic_Type, SUM(tc.Total_Count) AS Interval_Count, MAX(wsd.Weather) AS Weather
             FROM traffic_counts tc
             JOIN weather_season_data wsd ON tc.Data_ID = wsd.Data_ID
             JOIN processed_data pd ON tc.Data_ID = pd.Data_ID
@@ -46,7 +46,7 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
         """, (season_filter, selected_type))
 
         rows = cursor.fetchall()
-        df = pd.DataFrame(rows, columns=["Location", "Traffic_Type", "Interval_Count"])
+        df = pd.DataFrame(rows, columns=["Location", "Traffic_Type", "Interval_Count", "Weather"])
         df["Date"] = season_filter
         df["Time"] = "All"
         df["DateTime_String"] = "Unknown"
@@ -55,9 +55,10 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
         selected_time = datetime.strptime(time_filter, "%H:%M:%S")
 
         cursor.execute("""
-            SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time, pd.Date
+            SELECT pd.Location, tc.Traffic_Type, tc.Interval_Count, pd.Time, pd.Date, wsd.Weather
             FROM processed_data pd
             JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
+            JOIN weather_season_data wsd ON pd.Data_ID = wsd.Data_ID
             WHERE pd.Date = %s AND tc.Traffic_Type = %s AND pd.Time <= %s
               AND pd.Time = (
                   SELECT MAX(pd2.Time)
@@ -83,7 +84,7 @@ def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicl
             if age_minutes <= max_age_minutes:
                 location_rows.append(row)
 
-        df = pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date"])
+        df = pd.DataFrame(location_rows, columns=["Location", "Traffic_Type", "Interval_Count", "Time", "Date", "Weather"])
         df["DateTime_String"] = df.apply(
             lambda row: f"{row['Date']} {row['Time']}" if pd.notna(row['Date']) and pd.notna(row['Time']) else "N/A",
             axis=1
@@ -124,9 +125,11 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
                 cnt = row_data.iloc[0]["Interval_Count"]
                 cnt = cnt if pd.notna(cnt) else 0
                 dt_string = row_data.iloc[0]["DateTime_String"]
+                weather = row_data.iloc[0]["Weather"] if "Weather" in row_data.columns else "Unknown"
             else:
                 cnt = 0
                 dt_string = "Unknown"
+                weather = "Unknown"
 
             fill_color = get_color_by_count(cnt) if cnt > 0 else "#444444"
 
@@ -137,7 +140,7 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
                 count=cnt,
                 datetime_string="Unknown" if season_filter else dt_string,
                 season=season_filter if season_filter else "Unknown",
-                weather="Unknown"
+                weather=weather
             )
 
             add_zone_polygon(base_map, loc, fill_color, tooltip_html, LOCATION_ZONES)
