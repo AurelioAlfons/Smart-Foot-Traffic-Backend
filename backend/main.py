@@ -56,7 +56,7 @@ subprocess.run([python_exec, "backend/pipeline/preprocess.py"])
 print("\n========================================")
 print("🍂 2. Running assign_weather_season.py...")
 print("========================================")
-subprocess.run([python_exec, "backend/pipeline/assign_weather_season.py"])
+subprocess.run([python_exec, "backend/forecast/init_weather_season.py"])
 
 # =====================================================
 # ✅ Final message
