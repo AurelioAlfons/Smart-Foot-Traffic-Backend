@@ -19,9 +19,6 @@ import pandas as pd               # 📊 For working with data tables
 from datetime import datetime, timedelta
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 from rich.console import Console
-
-console = Console()
-
 # ✅ Import helper functions and settings
 from backend.config import DB_CONFIG
 from backend.visualizer.utils.description_box import generate_description_box
@@ -30,6 +27,8 @@ from backend.visualizer.utils.tooltip_box import generate_tooltip_html
 from backend.visualizer.utils.heatmap_colors import get_color_by_count
 from backend.visualizer.utils.marker_helpers import add_center_marker
 from backend.visualizer.utils.map_shapes import add_zone_polygon
+
+console = Console()
 
 # 🔍 Get traffic data for the selected date, time, and type (or by season)
 def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicle Count", season_filter=None, max_age_minutes=30):
@@ -164,7 +163,7 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
 # ▶️ Run example
-generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
+generate_heatmap("2025-03-03", "01:00:00", "Vehicle Count")
 # generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")

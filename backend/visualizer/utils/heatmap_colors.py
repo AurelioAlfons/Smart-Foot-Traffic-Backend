@@ -1,123 +1,73 @@
 def get_color_by_count(count):
-    if count > 8000:
-        return "#3B0000"  # 🩸 Extremely high traffic - Very Dark Red
-    elif count > 7500:
-        return "#420000"  # 🩸 Deeper Maroon
-    elif count > 7000:
-        return "#4B0000"  # 🩸 Deep Maroon
-    elif count > 6500:
-        return "#540000"  # 🩸 Rich Dark Red
-    elif count > 6000:
-        return "#5C0000"  # 🩸 Deep Crimson
-    elif count > 5500:
-        return "#640000"  # 🔴 Strong Crimson
-    elif count > 5000:
-        return "#6D0000"  # 🔴 Deep Red
-    elif count > 4500:
-        return "#760000"  # 🔴 Bold Red
-    elif count > 4000:
-        return "#7E0000"  # 🔴 Darker Red
-    elif count > 3600:
-        return "#850808"  # 🔴 Red-Blood
-    elif count > 3200:
-        return "#8F0000"  # 🔴 Bold Red
-    elif count > 2900:
-        return "#991111"  # 🔴 Sharp Red
-    elif count > 2600:
-        return "#9F1A1A"  # 🔴 Strong Reddish Tone
-    elif count > 2400:
-        return "#A42222"  # 🔴 Mid Red
-    elif count > 2200:
-        return "#AF2B2B"  # 🔴 Slightly Muted Red
-    elif count > 2000:
-        return "#B93333"  # 🔴 Brightening Red
-    elif count > 1800:
-        return "#BF3C3C"  # 🔴 Mid Reddish-Orange
-    elif count > 1650:
-        return "#C54444"  # 🔴 Transitioning Red-Orange
-    elif count > 1500:
-        return "#CF4D4D"  # 🔴 Soft Red
-    elif count > 1350:
-        return "#D55555"  # 🟠 Reddish-Orange Blend
-    elif count > 1200:
-        return "#DF5E5E"  # 🟠 Red-Orange Blend
-    elif count > 1100:
-        return "#E76666"  # 🟠 Light Red-Orange
-    elif count > 1000:
-        return "#EF6F6F"  # 🟠 Orange-Red Edge
-    elif count > 950:
-        return "#F57766"  # 🟠 Deeper Orange-Red
-    elif count > 900:
-        return "#FF7F7F"  # 🟠 Light Red-Tint
-    elif count > 875:
-        return "#FF8366"  # 🟠 Soft Orange-Red
-    elif count > 850:
-        return "#FF8666"  # 🟠 Orange-Red
-    elif count > 825:
-        return "#FF8A66"  # 🟠 Bold Orange
-    elif count > 800:
-        return "#FF8F66"  # 🟠 Deep Orange
-    elif count > 775:
-        return "#FF944C"  # 🟠 Mid Orange
-    elif count > 750:
-        return "#FF984C"  # 🟠 Warm Orange
-    elif count > 725:
-        return "#FFA033"  # 🟠 Slight Yellow-Orange
-    elif count > 700:
-        return "#FFA133"  # 🟠 Warm Orange
-    elif count > 675:
-        return "#FFA82A"  # 🟠 Rich Orange
-    elif count > 650:
-        return "#FFAA2A"  # 🟠 Yellow-Orange
-    elif count > 625:
-        return "#FFAD1A"  # 🟠 Orange-Gold
-    elif count > 600:
-        return "#FFB31A"  # 🟠 Light Orange
+    # 🔴 Red Zone (Warmest → Deepest)
+    if count > 600:
+        return "#800000"  # 🟥 Deepest Dark Red
     elif count > 550:
-        return "#FFBF1A"  # 🟡 Yellow-Orange
+        return "#8B0000"  # 🟥 Very Dark Red
     elif count > 500:
-        return "#FFCC00"  # 🟡 Dark Yellow
+        return "#990000"  # 🟥 Dark Red
+    elif count > 475:
+        return "#A60000"  # 🟥 Rich Crimson
     elif count > 450:
-        return "#FFDD00"  # 🟡 Yellow Gold
+        return "#B30000"  # 🔴 Strong Red
+    elif count > 425:
+        return "#BF0000"  # 🔴 Bold Red
     elif count > 400:
-        return "#FFEB33"  # 🟡 Bright Yellow
+        return "#e30015"  # 🔴 Clear Red
+    elif count > 375:
+        return "#e90000"  # 🔴 Bright Red
     elif count > 350:
-        return "#FFF066"  # 🟡 Soft Yellow
+        return "#F20000"  # 🔴 Intense Red
+    elif count > 325:
+        return "#FF0033"  # 🔴 Light-Intense Red
     elif count > 300:
-        return "#FFF599"  # 🟡 Faint Yellow
-    elif count > 250:
-        return "#FFFACB"  # 🟡 Very Pale Yellow
-    elif count > 200:
-        return "#F0F9A3"  # 💚 Yellow-Green Tint
+        return "#FF0033"  # 🔴 Light Red
+    elif count > 180:
+        return "#FF3333"  # 🔴 Soft Red
+
+    # 🌸 Pink Zone (Red-Pink Blend)
     elif count > 170:
-        return "#E0F683"  # 💚 Faint Green-Yellow
+        return "#ff174b"  # 🌺 Vivid Red-Pink
+    elif count > 160:
+        return "#FF1A4D"  # 🌺 Deep Pink-Red
+    elif count > 150:
+        return "#FF2E5A"  # 🌺 Mid Coral Pink
     elif count > 140:
-        return "#D0F363"  # 💚 Light Lime
+        return "#FF4470"  # 🌸 Rose Pink
+    elif count > 130:
+        return "#FF5A85"  # 🌸 Blush Pink
+    elif count > 120:
+        return "#FF7F7A"  # 🌸 Light Coral Pink
+
+    # 🟧 Orange Zone (Bright & Bold)
     elif count > 110:
-        return "#C0F043"  # 💚 Light Green
+        return "#FF6600"  # 🟧 Dark Orange
+    elif count > 100:
+        return "#FF751A"  # 🟧 Bold Orange
     elif count > 90:
-        return "#B0ED33"  # 💚 Soft Green
-    elif count > 75:
-        return "#A0EA29"  # 🟢 Light Green
-    elif count > 60:
-        return "#90E720"  # 🟢 Grass Green
-    elif count > 45:
-        return "#80E416"  # 🟢 Mid Green
+        return "#FFAE33"  # 🟧 Medium Orange
+    elif count > 85:
+        return "#FEB001"  # 🟧 Bright Golden Orange
+    elif count > 80:
+        return "#FFB101"  # 🟧 Soft Golden Orange
+
+    # 🟨 Yellow Zone (Warm → Pale)
+    elif count > 65:
+        return "#FFCC00"  # 🟨 Strong Yellow
+    elif count > 55:
+        return "#FFD200"  # 🟨 Bright Yellow
+    elif count > 50:
+        return "#FFC133"  # 🟨 Light Orange-Yellow
+    elif count > 40:
+        return "#FFC000"  # 🟨 Golden Yellow
     elif count > 30:
-        return "#70E10D"  # 🟢 Slightly Darker
+        return "#FFD000"  # 🟨 Yellow-Gold
     elif count > 20:
-        return "#60DE05"  # 🟢 Rich Green
+        return "#FFDF00"  # 🟨 Soft Yellow-Gold
     elif count > 10:
-        return "#50DB00"  # 🟢 Vibrant Green
-    elif count > 5:
-        return "#40C000"  # 🟢 Dark Green
-    elif count > 3:
-        return "#30A000"  # 🟢 Deep Forest Green
-    elif count > 2:
-        return "#208000"  # 🟢 Faint Green
+        return "#FFE800"  # 🟨 Light Yellow
     elif count > 1:
-        return "#106000"  # 🟢 Minimal Green
-    elif count == 1:
-        return "#004000"  # 🟢 Smallest Positive
+        return "#FFEA00"  # 🟨 Faint Yellow
+
     else:
-        return "#E0E0E0"  # ⚪ No Data (gray)
+        return "#E0E0E0"  # ⚪ No Data (Neutral Gray)
