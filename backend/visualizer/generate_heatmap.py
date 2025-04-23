@@ -177,7 +177,10 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
 # ▶️ Run example
-generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
+generate_heatmap("2025-02-27", "12:00:00", "Pedestrian Count")
+generate_heatmap("2025-02-27", "12:00:00", "Vehicle Count")
+# generate_heatmap("2025-02-28", "12:00:00", "Pedestrian Count")
+# generate_heatmap("2025-02-28", "12:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
 # generate_heatmap("2025-03-03", "01:00:00", "Vehicle Count")
 # generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
