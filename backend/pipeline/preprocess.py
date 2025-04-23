@@ -107,17 +107,27 @@ def preprocess_data():
             df['Date_Time'] = pd.to_datetime(df['date'], errors='coerce', utc=True)
             df.dropna(subset=['Date_Time'], inplace=True)
             df['Date_Time'] = df['Date_Time'].dt.tz_convert('Australia/Melbourne')
-            df['Date_Time'] = df['Date_Time'].dt.floor('h', ambiguous='infer')
-            df['Date_Time'] = df['Date_Time'].dt.tz_localize(None)
+            df['Date_Time'] = df['Date_Time'].dt.tz_localize(None)  # KEEP full precision
 
-            # ⌛ Group by hour and keep the last entry before the next hour
-            df = df.sort_values(by='Date_Time')
+            # 🧠 Group by hour, keeping latest value *before the next hour* as Total Count
             df['Hour_Bucket'] = df['Date_Time'].dt.floor('h')
-            # Drop old column to avoid collision before renaming
-            df = df.groupby('Hour_Bucket', as_index=False).last()
-            df.drop(columns=['Date_Time'], inplace=True, errors='ignore')  # 🔧 safe drop
+            df['Next_Hour'] = df['Hour_Bucket'] + pd.Timedelta(hours=1)
+
+            # Sort to make sure we can pick latest reading per hour
+            df = df.sort_values(by='Date_Time')
+
+            # Keep rows that occur before the next hour only
+            latest_before_hour = df[df['Date_Time'] < df['Next_Hour']]
+
+            # For each hour, get the latest value (last row in that hour window)
+            df = latest_before_hour.groupby('Hour_Bucket', as_index=False).last()
+
+            # Remove old Date_Time to avoid duplicate key error
+            if 'Date_Time' in df.columns:
+                df.drop(columns=['Date_Time'], inplace=True)
+
             df.rename(columns={'Hour_Bucket': 'Date_Time'}, inplace=True)
-            df['Date_Time'] = pd.to_datetime(df['Date_Time'])  # now safe
+            df['Date_Time'] = pd.to_datetime(df['Date_Time'])  # ensure datetime format
 
             # ⏱ Extract components
             df['Date'] = df['Date_Time'].dt.date.astype(str)
