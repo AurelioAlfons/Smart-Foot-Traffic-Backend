@@ -1,18 +1,35 @@
 import folium
+from datetime import datetime
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 
 def generate_description_box(date_filter, time_filter, selected_type, included_locations):
     traffic_label = selected_type.replace(" Count", "")
     all_locations = sorted(LOCATION_COORDINATES.keys())
 
-    # Determine season range (month span) for display if using season mode
     season_ranges = {
         "Summer": "December – February",
         "Autumn": "March – May",
         "Winter": "June – August",
         "Spring": "September – November"
     }
-    season_range = season_ranges.get(date_filter, "")
+
+    # 📅 Auto-assign season if date_filter is a date string
+    def get_season_from_date(date_str):
+        try:
+            month = int(datetime.strptime(date_str, "%Y-%m-%d").month)
+            if month in [12, 1, 2]:
+                return "Summer"
+            elif month in [3, 4, 5]:
+                return "Autumn"
+            elif month in [6, 7, 8]:
+                return "Winter"
+            elif month in [9, 10, 11]:
+                return "Spring"
+        except:
+            return None
+
+    current_season = date_filter if date_filter in season_ranges else get_season_from_date(date_filter)
+    season_range = season_ranges.get(current_season, "")
 
     # ⛳ Build HTML for each location
     loc_list_html = ''
@@ -39,8 +56,8 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
     ">
         <b style="color:#0275d8;">ℹ️ Heatmap Info</b><br>
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
-        <b>🌦️ Season:</b> {date_filter if date_filter in season_ranges else "N/A"}<br>
-        <b>🗓️ Date:</b> {season_range if season_range else date_filter}<br>
+        <b>🌦️ Season:</b> {current_season or "N/A"}<br>
+        <b>🗓️ Date:</b> {date_filter}<br>
         <b>🕒 Time:</b> {time_filter}<br>
         <b>📊 Type:</b> {traffic_label}<br>
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
