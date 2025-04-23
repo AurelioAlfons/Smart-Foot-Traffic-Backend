@@ -103,35 +103,41 @@ def preprocess_data():
             df.drop_duplicates(inplace=True)
             location = extract_location(path)
 
-            # 🕒 Convert to Melbourne time and round to nearest hour
+            # 🕒 Convert time and floor to hour (UTC -> Melbourne)
             df['Date_Time'] = pd.to_datetime(df['date'], errors='coerce', utc=True)
             df.dropna(subset=['Date_Time'], inplace=True)
-
-            # Convert from UTC to Australia/Melbourne
             df['Date_Time'] = df['Date_Time'].dt.tz_convert('Australia/Melbourne')
-
-            # 🧠 Floor to the start of the hour safely
-            # ➕ Avoid DST ambiguity by setting ambiguous='infer'
             df['Date_Time'] = df['Date_Time'].dt.floor('h', ambiguous='infer')
-
-            # Remove timezone info (naive datetime) before storing in MySQL
             df['Date_Time'] = df['Date_Time'].dt.tz_localize(None)
 
-            # 🧮 Group by hour and sum traffic values
-            df = df.groupby('Date_Time', as_index=False)['value'].sum()
+            # ⌛ Group by hour and keep the last entry before the next hour
+            df = df.sort_values(by='Date_Time')
+            df['Hour_Bucket'] = df['Date_Time'].dt.floor('h')
+            # Drop old column to avoid collision before renaming
+            df = df.groupby('Hour_Bucket', as_index=False).last()
+            df.drop(columns=['Date_Time'], inplace=True, errors='ignore')  # 🔧 safe drop
+            df.rename(columns={'Hour_Bucket': 'Date_Time'}, inplace=True)
+            df['Date_Time'] = pd.to_datetime(df['Date_Time'])  # now safe
 
-            # ⏱ Extract date and time fields
+            # ⏱ Extract components
             df['Date'] = df['Date_Time'].dt.date.astype(str)
             df['Time'] = df['Date_Time'].dt.time.astype(str)
+
+            # 🕐 Format interval labels e.g., "01:00 - 02:00"
+            start_times = df['Date_Time']
+            end_times = start_times + pd.Timedelta(hours=1)
+            df['Duration'] = start_times.dt.strftime('%H:%M') + " - " + end_times.dt.strftime('%H:%M')
+
+            # Format datetime for SQL insert
             df['Date_Time'] = df['Date_Time'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
+            # 🔢 Fill missing values if any
             df['value'] = df['value'].fillna(df['value'].median())
             df.sort_values(by='Date_Time', inplace=True)
 
-            # 🧠 Reset interval count logic grouped by date
+            # 🧠 Calculate interval count (difference from last hour's total)
             df['Date_Only'] = pd.to_datetime(df['Date_Time']).dt.date
             interval_list = []
-
             for _, group in df.groupby('Date_Only'):
                 group = group.sort_values(by='Date_Time')
                 last_total = None
@@ -143,11 +149,10 @@ def preprocess_data():
                         interval = max(0, int(current_total - last_total))
                     interval_list.append(interval)
                     last_total = current_total
-
-            # ✅ Assign interval counts
             df['Interval_Count'] = interval_list
             df.drop(columns=['Date_Only'], inplace=True)
 
+            # ✅ Insert into database
             inserted = 0
             failed_processed = 0
             failed_traffic = 0
@@ -155,9 +160,9 @@ def preprocess_data():
             for _, row in df.iterrows():
                 try:
                     cursor.execute("""
-                        INSERT INTO processed_data (Date_Time, Date, Time, Location)
-                        VALUES (%s, %s, %s, %s)
-                    """, (row['Date_Time'], row['Date'], row['Time'], location))
+                        INSERT INTO processed_data (Date_Time, Date, Time, Location, Duration)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (row['Date_Time'], row['Date'], row['Time'], location, row['Duration']))
                     data_id = cursor.lastrowid
 
                     try:
@@ -170,7 +175,6 @@ def preprocess_data():
                             int(row['Interval_Count'])
                         ))
                         inserted += 1
-
                     except mysql.connector.Error as e:
                         conn.rollback()
                         failed_traffic += 1
@@ -191,11 +195,13 @@ def preprocess_data():
                 console.print(f"[red]❌ Failed[/red] Processed: {failed_processed}, Traffic: {failed_traffic}")
             console.print("[grey70]" + "-" * 60 + "[/grey70]")
 
+    # 📦 Commit everything
     conn.commit()
     logging.info("📦 All CSVs committed to MySQL.")
     logging.info("🔍 Checking missing hours...")
     check_missing_hours(cursor)
 
+    # 🔚 Close connection
     cursor.close()
     conn.close()
     logging.info("🌟 All done!")

@@ -32,6 +32,7 @@ CREATE_QUERIES = [
         Date_Time DATETIME,                      -- Full timestamp
         Date DATE,                               -- Date only
         Time TIME,                               -- Time only
+        Duration VaRCHAR(50),                    -- Duration Time (01:00:-02:00)
         Location VARCHAR(255)                    -- Sensor location
     );
     """,
@@ -42,8 +43,8 @@ CREATE_QUERIES = [
         Traffic_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
         Data_ID INT,                                -- Link to processed_data
         Traffic_Type VARCHAR(50),                   -- Pedestrian, Vehicle, etc.
-        Total_Count INT,                            -- Cumulative count
         Interval_Count INT,                         -- Count in specific time window
+        Total_Count INT,                            -- Cumulative count
         FOREIGN KEY (Data_ID) REFERENCES processed_data(Data_ID)
     );
     """,
