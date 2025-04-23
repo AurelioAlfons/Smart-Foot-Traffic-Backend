@@ -1,8 +1,8 @@
 # =====================================================
-# 🌤️ MODULE: Assign Weather
-# Purpose: Fetch historical weather conditions (e.g. Clear, Rain)
-# using Open-Meteo's API and update the Weather column
-# in weather_season_data table.
+# 🌤️ MODULE: Assign Weather (Filtered by Date)
+# Purpose: Fetch historical weather (e.g. Clear, Rain)
+# using Open-Meteo API, and update only records from
+# a specific date where Weather = 'Undefined'
 # =====================================================
 
 import mysql.connector
@@ -13,7 +13,7 @@ from backend.config import DB_CONFIG
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 
 # =====================================================
-# 🗺️ FUNCTION: Get readable weather label from weather code
+# 🗺️ FUNCTION: Convert weather code to readable label
 # =====================================================
 def get_weather_label(code):
     weather_map = {
@@ -24,32 +24,38 @@ def get_weather_label(code):
     return weather_map.get(code, "Unknown")
 
 # =====================================================
-# 🌦️ FUNCTION: Fetch and assign weather to each data point
+# 🌦️ FUNCTION: Assign weather for a specific date only
 # =====================================================
-def assign_weather():
+def assign_weather(target_date):
     try:
         # 🔌 Connect to DB
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        logging.info("🔌 Connected to MySQL")
+        logging.info(f"🔍 Assigning weather for {target_date}...")
 
-        # 📥 Get all data points
-        cursor.execute("SELECT Data_ID, Date, Location FROM processed_data")
+        # 🗃️ Only select rows with undefined weather for that date
+        cursor.execute("""
+            SELECT pd.Data_ID, pd.Date, pd.Location
+            FROM processed_data pd
+            JOIN weather_season_data wsd ON pd.Data_ID = wsd.Data_ID
+            WHERE pd.Date = %s AND wsd.Weather = 'Undefined'
+        """, (target_date,))
+        
         rows = cursor.fetchall()
         updated = 0
         weather_cache = {}
 
-        # 🔁 Process each row
         for data_id, date, location in rows:
             try:
+                # ⏱️ Normalize date format
                 if isinstance(date, str):
                     date = datetime.strptime(date, "%Y-%m-%d")
                 date_str = date.strftime("%Y-%m-%d")
 
-                # 📍 Get lat/lon from known sensor locations
+                # 📍 Get lat/lon for location
                 lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
 
-                # ⚡ Cache API calls per date-location combo
+                # 🚀 Avoid duplicate API calls
                 key = (date_str, location)
                 if key not in weather_cache:
                     url = (
@@ -60,7 +66,7 @@ def assign_weather():
                     response = requests.get(url)
                     data = response.json()
 
-                    if "daily" in data:
+                    if "daily" in data and data["daily"].get("weathercode"):
                         code = data["daily"]["weathercode"][0]
                         weather = get_weather_label(code)
                     else:
@@ -70,7 +76,7 @@ def assign_weather():
                 else:
                     weather = weather_cache[key]
 
-                # ✏️ Update weather in DB
+                # ✏️ Update the weather in DB
                 cursor.execute("""
                     UPDATE weather_season_data
                     SET Weather = %s
@@ -82,11 +88,11 @@ def assign_weather():
                 logging.warning(f"⚠️ Skipped Data_ID {data_id} — {e}")
                 continue
 
-        # 💾 Save changes
+        # 💾 Commit and cleanup
         conn.commit()
         cursor.close()
         conn.close()
-        logging.info(f"✅ Weather assigned for {updated} entries.")
+        logging.info(f"✅ Weather assigned for {updated} entries on {target_date}.")
 
     except Exception as e:
         logging.error(f"❌ Failed to assign weather — {e}")

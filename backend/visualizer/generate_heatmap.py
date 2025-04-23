@@ -10,6 +10,9 @@
 import os
 import sys
 
+from backend.forecast.temperature import assign_temperature
+from backend.forecast.weather import assign_weather
+
 # 🔧 Allow importing files from the project root
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
@@ -109,6 +112,11 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
     with progress:
         task = progress.add_task("Fetching data...", total=4)
 
+        # 🧠 Auto-fetch weather & temperature if not assigned yet
+        console.print("🔍 Checking for missing weather or temperature...")
+        assign_weather(date_filter)
+        assign_temperature(date_filter)
+
         # 📊 Load and prepare the data
         df = fetch_traffic_data(date_filter=date_filter, time_filter=time_filter, selected_type=selected_type, season_filter=season_filter)
 
@@ -169,7 +177,7 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
 # ▶️ Run example
-generate_heatmap("2024-12-03", "12:00:00", "Vehicle Count")
+generate_heatmap("2025-03-03", "12:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
 # generate_heatmap("2025-03-03", "01:00:00", "Vehicle Count")
 # generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")

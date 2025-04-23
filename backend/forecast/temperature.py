@@ -1,8 +1,7 @@
 # =====================================================
-# 🌡️ MODULE: Assign Temperature
-# Purpose: Use Open-Meteo API to fetch daily max temperature
-# for each record in processed_data and update it in
-# weather_season_data.Temperature
+# 🌡️ MODULE: Assign Temperature (Filtered by Date)
+# Purpose: Use Open-Meteo API to fetch max temp for
+# specific date entries where temp is NULL
 # =====================================================
 
 import mysql.connector
@@ -13,32 +12,37 @@ from backend.config import DB_CONFIG
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 
 # =====================================================
-# 🌞 FUNCTION: Fetch and assign temperature from API
+# 🌞 FUNCTION: Assign temperature for a specific date only
 # =====================================================
-def assign_temperature():
+def assign_temperature(target_date):
     try:
-        # 🔌 Connect to MySQL
+        # 🔌 Connect to DB
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        logging.info("🔌 Connected to MySQL")
+        logging.info(f"🌡️ Assigning temperature for {target_date}...")
 
-        # 📥 Get all data rows from processed_data
-        cursor.execute("SELECT Data_ID, Date, Location FROM processed_data")
+        # 📥 Fetch only records for the target date where temp is missing
+        cursor.execute("""
+            SELECT pd.Data_ID, pd.Date, pd.Location
+            FROM processed_data pd
+            JOIN weather_season_data wsd ON pd.Data_ID = wsd.Data_ID
+            WHERE pd.Date = %s AND wsd.Temperature IS NULL
+        """, (target_date,))
+        
         rows = cursor.fetchall()
         updated = 0
         temp_cache = {}
 
-        # 🔁 Loop through each row
         for data_id, date, location in rows:
             try:
                 if isinstance(date, str):
                     date = datetime.strptime(date, "%Y-%m-%d")
                 date_str = date.strftime("%Y-%m-%d")
 
-                # 📍 Get coordinates for location
+                # 📍 Get lat/lon for the location
                 lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
 
-                # ⚡ Avoid duplicate API calls with caching
+                # ⚡ Cache to avoid duplicate API calls
                 key = (date_str, location)
                 if key not in temp_cache:
                     url = (
@@ -49,7 +53,7 @@ def assign_temperature():
                     response = requests.get(url)
                     data = response.json()
 
-                    if "daily" in data:
+                    if "daily" in data and data["daily"].get("temperature_2m_max"):
                         max_temp = round(data["daily"]["temperature_2m_max"][0], 1)
                     else:
                         max_temp = None
@@ -58,7 +62,7 @@ def assign_temperature():
                 else:
                     max_temp = temp_cache[key]
 
-                # ✏️ Update temperature in DB
+                # 📝 Update the DB
                 cursor.execute("""
                     UPDATE weather_season_data
                     SET Temperature = %s
@@ -70,11 +74,11 @@ def assign_temperature():
                 logging.warning(f"⚠️ Skipping Data_ID {data_id} — {e}")
                 continue
 
-        # 💾 Save all changes
+        # 💾 Commit changes
         conn.commit()
         cursor.close()
         conn.close()
-        logging.info(f"🌡️ Assigned temperatures to {updated} entries.")
+        logging.info(f"✅ Temperature assigned for {updated} rows on {target_date}.")
 
     except Exception as e:
         logging.error(f"❌ Failed to assign temperature — {e}")
