@@ -70,4 +70,4 @@ def get_color_by_count(count):
         return "#FFEA00"  # 🟨 Faint Yellow
 
     else:
-        return "#E0E0E0"  # ⚪ No Data (Neutral Gray)
+        return "#FFEA00"  # ⚪ No Data (Neutral Gray)
