@@ -59,6 +59,19 @@ print("========================================")
 subprocess.run([python_exec, "backend/pipeline/assign_weather_season.py"])
 
 # =====================================================
+# 🍂 Step 3: Add weather and season data
+# =====================================================
+# This will:
+# - Take the cleaned data
+# - Assign weather (sunny, cloudy, etc.) and season (summer, winter, etc.)
+# - Save to weather_season_data table
+
+print("\n========================================")
+print("🤖 3. Running model_pipeline.py...")
+print("========================================")
+subprocess.run([python_exec, "backend/pipeline/model_pipeline.py"])
+
+# =====================================================
 # ✅ Final message
 # =====================================================
 print("\n========================================")
