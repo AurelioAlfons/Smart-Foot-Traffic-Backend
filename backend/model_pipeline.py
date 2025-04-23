@@ -1,222 +1,186 @@
+import os
+import logging
+from pathlib import Path
+
 import pandas as pd
-import numpy as np
 from prophet import Prophet
 from sqlalchemy import create_engine
 from joblib import dump
 import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score, mean_absolute_error
-from config import DB_CONFIG
-import glob
-import os
 from rich.progress import Progress
 from rich.console import Console
-from datetime import datetime, timedelta
-import holidays
 
-# Configure style
-plt.style.use('seaborn')
-sns.set_palette("husl")
+# Import DB config from external file
+from config import DB_CONFIG
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 console = Console()
 
 # Constants
 TRAFFIC_TYPES = ['Vehicle Count', 'Pedestrian Count', 'Cyclist Count']
-FORECAST_PERIODS = 365
-MODEL_COLORS = {
-    'prophet': '#1f77b4',
-    'linear': '#ff7f0e'
-}
+FORECAST_PERIODS = 365  # days to forecast into the future
+NUM_TRAINING_RUNS = 3
+RESULTS_DIR = Path("results")
+RESULTS_DIR.mkdir(exist_ok=True)
 
-def clean_old_results():
-    """Remove previous result files"""
-    for f in glob.glob('results/*.png') + glob.glob('results/*.joblib'):
-        try:
-            os.remove(f)
-        except Exception as e:
-            console.print(f"[red]Error deleting {f}: {str(e)}[/red]")
+class TrafficForecaster:
+    def __init__(self):
+        # Build and test DB connection string
+        conn_str = (
+            f"mysql+mysqlconnector://{DB_CONFIG['user']}:{DB_CONFIG['password']}@"
+            f"{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
+        )
+        self.engine = create_engine(conn_str)
 
-def fetch_traffic_data(traffic_type):
-    """Enhanced data fetching with validation"""
-    engine = create_engine(
-        f"mysql+mysqlconnector://{DB_CONFIG['user']}:{DB_CONFIG['password']}@"
-        f"{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
-    )
-    
-    query = f"""
-    SELECT 
-        p.Date_Time AS ds,
-        t.Total_Count AS y,
-        ws.Temperature,
-        ws.Weather_Condition
-    FROM processed_data p
-    JOIN traffic_counts t ON p.Data_ID = t.Data_ID
-    JOIN weather_season_data ws ON p.Data_ID = ws.Data_ID
-    WHERE p.Location = 'Footscray Library Car Park'
-    AND t.Traffic_Type = '{traffic_type}'
-    """
-    
-    df = pd.read_sql(query, engine)
-    
-    # Data validation
-    df['ds'] = pd.to_datetime(df['ds'])
-    df = df.sort_values('ds').drop_duplicates('ds')
-    df['y'] = df['y'].clip(lower=0)
-    
-    if df.empty:
-        raise ValueError(f"No data found for {traffic_type}")
-    
-    return df
-
-def train_prophet_model(df):
-    """Enhanced Prophet model with holidays"""
-    model = Prophet(
-        yearly_seasonality=True,
-        weekly_seasonality=True,
-        daily_seasonality=True,
-        changepoint_prior_scale=0.05,
-        holidays=holidays.Australia(),
-        uncertainty_samples=1000
-    )
-    
-    # Add weather regressors
-    for col in ['Temperature']:
-        model.add_regressor(col)
-    
-    model.fit(df)
-    future = model.make_future_dataframe(periods=FORECAST_PERIODS)
-    future = future.merge(df[['ds', 'Temperature']], on='ds', how='left')
-    forecast = model.predict(future)
-    return model, forecast
-
-def train_linear_regression(df):
-    """Enhanced linear regression model with time features"""
-    # Create time features
-    df['days'] = (df['ds'] - df['ds'].min()).dt.days
-    X = df[['days', 'Temperature']].values
-    y = df['y'].values
-    
-    # Train model
-    lr = LinearRegression()
-    lr.fit(X, y)
-    
-    # Create future dates
-    last_date = df['ds'].max()
-    future_dates = [last_date + timedelta(days=x) for x in range(1, FORECAST_PERIODS+1)]
-    future_df = pd.DataFrame({'ds': future_dates})
-    future_df['days'] = (future_df['ds'] - df['ds'].min()).dt.days
-    future_df['Temperature'] = df['Temperature'].mean()  # Use average temp
-    
-    # Predict
-    future_y = lr.predict(future_df[['days', 'Temperature']])
-    future_df['yhat'] = future_y
-    
-    return lr, future_df
-
-def generate_insights(df, prophet_forecast, lr_forecast, traffic_type):
-    """Generate comprehensive insights with visualizations"""
-    # Merge data
-    combined = pd.concat([
-        df[['ds', 'y']].assign(model='actual'),
-        prophet_forecast[['ds', 'yhat']].assign(model='prophet'),
-        lr_forecast[['ds', 'yhat']].assign(model='linear')
-    ])
-    
-    # Create figure
-    plt.figure(figsize=(16, 9))
-    
-    # Plot historical data
-    plt.subplot(2, 1, 1)
-    sns.lineplot(data=combined[combined['model'] == 'actual'],
-                 x='ds', y='y', label='Actual Data')
-    
-    # Plot forecasts
-    sns.lineplot(data=combined[combined['model'] == 'prophet'],
-                 x='ds', y='yhat', color=MODEL_COLORS['prophet'], label='Prophet Forecast')
-    sns.lineplot(data=combined[combined['model'] == 'linear'],
-                 x='ds', y='yhat', color=MODEL_COLORS['linear'], label='Linear Forecast')
-    
-    plt.title(f'{traffic_type} Traffic Forecast Comparison', fontsize=14)
-    plt.xlabel('Date', fontsize=12)
-    plt.ylabel('Traffic Count', fontsize=12)
-    plt.legend()
-    
-    # Add metrics table
-    prophet_mae = mean_absolute_error(df['y'], prophet_forecast[:len(df)]['yhat'])
-    lr_mae = mean_absolute_error(df['y'], lr_forecast[:len(df)]['yhat'])
-    
-    metrics_text = (
-        f"Prophet MAE: {prophet_mae:.1f}\n"
-        f"Linear MAE: {lr_mae:.1f}\n"
-        f"Prophet R²: {r2_score(df['y'], prophet_forecast[:len(df)]['yhat']):.2f}\n"
-        f"Linear R²: {r2_score(df['y'], lr_forecast[:len(df)]['yhat']):.2f}"
-    )
-    
-    plt.subplot(2, 1, 2)
-    plt.axis('off')
-    plt.text(0.1, 0.5, metrics_text, fontsize=12, family='monospace')
-    
-    plt.tight_layout()
-    plot_path = f'results/{traffic_type.replace(" ", "_")}_comparison.png'
-    plt.savefig(plot_path, bbox_inches='tight')
-    plt.close()
-    
-    return {
-        'traffic_type': traffic_type,
-        'plot_path': plot_path,
-        'prophet_mae': prophet_mae,
-        'linear_mae': lr_mae,
-        'last_actual_date': df['ds'].max().strftime('%Y-%m-%d'),
-        'prophet_peak': prophet_forecast['yhat'].max(),
-        'linear_peak': lr_forecast['yhat'].max(),
-    }
-
-def main():
-    """Main execution flow"""
-    clean_old_results()
-    os.makedirs('results', exist_ok=True)
-    all_insights = []
-    
-    with Progress() as progress:
-        task = progress.add_task("Processing...", total=len(TRAFFIC_TYPES))
-        
-        for traffic_type in TRAFFIC_TYPES:
-            progress.console.print(f"\n[bold cyan]Processing {traffic_type}[/bold cyan]")
-            
+    def _clean_old_results(self):
+        """Remove all files in the results directory"""
+        for file in RESULTS_DIR.iterdir():
             try:
-                # Data preparation
-                df = fetch_traffic_data(traffic_type)
-                
-                # Prophet model
-                prophet_model, prophet_forecast = train_prophet_model(df)
-                
-                # Linear regression
-                lr_model, lr_forecast = train_linear_regression(df)
-                
-                # Generate insights
-                insights = generate_insights(df, prophet_forecast, lr_forecast, traffic_type)
-                all_insights.append(insights)
-                
-                # Save models
-                dump(prophet_model, f'results/{traffic_type.replace(" ", "_")}_prophet.joblib')
-                dump(lr_model, f'results/{traffic_type.replace(" ", "_")}_linear.joblib')
-                
-                progress.update(task, advance=1)
-                
+                file.unlink()
+                logger.info(f"Deleted old result: {file.name}")
             except Exception as e:
-                progress.console.print(f"[bold red]Error in {traffic_type}: {str(e)}[/bold red]")
-                continue
-    
-    # Generate final report
-    console.print("\n[bold green]📊 Final Traffic Insights Report[/bold green]")
-    for insight in all_insights:
-        console.print(f"\n[bold]{insight['traffic_type']}:[/bold]")
-        console.print(f"  📈 Last Actual Date: {insight['last_actual_date']}")
-        console.print(f"  🔮 Prophet Forecast Peak: {insight['prophet_peak']:.0f}")
-        console.print(f"  📉 Linear Forecast Peak: {insight['linear_peak']:.0f}")
-        console.print(f"  📊 Model Comparison Plot: {insight['plot_path']}")
-        console.print(f"  ⚖️  Prophet MAE: {insight['prophet_mae']:.1f}")
-        console.print(f"  ⚖️  Linear MAE: {insight['linear_mae']:.1f}")
+                logger.error(f"Error deleting {file.name}: {e}")
+
+    def fetch_traffic_data(self, traffic_type: str) -> pd.DataFrame:
+        """Query traffic data for a given type and clean it"""
+        query = (
+            "SELECT p.Date_Time AS ds, t.Total_Count AS y "
+            "FROM processed_data p "
+            "JOIN traffic_counts t ON p.Data_ID = t.Data_ID "
+            "WHERE p.Location = 'Footscray Library Car Park' "
+            "AND t.Traffic_Type = %(traffic_type)s"
+        )
+        try:
+            df = pd.read_sql(query, self.engine, params={'traffic_type': traffic_type})
+            if df.empty:
+                raise ValueError(f"No data found for {traffic_type}")
+
+            df['ds'] = pd.to_datetime(df['ds'])
+            df = df.drop_duplicates('ds').sort_values('ds')
+            df['y'] = df['y'].clip(lower=0)
+            return df[['ds', 'y']]
+        except Exception:
+            logger.exception(f"Failed to fetch data for {traffic_type}")
+            raise
+
+    def _create_prophet_model(self) -> Prophet:
+        """Initialize a new Prophet model with sensible defaults"""
+        return Prophet(
+            daily_seasonality=True,
+            weekly_seasonality=True,
+            yearly_seasonality=True,
+            changepoint_prior_scale=0.05,
+            interval_width=0.95
+        )
+
+    def train_ensemble_model(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Train multiple Prophet models and average the forecasts"""
+        all_forecasts = []
+        for run in range(1, NUM_TRAINING_RUNS + 1):
+            logger.info(f"Training run {run}/{NUM_TRAINING_RUNS}")
+            model = self._create_prophet_model()
+            model.fit(df)
+
+            future = model.make_future_dataframe(periods=FORECAST_PERIODS, freq='D')
+            forecast = model.predict(future)
+            all_forecasts.append(
+                forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']]
+            )
+
+        combined = pd.concat(all_forecasts)
+        avg_forecast = (
+            combined.groupby('ds')
+                    .agg(
+                        yhat=('yhat', 'mean'),
+                        yhat_lower=('yhat_lower', 'min'),
+                        yhat_upper=('yhat_upper', 'max')
+                    )
+                    .reset_index()
+                    .sort_values('ds')
+        )
+        return avg_forecast
+
+    def _calculate_trend_growth(self, forecast: pd.DataFrame) -> float:
+        """Compute percentage change from first to last forecasted point"""
+        start = forecast['yhat'].iloc[0]
+        end = forecast['yhat'].iloc[-1]
+        if start == 0:
+            return 0.0
+        return round((end - start) / start * 100, 2)
+
+    def generate_insights(self, forecast: pd.DataFrame, traffic_type: str) -> dict:
+        """Create summary metrics from the forecast"""
+        peak_idx = forecast['yhat'].idxmax()
+        peak_date = forecast.at[peak_idx, 'ds'].date().isoformat()
+        return {
+            'traffic_type': traffic_type,
+            'last_training_date': forecast['ds'].max().date().isoformat(),
+            'peak_date': peak_date,
+            'avg_demand': round(forecast['yhat'].mean(), 2),
+            'trend_growth': self._calculate_trend_growth(forecast)
+        }
+
+    def plot_forecast(self, df: pd.DataFrame, forecast: pd.DataFrame, traffic_type: str):
+        """Plot historical vs forecasted data and save as PNG"""
+        plt.figure(figsize=(14, 8))
+        plt.plot(df['ds'], df['y'], 'k.', label='Observed', alpha=0.5)
+        plt.plot(forecast['ds'], forecast['yhat'], label='Forecast')
+        plt.fill_between(
+            forecast['ds'],
+            forecast['yhat_lower'],
+            forecast['yhat_upper'],
+            alpha=0.2
+        )
+        plt.title(f"{traffic_type} Forecast with 95% Interval")
+        plt.xlabel('Date')
+        plt.ylabel('Count')
+        plt.legend()
+        plt.grid(alpha=0.3)
+
+        out_path = RESULTS_DIR / f"{traffic_type.lower().replace(' ', '_')}_forecast.png"
+        plt.tight_layout()
+        plt.savefig(out_path, dpi=150)
+        plt.close()
+        logger.info(f"Plot saved to {out_path}")
+
+    def _generate_final_report(self, insights: list):
+        """Print a console summary for all traffic types"""
+        console.print("\n[bold green]📊 FINAL TRAFFIC FORECAST REPORT[/bold green]")
+        for ins in insights:
+            console.print(f"\n[bold cyan]{ins['traffic_type']}[/bold cyan]")
+            console.print(f"  📅 Last Training Date: {ins['last_training_date']}")
+            console.print(f"  🔮 Peak Date: {ins['peak_date']}")
+            console.print(f"  📈 Avg Demand: {ins['avg_demand']}")
+            console.print(f"  📈 Trend Growth: {ins['trend_growth']}%")
+            console.print(f"  📂 Results Dir: {RESULTS_DIR.resolve()}")
+
+    def run_pipeline(self):
+        """Run the full ETL, modeling, and reporting pipeline"""
+        self._clean_old_results()
+        all_insights = []
+
+        with Progress() as progress:
+            task = progress.add_task("[cyan]Processing traffic types...", total=len(TRAFFIC_TYPES))
+
+            for ttype in TRAFFIC_TYPES:
+                progress.console.log(f"\n[bold]Processing {ttype}[/bold]")
+                try:
+                    df = self.fetch_traffic_data(ttype)
+                    forecast = self.train_ensemble_model(df)
+                    insights = self.generate_insights(forecast, ttype)
+                    self.plot_forecast(df, forecast, ttype)
+                    dump(insights, RESULTS_DIR / f"{ttype.lower().replace(' ', '_')}_insights.joblib")
+                    all_insights.append(insights)
+                except Exception as e:
+                    progress.console.log(f"[red]Error on {ttype}: {e}[/red]")
+                finally:
+                    progress.update(task, advance=1)
+
+        self._generate_final_report(all_insights)
+        self.engine.dispose()
+
 
 if __name__ == '__main__':
-    main()
+    TrafficForecaster().run_pipeline()
