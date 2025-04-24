@@ -6,6 +6,9 @@ This project is a backend system designed to clean, process, and store traffic d
 
 🗂️ Project Structure
 
+![image](https://github.com/user-attachments/assets/50fa94bc-c468-4147-8dc4-b29fecd783fe)
+
+
 SMART_FOOT_TRAFFIC/
 ├── backend/
 │   ├── config.py                    ⚙️ (Database configuration settings)
