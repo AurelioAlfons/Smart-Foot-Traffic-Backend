@@ -10,6 +10,7 @@
 import os
 import sys
 from datetime import datetime
+import mysql
 from rich.console import Console
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 
@@ -17,6 +18,7 @@ from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # ✅ Import logic modules
+from backend.config import DB_CONFIG
 from backend.forecast.temperature import assign_temperature
 from backend.forecast.weather import assign_weather
 from backend.visualizer.services.data_fetcher import fetch_traffic_data
@@ -28,6 +30,30 @@ console = Console()
 # 🔥 Main function to generate the heatmap and save as HTML
 def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestrian Count", season_filter=None):
     label = season_filter if season_filter else date_filter
+
+    # 🚫 Check for duplicate filter in DB
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT COUNT(*) FROM heatmaps
+            WHERE Traffic_Type = %s AND Date_Filter = %s AND Time_Filter = %s
+        """, (selected_type, date_filter, time_filter))
+
+        (count,) = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if count > 0:
+            console.print(f"[yellow]⚠️ Heatmap already exists for {selected_type} on {date_filter} at {time_filter}. Skipping generation.[/yellow]")
+            return
+
+    except mysql.connector.Error as e:
+        console.print(f"[red]❌ DB check failed:[/red] {e}")
+        return
+
+
     console.print(f"\n📌 Generating heatmap for: [bold magenta]{selected_type}[/bold magenta] at [cyan]{label}[/cyan]")
 
     progress = Progress(
