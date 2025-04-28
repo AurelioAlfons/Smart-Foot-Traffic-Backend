@@ -161,9 +161,13 @@ def generate_from_user_input(userSelectedDate, userSelectedTime, userSelectedTyp
         season_filter=userSelectedSeason
     )
 
-# ▶️ Run example
-generate_heatmap("2025-02-27", "01:00:00", "Vehicle Count")
-generate_heatmap("2025-02-27", "01:00:00", "Pedestrian Count")
+# =====================================================
+# ▶️ ONLY RUN WHEN THIS FILE IS RUN DIRECTLY (NOT WHEN IMPORTED)
+# =====================================================
+if __name__ == "__main__":
+    generate_heatmap("2025-02-27", "01:00:00", "Vehicle Count")
+    generate_heatmap("2025-02-27", "01:00:00", "Pedestrian Count")
+    # generate_heatmap(...)
 # generate_heatmap("2025-02-28", "12:00:00", "Pedestrian Count")
 # generate_heatmap("2025-02-28", "12:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
