@@ -1,4 +1,4 @@
-📊 Smart Foot Traffic Monitoring System
+# 📊 Smart Foot Traffic Monitoring System
 
 This project is a backend system designed to clean, process, and store traffic data (🚶‍♂️ pedestrian, 🚴‍♀️ cyclist, 🚗 vehicle counts) from sensors deployed in various locations around Footscray. The system helps transform raw, unstructured sensor CSV files into organized, filtered datasets stored in a MySQL database. These datasets can later be used to generate interactive visualizations like traffic heatmaps based on user-selected filters such as time, date, weather, or season.
 
@@ -6,52 +6,61 @@ This project is a backend system designed to clean, process, and store traffic d
 
 🗂️ Project Structure
 
+![image](https://github.com/user-attachments/assets/50fa94bc-c468-4147-8dc4-b29fecd783fe)
+
+
 SMART_FOOT_TRAFFIC/
 ├── backend/
-│   ├── __pycache__/
-│   ├── data/                         📁 (Raw CSV files go here)
-│   ├── assign_weather_season.py     🌦️ (Assign season & weather to each record based on timestamp)
-│   ├── config.py                    ⚙️ (Contains database configuration settings)
-│   ├── preprocess.py                🧹 (Main script for preprocessing and storing traffic data)
-│   ├── run_pipeline.py              🔁 (Combines preprocessing and season assignment into one process)
-│   ├── tes_insert.py                🧪 (Script for testing individual data insertions)
-│   ├── test_db_connection.py       🔌 (Tests database connection settings)
+│   ├── config.py                    ⚙️ (Database configuration settings)
+│   ├── preprocess.py                🧹 (Cleans and stores traffic data)
+│   ├── run_pipeline.py              🔁 (Runs full preprocessing + weather assignment)
+│   ├── forecast/                    🌦️ (Assign season and weather to records)
+│   ├── pipeline/                    🧪 (Helper scripts for ETL)
+│   ├── visualizer/
+│   │   ├── generate_heatmap.py      🌐 (Generates and logs HTML heatmaps)
+│   │   ├── services/                🧠 (data_fetcher, map_renderer, db_logger)
+│   │   └── utils/                   🔧 (tooltip, colors, shapes, markers)
+├── heatmaps/                        🗺️ (Generated heatmap HTML files)
+├── server.py                        🚀 (Flask server to serve heatmaps)
+├── data/                            📂 (Raw CSV files go here)
 ├── requirements.txt                 📦 (List of required Python packages)
-├── .env                             🔒 (Environment variables file)
-├── README.md                        📄 (This file)
-└── venv/                            🐍 (Python virtual environment)
+├── .env                             🔒 (Environment variables)
+└── README.md                        📄 (This file)
 
 --------------------------------------------------
 
 ✨ Features Implemented
 
 1. 🧹 Preprocessing Script (preprocess.py)
-- 📥 Reads CSV files from the /data folder.
-- 🧼 Cleans and formats data (e.g., standardizes datetime format, removes duplicates).
-- ⏱️ Converts UTC timestamps to Melbourne local time.
-- 🧠 Extracts key metadata like location name, date, time, and traffic counts.
-- 🗃️ Stores cleaned data in two MySQL tables: `processed_data` and `traffic_counts`.
+- 📥 Reads CSV files from `/data`
+- 🧼 Cleans and formats datetime
+- 🕐 Converts UTC to Melbourne local time
+- 📊 Calculates interval counts
+- 🗃️ Stores data into:
+  - `processed_data`
+  - `traffic_counts`
 
 --------------------------------------------------
 
 2. 🌦️ Weather & Season Assignment (assign_weather_season.py)
-- 🗓️ Assigns seasonal labels (Summer, Autumn, Winter, Spring) to each traffic entry using timestamps.
-- ☁️ Future updates will integrate historical weather data using a weather API.
-- 💾 Updates results into a MySQL table called `weather_season_data` for advanced filtering and visualization.
+- 🗓️ Labels each row with the correct season
+- 🌡️ Integrates temperature and weather (Open-Meteo API)
+- 💾 Results go to `weather_season_data` table
 
 --------------------------------------------------
 
-3. 🔁 Combined Pipeline (run_pipeline.py)
-- ⚙️ A wrapper script that runs both the preprocessing and weather/season assignment steps in one go.
-- 🚀 Ensures efficient automation for bulk data preparation.
-- 📊 Includes rich terminal logs and a progress bar to enhance the user experience.
+3. 🌐 Heatmap Generation (generate_heatmap.py)
+- 🎯 Generates filtered interactive heatmaps
+- 📍 Highlights sensor zones by traffic density
+- 🗂️ Saves result as HTML in `/heatmaps`
+- 🧠 Logs metadata to `heatmaps` table in MySQL
+- 🔄 Avoids duplicates and regenerates if needed
 
 --------------------------------------------------
 
-4. 📝 Logging and Comments
-- 💬 All major scripts are commented for clarity.
-- 🎨 Console outputs use emojis and progress bars (via the `rich` library) for an engaging and informative runtime.
-- 🧯 Error handling and informative logs help trace issues easily during execution.
+4. 🚀 Flask Server (server.py)
+- Serves heatmap HTMLs locally
+- 📡 Use `http://localhost:5000/heatmaps/...`
 
 --------------------------------------------------
 
@@ -64,71 +73,93 @@ https://code.visualstudio.com
 
 2. 🐍 Install Python  
 https://python.org  
-✅ Make sure to check "Add Python to PATH" during install.
+✅ Check "Add Python to PATH" during install
 
 --------------------------------------------------
 
 3. ⬇️ Clone the Repository
 
-git clone https://github.com/AurelioAlfons/Smart-Foot-Traffic.git  
+```bash
+git clone https://github.com/AurelioAlfons/Smart-Foot-Traffic.git
 cd Smart-Foot-Traffic
+```
 
 --------------------------------------------------
 
 4. 🧪 Create Virtual Environment
 
+```bash
 python -m venv venv
+```
 
 --------------------------------------------------
 
 5. 🔄 Activate Virtual Environment
 
-Windows:
+```bash
+# Windows
 venv\Scripts\activate
 
-Mac/Linux:
+# Mac/Linux
 source venv/bin/activate
+```
 
 --------------------------------------------------
 
-6. 🧩 Install Extensions in VS Code
-- 🐍 Python Extension
-- 📓 Jupyter (optional)
-- 🗄️ MySQL or SQLTools (for viewing DB contents)
+6. 📦 Install Required Packages
+
+```bash
+pip install -r requirements.txt
+```
 
 --------------------------------------------------
 
-7. 📦 Install Required Packages
+7. ⚙️ Create config.py inside `backend/`
 
-pip install -r backend/requirements.txt
-
-Or manually:
-
-pip install pandas mysql-connector-python rich python-dotenv
-
---------------------------------------------------
-
-8. ⚙️ Create config.py inside backend/
-
+```python
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'your_user',
     'password': 'your_password',
     'database': 'your_db'
 }
+```
 
 --------------------------------------------------
 
-9. ▶️ Run Preprocessing Script
+8. ▶️ Run Preprocessing Script
 
+```bash
 python backend/preprocess.py
+```
 
 --------------------------------------------------
 
-10. ▶️ Run the Whole Pipeline
+9. 🌦️ Run Weather/Season Assignment
 
-python backend/run_pipeline.py
+```bash
+python backend/forecast/init_weather_season.py
+```
 
 --------------------------------------------------
 
-✅ Once completed, the system will insert all cleaned and structured traffic data into your MySQL database. This prepares your dataset for heatmap generation and analytics based on filters like location, date, traffic type, weather, and season.
+10. 🌐 Generate a Heatmap
+
+```bash
+python backend/visualizer/generate_heatmap.py
+```
+
+--------------------------------------------------
+
+11. 🚀 Serve Heatmaps with Flask
+
+```bash
+python server.py
+```
+
+🖥️ Visit your browser:  
+[http://localhost:5000/heatmaps/heatmap_YYYY-MM-DD_HH-MM-SS_TrafficType.html](http://localhost:5000/heatmaps/...)
+
+--------------------------------------------------
+
+✅ Done! Your traffic heatmaps are now stored, served, and ready for frontend integration!
