@@ -144,9 +144,26 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
 
     console.print(f"\n🚀 [bold green]Done![/bold green] Map saved as [bold]{filename}[/bold]\n")
 
+# =====================================================
+# 🧪 Placeholder: Simulating User Input for Testing
+# =====================================================
+# This function is used to simulate real user input (date, time,
+# traffic type, and optional season) before connecting with
+# the actual Flutter frontend.
+# 
+# Later, Flutter will POST real user selections here dynamically.
+# =====================================================
+def generate_from_user_input(userSelectedDate, userSelectedTime, userSelectedType, userSelectedSeason=None):
+    generate_heatmap(
+        date_filter=userSelectedDate,
+        time_filter=userSelectedTime,
+        selected_type=userSelectedType,
+        season_filter=userSelectedSeason
+    )
+
 # ▶️ Run example
-generate_heatmap("2025-02-27", "12:00:00", "Vehicle Count")
-generate_heatmap("2025-02-27", "12:00:00", "Pedestrian Count")
+generate_heatmap("2025-02-27", "01:00:00", "Vehicle Count")
+generate_heatmap("2025-02-27", "01:00:00", "Pedestrian Count")
 # generate_heatmap("2025-02-28", "12:00:00", "Pedestrian Count")
 # generate_heatmap("2025-02-28", "12:00:00", "Vehicle Count")
 # generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
