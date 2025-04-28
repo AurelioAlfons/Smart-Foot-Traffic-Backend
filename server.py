@@ -7,11 +7,13 @@
 # ==========================================
 
 from flask import Flask, send_from_directory, request, jsonify
+from flask_cors import CORS
 import os
 import sys
 
 # 🔧 Initialize the Flask app
 app = Flask(__name__)
+CORS(app) 
 
 # 📁 Define the folder where heatmaps are saved
 HEATMAP_FOLDER = os.path.join(os.getcwd(), 'heatmaps')
