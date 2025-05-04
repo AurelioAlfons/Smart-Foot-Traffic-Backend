@@ -20,14 +20,13 @@ DROP_QUERIES = [
     "DROP TABLE IF EXISTS weather_season_data;",  # Delete weather table
     "DROP TABLE IF EXISTS traffic_counts;",       # Delete traffic table
     "DROP TABLE IF EXISTS processed_data;",       # Delete main data table
-    "DROP TABLE IF EXISTS heatmaps;"              # Delete heatmap records
 ]
 
 # 🧱 Step 2: SQL commands to create tables from scratch
 CREATE_QUERIES = [
     # Table to store cleaned data from CSV
     """
-    CREATE TABLE processed_data (
+    CREATE TABLE IF NOT EXISTS processed_data (
         Data_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
         Date_Time DATETIME,                      -- Full timestamp
         Date DATE,                               -- Date only
@@ -39,7 +38,7 @@ CREATE_QUERIES = [
 
     # Table for traffic counts linked to processed_data
     """
-    CREATE TABLE traffic_counts (
+    CREATE TABLE IF NOT EXISTS traffic_counts (
         Traffic_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
         Data_ID INT,                                -- Link to processed_data
         Traffic_Type VARCHAR(50),                   -- Pedestrian, Vehicle, etc.
@@ -51,7 +50,7 @@ CREATE_QUERIES = [
 
     # Table to store weather and season info
     """
-    CREATE TABLE weather_season_data (
+    CREATE TABLE IF NOT EXISTS weather_season_data (
             Weather_ID INT AUTO_INCREMENT PRIMARY KEY,
             Data_ID INT NOT NULL,
             Weather VARCHAR(50) NOT NULL,
@@ -65,7 +64,7 @@ CREATE_QUERIES = [
     # Table to store saved heatmaps
 
     """
-    CREATE TABLE heatmaps (
+    CREATE TABLE IF NOT EXISTS heatmaps (
         Heatmap_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
         Generated_At DATETIME NOT NULL,             -- When the map was made
         Traffic_Type VARCHAR(50),                   -- Type of traffic shown
