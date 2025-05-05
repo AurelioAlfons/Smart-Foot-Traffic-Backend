@@ -1,8 +1,7 @@
 # =====================================================
-# 🌤️ MODULE: Assign Weather (Filtered by Date)
-# Purpose: Fetch historical weather (e.g. Clear, Rain)
-# using Open-Meteo API, and update only records from
-# a specific date where Weather = 'Undefined'
+# 🌤️ MODULE: Assign Weather (Filtered by Date & Time)
+# Purpose: Fetch hourly weather conditions (e.g. Clear, Rain)
+# using Open-Meteo API and update missing weather entries
 # =====================================================
 
 import mysql.connector
@@ -18,24 +17,29 @@ from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 def get_weather_label(code):
     weather_map = {
         0: "Clear", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast",
-        45: "Fog", 48: "Rime Fog", 51: "Light Drizzle", 61: "Light Rain",
-        71: "Light Snow", 80: "Rain Showers", 95: "Thunderstorm"
+        45: "Fog", 48: "Rime Fog", 51: "Light Drizzle", 53: "Moderate Drizzle", 55: "Dense Drizzle",
+        56: "Freezing Drizzle", 57: "Freezing Dense Drizzle",
+        61: "Light Rain", 63: "Moderate Rain", 65: "Heavy Rain",
+        66: "Freezing Rain", 67: "Freezing Heavy Rain",
+        71: "Light Snow", 73: "Moderate Snow", 75: "Heavy Snow",
+        77: "Snow Grains", 80: "Rain Showers", 81: "Heavy Showers", 82: "Violent Showers",
+        85: "Snow Showers", 86: "Heavy Snow Showers",
+        95: "Thunderstorm", 96: "Thunderstorm + Hail", 99: "Thunderstorm + Heavy Hail"
     }
     return weather_map.get(code, "Unknown")
 
 # =====================================================
-# 🌦️ FUNCTION: Assign weather for a specific date only
+# 🌦️ FUNCTION: Assign weather for a specific date & time
 # =====================================================
 def assign_weather(target_date):
     try:
-        # 🔌 Connect to DB
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        logging.info(f"🔍 Assigning weather for {target_date}...")
+        logging.info(f"🔍 Assigning hourly weather for {target_date}...")
 
-        # 🗃️ Only select rows with undefined weather for that date
+        # 📦 Get rows missing weather
         cursor.execute("""
-            SELECT pd.Data_ID, pd.Date, pd.Location
+            SELECT pd.Data_ID, pd.Date, pd.Time, pd.Location
             FROM processed_data pd
             JOIN weather_season_data wsd ON pd.Data_ID = wsd.Data_ID
             WHERE pd.Date = %s AND wsd.Weather = 'Undefined'
@@ -45,38 +49,51 @@ def assign_weather(target_date):
         updated = 0
         weather_cache = {}
 
-        for data_id, date, location in rows:
+        for data_id, date, time, location in rows:
             try:
-                # ⏱️ Normalize date format
+                # 🗓️ Format date string
                 if isinstance(date, str):
                     date = datetime.strptime(date, "%Y-%m-%d")
                 date_str = date.strftime("%Y-%m-%d")
 
-                # 📍 Get lat/lon for location
-                lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
+                # 🕒 Format time as HH:00 (handle str or timedelta)
+                if isinstance(time, str):
+                    hour_str = datetime.strptime(time, "%H:%M:%S").strftime("%H:00")
+                else:
+                    # ✅ Handle MySQL TIME returned as timedelta
+                    hour_str = f"{int(time.total_seconds() // 3600):02d}:00"
 
-                # 🚀 Avoid duplicate API calls
+                target_hour = f"{date_str}T{hour_str}"
+
+                # 📍 Coordinates for location
+                lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
                 key = (date_str, location)
+
                 if key not in weather_cache:
+                    # 🌐 Fetch hourly weathercode data
                     url = (
                         f"https://archive-api.open-meteo.com/v1/archive?"
                         f"latitude={lat}&longitude={lon}&start_date={date_str}&end_date={date_str}"
-                        f"&daily=weathercode&timezone=Australia/Melbourne"
+                        f"&hourly=weathercode&timezone=Australia/Melbourne"
                     )
                     response = requests.get(url)
                     data = response.json()
 
-                    if "daily" in data and data["daily"].get("weathercode"):
-                        code = data["daily"]["weathercode"][0]
-                        weather = get_weather_label(code)
+                    if "hourly" in data and "weathercode" in data["hourly"]:
+                        weather_cache[key] = dict(zip(data["hourly"]["time"], data["hourly"]["weathercode"]))
                     else:
-                        weather = "Unknown"
+                        logging.warning(f"⚠️ No hourly weather data for {location} on {date_str}")
+                        weather_cache[key] = {}
 
-                    weather_cache[key] = weather
-                else:
-                    weather = weather_cache[key]
+                # 🎯 Match weathercode for the exact timestamp
+                code = weather_cache[key].get(target_hour)
+                weather = get_weather_label(code) if code is not None else "Unknown"
 
-                # ✏️ Update the weather in DB
+                if weather == "Unknown":
+                    logging.warning(f"⚠️ Weather Unknown for Data_ID {data_id}, skipping...")
+                    continue
+
+                # 💾 Update the DB
                 cursor.execute("""
                     UPDATE weather_season_data
                     SET Weather = %s
@@ -88,7 +105,6 @@ def assign_weather(target_date):
                 logging.warning(f"⚠️ Skipped Data_ID {data_id} — {e}")
                 continue
 
-        # 💾 Commit and cleanup
         conn.commit()
         cursor.close()
         conn.close()

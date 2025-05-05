@@ -1,7 +1,7 @@
 # =====================================================
 # 🌡️ MODULE: Assign Temperature (Filtered by Date)
-# Purpose: Use Open-Meteo API to fetch max temp for
-# specific date entries where temp is NULL
+# Purpose: Fetch hourly temperature using Open-Meteo API
+# and assign it based on exact hour for rows with NULL temp
 # =====================================================
 
 import mysql.connector
@@ -16,14 +16,14 @@ from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 # =====================================================
 def assign_temperature(target_date):
     try:
-        # 🔌 Connect to DB
+        # 🔌 Connect to the MySQL database
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        logging.info(f"🌡️ Assigning temperature for {target_date}...")
+        logging.info(f"🌡️ Assigning hourly temperature for {target_date}...")
 
-        # 📥 Fetch only records for the target date where temp is missing
+        # 📥 Fetch records on the selected date where temperature is missing
         cursor.execute("""
-            SELECT pd.Data_ID, pd.Date, pd.Location
+            SELECT pd.Data_ID, pd.Date, pd.Time, pd.Location
             FROM processed_data pd
             JOIN weather_season_data wsd ON pd.Data_ID = wsd.Data_ID
             WHERE pd.Date = %s AND wsd.Temperature IS NULL
@@ -33,48 +33,60 @@ def assign_temperature(target_date):
         updated = 0
         temp_cache = {}
 
-        for data_id, date, location in rows:
+        for data_id, date, time, location in rows:
             try:
+                # 🗓️ Format date
                 if isinstance(date, str):
                     date = datetime.strptime(date, "%Y-%m-%d")
                 date_str = date.strftime("%Y-%m-%d")
 
-                # 📍 Get lat/lon for the location
-                lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
+                # 🕒 Format time into HH:00
+                if isinstance(time, str):
+                    hour_str = datetime.strptime(time, "%H:%M:%S").strftime("%H:00")
+                else:
+                    # ✅ Handle MySQL TIME returned as timedelta
+                    hour_str = f"{int(time.total_seconds() // 3600):02d}:00"
 
-                # ⚡ Cache to avoid duplicate API calls
+                target_timestamp = f"{date_str}T{hour_str}"  # e.g., 2025-03-03T21:00
+
+                # 📍 Get coordinates for the location
+                lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
                 key = (date_str, location)
+
+                # 🌐 Fetch API data if not cached
                 if key not in temp_cache:
                     url = (
                         f"https://archive-api.open-meteo.com/v1/archive?"
                         f"latitude={lat}&longitude={lon}&start_date={date_str}&end_date={date_str}"
-                        f"&daily=temperature_2m_max&timezone=Australia/Melbourne"
+                        f"&hourly=temperature_2m&timezone=Australia/Melbourne"
                     )
                     response = requests.get(url)
                     data = response.json()
 
-                    if "daily" in data and data["daily"].get("temperature_2m_max"):
-                        max_temp = round(data["daily"]["temperature_2m_max"][0], 1)
+                    if "hourly" in data and "temperature_2m" in data["hourly"]:
+                        times = data["hourly"]["time"]
+                        temps = data["hourly"]["temperature_2m"]
+                        temp_cache[key] = dict(zip(times, temps))
                     else:
-                        max_temp = None
+                        logging.warning(f"⚠️ No hourly temperature data for {location} on {date_str}")
+                        temp_cache[key] = {}
 
-                    temp_cache[key] = max_temp
-                else:
-                    max_temp = temp_cache[key]
+                # 🌡️ Get temperature for this hour
+                hourly_temp = temp_cache[key].get(target_timestamp)
 
-                # 📝 Update the DB
+                # 💾 Update the DB
                 cursor.execute("""
                     UPDATE weather_season_data
                     SET Temperature = %s
                     WHERE Data_ID = %s
-                """, (max_temp, data_id))
+                """, (hourly_temp, data_id))
                 updated += 1
 
             except Exception as e:
                 logging.warning(f"⚠️ Skipping Data_ID {data_id} — {e}")
                 continue
 
-        # 💾 Commit changes
+        # ✅ Save changes and close
         conn.commit()
         cursor.close()
         conn.close()
