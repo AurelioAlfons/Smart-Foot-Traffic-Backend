@@ -23,7 +23,7 @@ DB_CONFIG = {
     'host': 'localhost',
     'port': 3306,
     'user': 'root',
-    'password': 'password',
+    'password': '',
     'database': 'smart_foot_traffic'
 }
 
