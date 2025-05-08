@@ -4,11 +4,11 @@
 
 import folium
 import os
-
 import pandas as pd
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES, LOCATION_ZONES
+
+from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES, LOCATION_CENTERS
 from backend.visualizer.utils.tooltip_box import generate_tooltip_html
-from backend.visualizer.utils.map_shapes import add_zone_polygon
+from backend.visualizer.utils.map_shapes import add_zone_circle  # ✅ Updated
 from backend.visualizer.utils.marker_helpers import add_center_marker
 from backend.visualizer.utils.heatmap_colors import get_color_by_count
 from backend.visualizer.utils.description_box import generate_description_box
@@ -50,7 +50,8 @@ def render_heatmap_map(df, selected_type, label, time_filter):
             temperature=temperature
         )
 
-        add_zone_polygon(base_map, loc, fill_color, tooltip_html, LOCATION_ZONES)
+        # 🔁 Swap to add_zone_circle instead of polygon
+        add_zone_circle(base_map, loc, fill_color, tooltip_html, LOCATION_CENTERS)
         add_center_marker(base_map, coords, cnt, fill_color)
 
     # Add bottom description box

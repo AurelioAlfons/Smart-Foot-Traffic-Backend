@@ -1,8 +1,12 @@
 import folium
 
-def add_zone_polygon(map_obj, location, fill_color, tooltip_html, LOCATION_ZONES):
-    folium.Polygon(
-        locations=[[lat, lon] for lon, lat in LOCATION_ZONES[location]],
+def add_zone_circle(map_obj, location, fill_color, tooltip_html, LOCATION_CENTERS):
+    # LOCATION_CENTERS[location] should be a tuple: (lat, lon)
+    center_lat, center_lon = LOCATION_CENTERS[location]
+
+    folium.Circle(
+        location=[center_lat, center_lon],
+        radius=70,  # Radius in meters (adjust as needed)
         color=fill_color,
         fill=True,
         fill_color=fill_color,

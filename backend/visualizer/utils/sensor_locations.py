@@ -1,6 +1,6 @@
 # sensor_locations.py
 
-# 📍 SENSOR COORDINATES FOR EACH LOCATION
+# 📍 SENSOR COORDINATES FOR EACH LOCATION (used for both markers and circles)
 LOCATION_COORDINATES = {
     "Footscray Library Car Park": (-37.800791, 144.897828),
     "Footscray Market Hopkins And Irving": (-37.800195, 144.902611),
@@ -15,18 +15,6 @@ LOCATION_COORDINATES = {
     "Salt Water Child Care Centre": (-37.795044, 144.900284)
 }
 
-# 🧱 Helper: Create a square polygon (GeoJSON-style) around the sensor
-def create_default_zone(lat, lon, size=0.0005):
-    return [
-        [lon - size, lat - size],  # bottom-left
-        [lon - size, lat + size],  # top-left
-        [lon + size, lat + size],  # top-right
-        [lon + size, lat - size],  # bottom-right
-        [lon - size, lat - size]   # close loop
-    ]
-
-# 📦 Generate zones for all sensors
-LOCATION_ZONES = {
-    name: create_default_zone(lat, lon)
-    for name, (lat, lon) in LOCATION_COORDINATES.items()
-}
+# ✅ For backward compatibility, you can also define:
+# LOCATION_CENTERS = LOCATION_COORDINATES
+LOCATION_CENTERS = LOCATION_COORDINATES
