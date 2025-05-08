@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_0d661eaf97f7361e3155cab718b82b41 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+    <div style="
+        position: absolute;
+        top: 80px;
+        left: 10px;
+        width: 240px;
+        background-color: #fff;
+        border: 1px solid #444;
+        z-index: 9999;
+        font-size: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        line-height: 1.4;
+    ">
+        <b style="color:#0275d8;">ℹ️ Heatmap Info</b><br>
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <b>🌦️ Season:</b> Autumn<br>
+        <b>🗓️ Date:</b> 2024-03-05<br>
+        <b>🕒 Time:</b> 05:00:00<br>
+        <b>📊 Type:</b> Pedestrian<br>
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <b>📍 Locations:</b>
+        <ul style="padding-left: 10px; margin-top: 5px;">
+            <li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Footscray Library Car Park</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Footscray Market Hopkins And Irving</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Footscray Market Hopkins And Leeds</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Footscray Market Irving St Train Stn</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Footscray Park Gardens</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Footscray Park Rowing Club</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Nic St Campus</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Nicholson Mall Clock Tower</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Salt Water Child Care Centre</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> Snap Fitness</li><li style="margin: 4px 0; list-style: none;"><span style="color:green;">✔</span> West Footscray Library</li>
+        </ul>
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <b>🔍 Legend</b><br>
+        <div style="margin-top: 5px;">
+            <span style="display:inline-block;width:12px;height:12px;background:#3bffc1;margin-right:6px;"></span>Pedestrian<br>
+            <span style="display:inline-block;width:12px;height:12px;background:#ffe53b;margin-right:6px;"></span>Cyclist<br>
+            <span style="display:inline-block;width:12px;height:12px;background:#8b4dff;margin-right:6px;"></span>Vehicle
+        </div>
+    </div>
+    
+            <div class="folium-map" id="map_0d661eaf97f7361e3155cab718b82b41" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_0d661eaf97f7361e3155cab718b82b41 = L.map(
+                "map_0d661eaf97f7361e3155cab718b82b41",
+                {
+                    center: [-37.7975, 144.8876],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 15.7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_4fc9450adb908112fb375d31def46d4c = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_4fc9450adb908112fb375d31def46d4c.addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var polygon_d9101797f4bb34e69d4bb06c78192d85 = L.polygon(
+                [[-37.801291, 144.89732800000002], [-37.800290999999994, 144.89732800000002], [-37.800290999999994, 144.898328], [-37.801291, 144.898328], [-37.801291, 144.89732800000002]],
+                {"bubblingMouseEvents": true, "color": "#FFEA00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFEA00", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_d9101797f4bb34e69d4bb06c78192d85.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Footscray Library Car Park</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>3</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_1b3fddcd7b2fc3784c10966c97cf3abe = L.marker(
+                [-37.800791, 144.897828],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_e9137317396597db900b8b8606f5c0b2 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    3\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_1b3fddcd7b2fc3784c10966c97cf3abe.setIcon(div_icon_e9137317396597db900b8b8606f5c0b2);
+        
+    
+                marker_1b3fddcd7b2fc3784c10966c97cf3abe.setIcon(div_icon_e9137317396597db900b8b8606f5c0b2);
+            
+    
+            var polygon_1b3f2d1005106052cf1d3ebac56d5d86 = L.polygon(
+                [[-37.800695000000005, 144.90211100000002], [-37.799695, 144.90211100000002], [-37.799695, 144.903111], [-37.800695000000005, 144.903111], [-37.800695000000005, 144.90211100000002]],
+                {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_1b3f2d1005106052cf1d3ebac56d5d86.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Footscray Market Hopkins And Irving</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>0</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_5cde03453ae992ceaceade3e10eb69ea = L.marker(
+                [-37.800195, 144.902611],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_3d471c8d85ad384eecf60038cc067a02 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_5cde03453ae992ceaceade3e10eb69ea.setIcon(div_icon_3d471c8d85ad384eecf60038cc067a02);
+        
+    
+                marker_5cde03453ae992ceaceade3e10eb69ea.setIcon(div_icon_3d471c8d85ad384eecf60038cc067a02);
+            
+    
+            var polygon_00a1916f5d299c2a199ffb3b0bb9fff7 = L.polygon(
+                [[-37.800534, 144.900767], [-37.799533999999994, 144.900767], [-37.799533999999994, 144.90176699999998], [-37.800534, 144.90176699999998], [-37.800534, 144.900767]],
+                {"bubblingMouseEvents": true, "color": "#FFEA00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFEA00", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_00a1916f5d299c2a199ffb3b0bb9fff7.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Footscray Market Hopkins And Leeds</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>9</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_ce2a5787c176d8469617ff3813f7f38f = L.marker(
+                [-37.800034, 144.901267],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_48481af0a72228f2d57697905c6bdba3 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    9\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_ce2a5787c176d8469617ff3813f7f38f.setIcon(div_icon_48481af0a72228f2d57697905c6bdba3);
+        
+    
+                marker_ce2a5787c176d8469617ff3813f7f38f.setIcon(div_icon_48481af0a72228f2d57697905c6bdba3);
+            
+    
+            var polygon_e72d135706f8581e8cf41178be98987c = L.polygon(
+                [[-37.804716, 144.898286], [-37.803715999999994, 144.898286], [-37.803715999999994, 144.899286], [-37.804716, 144.899286], [-37.804716, 144.898286]],
+                {"bubblingMouseEvents": true, "color": "#FFEA00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFEA00", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_e72d135706f8581e8cf41178be98987c.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Nic St Campus</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>4</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_456e9a28f7c2c4c907098225f7805eb6 = L.marker(
+                [-37.804216, 144.898786],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_92283a7b7f239058f572e305050da476 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    4\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_456e9a28f7c2c4c907098225f7805eb6.setIcon(div_icon_92283a7b7f239058f572e305050da476);
+        
+    
+                marker_456e9a28f7c2c4c907098225f7805eb6.setIcon(div_icon_92283a7b7f239058f572e305050da476);
+            
+    
+            var polygon_6e035d53dd2ce7b174e63efc214c34cc = L.polygon(
+                [[-37.79133, 144.901619], [-37.79033, 144.901619], [-37.79033, 144.902619], [-37.79133, 144.902619], [-37.79133, 144.901619]],
+                {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_6e035d53dd2ce7b174e63efc214c34cc.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Footscray Park Rowing Club</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>0</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.8°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_2f066113008890999e244f39dc26e3b6 = L.marker(
+                [-37.79083, 144.902119],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_2208957668ae74b7b1cd6d5071e5b66f = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_2f066113008890999e244f39dc26e3b6.setIcon(div_icon_2208957668ae74b7b1cd6d5071e5b66f);
+        
+    
+                marker_2f066113008890999e244f39dc26e3b6.setIcon(div_icon_2208957668ae74b7b1cd6d5071e5b66f);
+            
+    
+            var polygon_3444e9a07e4626c4f965abb0d72caa7c = L.polygon(
+                [[-37.793748, 144.90515900000003], [-37.792747999999996, 144.90515900000003], [-37.792747999999996, 144.906159], [-37.793748, 144.906159], [-37.793748, 144.90515900000003]],
+                {"bubblingMouseEvents": true, "color": "#FFEA00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFEA00", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_3444e9a07e4626c4f965abb0d72caa7c.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Footscray Park Gardens</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>2</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.9°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_d5fd0420caacad2b39c5ead70f3f1a7e = L.marker(
+                [-37.793248, 144.905659],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_93fa880b88b05292891a37931c0eff33 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    2\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_d5fd0420caacad2b39c5ead70f3f1a7e.setIcon(div_icon_93fa880b88b05292891a37931c0eff33);
+        
+    
+                marker_d5fd0420caacad2b39c5ead70f3f1a7e.setIcon(div_icon_93fa880b88b05292891a37931c0eff33);
+            
+    
+            var polygon_2504ec11fa752f1782913a6a93896aff = L.polygon(
+                [[-37.801680000000005, 144.901092], [-37.80068, 144.901092], [-37.80068, 144.90209199999998], [-37.801680000000005, 144.90209199999998], [-37.801680000000005, 144.901092]],
+                {"bubblingMouseEvents": true, "color": "#FFEA00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFEA00", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_2504ec11fa752f1782913a6a93896aff.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Footscray Market Irving St Train Stn</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>10</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_07ae9a65e1738edec9af89e34711f070 = L.marker(
+                [-37.80118, 144.901592],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_d5b34dc30bb1dd48aa396e7ac15203e9 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    10\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_07ae9a65e1738edec9af89e34711f070.setIcon(div_icon_d5b34dc30bb1dd48aa396e7ac15203e9);
+        
+    
+                marker_07ae9a65e1738edec9af89e34711f070.setIcon(div_icon_d5b34dc30bb1dd48aa396e7ac15203e9);
+            
+    
+            var polygon_bb9ab0389e9eae8099e6e163115f286f = L.polygon(
+                [[-37.801425, 144.898715], [-37.800425, 144.898715], [-37.800425, 144.899715], [-37.801425, 144.899715], [-37.801425, 144.898715]],
+                {"bubblingMouseEvents": true, "color": "#FFE800", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFE800", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_bb9ab0389e9eae8099e6e163115f286f.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Nicholson Mall Clock Tower</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>16</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_851505ce1636dec7ef6b50b9e9af06de = L.marker(
+                [-37.800925, 144.899215],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_54ce7d5cc0110eb09836086bf6581adf = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    16\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_851505ce1636dec7ef6b50b9e9af06de.setIcon(div_icon_54ce7d5cc0110eb09836086bf6581adf);
+        
+    
+                marker_851505ce1636dec7ef6b50b9e9af06de.setIcon(div_icon_54ce7d5cc0110eb09836086bf6581adf);
+            
+    
+            var polygon_0e670fcb4010ccde0f5ea62666e2e8e7 = L.polygon(
+                [[-37.798098200000005, 144.87507340000002], [-37.7970982, 144.87507340000002], [-37.7970982, 144.8760734], [-37.798098200000005, 144.8760734], [-37.798098200000005, 144.87507340000002]],
+                {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_0e670fcb4010ccde0f5ea62666e2e8e7.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 West Footscray Library</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>0</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Overcast</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_b5c26c1476755da0c57414b5216da4d6 = L.marker(
+                [-37.7975982, 144.8755734],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_b35691c8b5b42d9c5b06e413f726a421 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_b5c26c1476755da0c57414b5216da4d6.setIcon(div_icon_b35691c8b5b42d9c5b06e413f726a421);
+        
+    
+                marker_b5c26c1476755da0c57414b5216da4d6.setIcon(div_icon_b35691c8b5b42d9c5b06e413f726a421);
+            
+    
+            var polygon_7344e513d0d73a8c842e983344c52064 = L.polygon(
+                [[-37.800449, 144.898909], [-37.799448999999996, 144.898909], [-37.799448999999996, 144.89990899999998], [-37.800449, 144.89990899999998], [-37.800449, 144.898909]],
+                {"bubblingMouseEvents": true, "color": "#FFEA00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFEA00", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_7344e513d0d73a8c842e983344c52064.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Snap Fitness</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>9</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_1ad10eb5ae7657a19fd9a72acda7b1cc = L.marker(
+                [-37.799949, 144.899409],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_0bc232d9c806d8f819425e92078d67ca = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    9\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_1ad10eb5ae7657a19fd9a72acda7b1cc.setIcon(div_icon_0bc232d9c806d8f819425e92078d67ca);
+        
+    
+                marker_1ad10eb5ae7657a19fd9a72acda7b1cc.setIcon(div_icon_0bc232d9c806d8f819425e92078d67ca);
+            
+    
+            var polygon_0cd3d878e787cb8ebdc6fc70f99e6549 = L.polygon(
+                [[-37.795544, 144.899784], [-37.794543999999995, 144.899784], [-37.794543999999995, 144.900784], [-37.795544, 144.900784], [-37.795544, 144.899784]],
+                {"bubblingMouseEvents": true, "color": "#FFEA00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFEA00", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            polygon_0cd3d878e787cb8ebdc6fc70f99e6549.bindTooltip(
+                `<div>
+                     
+    <div style="
+        font-size: 14px;
+        line-height: 1.6;
+        font-weight: normal;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 14px 16px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 350px;
+    ">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📍 Salt Water Child Care Centre</div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span><b>🚦 Type:</b></span>
+            <span style="display:flex; align-items:center;">
+                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
+                Pedestrian
+            </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🔢 Count:</b></span> <span>1</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>📅 Date:</b></span> <span>2024-03-05</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🕒 Time:</b></span> <span>05:00:00</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌿 Season:</b></span> <span>Autumn</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>☁️ Weather:</b></span> <span>Mainly Clear</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between;">
+            <span><b>🌡️ Temperature:</b></span> <span>9.7°C</span>
+        </div>
+
+        <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
+        <div style="font-size: 14px; color: #888; text-align: center;">
+            Smart Foot Traffic System 🚶‍♂️🚴‍♀️🚗
+        </div>
+    </div>
+    
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_736616f70512e1c1d817c6572499ad54 = L.marker(
+                [-37.795044, 144.900284],
+                {
+}
+            ).addTo(map_0d661eaf97f7361e3155cab718b82b41);
+        
+    
+            var div_icon_6a75c28b30247068a41f96ed44294824 = L.divIcon({
+  "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    1\n                \u003c/div\u003e\n            ",
+  "iconSize": [40, 20],
+  "iconAnchor": [20, 10],
+  "className": "empty",
+});
+            marker_736616f70512e1c1d817c6572499ad54.setIcon(div_icon_6a75c28b30247068a41f96ed44294824);
+        
+    
+                marker_736616f70512e1c1d817c6572499ad54.setIcon(div_icon_6a75c28b30247068a41f96ed44294824);
+            
+</script>
+</html>

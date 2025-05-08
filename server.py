@@ -64,7 +64,9 @@ def api_generate_heatmap():
         # ---------------------------------------------
         # This URL is only used to access the heatmap file from the server
         # ---------------------------------------------
-        heatmap_url = f"http://localhost:5000/heatmaps/{file_name}"
+        # heatmap_url = f"http://localhost:5000/heatmaps/{file_name}"
+        ip = get_local_ip()
+        heatmap_url = f"http://{ip}:5000/heatmaps/{file_name}"
 
         return jsonify({"status": "success", "heatmap_url": heatmap_url}), 200
 
