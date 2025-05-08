@@ -1,18 +1,17 @@
 @echo off
 :MENU
 cls
-echo ==========================================
 echo     SMART FOOT TRAFFIC - BACKEND MENU
 echo ==========================================
 echo [1]. Check local IP address
 echo [2]. Run Flask server
 echo [3]. Run heatmap generator manually
 echo [4]. Run data preprocessing (backend.main)
-echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+echo ------------------------------------------ 
 echo [5]. Activate virtual environment
 echo [6]. Install required libraries (requirements.txt)
 echo [7]. Exit
-echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+echo ==========================================
 set /p choice="Enter your choice: "
 echo.
 

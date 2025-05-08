@@ -10,7 +10,6 @@ from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
 import os
 import sys
-from backend.utils.get_ip import get_local_ip
 
 # 🔧 Initialize the Flask app
 app = Flask(__name__)
@@ -24,6 +23,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # ✅ Import your generate_heatmap function
 from backend.visualizer.generate_heatmap import generate_heatmap
+
+# ✅ Health check route for Render
+@app.route('/healthz')
+def health_check():
+    return "OK", 200
 
 # 🏠 Home route to confirm server is running
 @app.route('/')
@@ -72,31 +76,19 @@ def api_generate_heatmap():
         # This URL is only for local access to heatmap files via the Flask server.
         # ============================================================
 
-        # heatmap_url = f"http://localhost:5000/heatmaps/{file_name}"
-        ip = get_local_ip()
-        # If you use a different wifi then change the IP
-        heatmap_url = f"http://{ip}:5000/heatmaps/{file_name}"
+        # ⛳ Replace with request.host_url for compatibility with Render
+        heatmap_url = f"{request.host_url}heatmaps/{file_name}"
 
         return jsonify({"status": "success", "heatmap_url": heatmap_url}), 200
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# ▶️ Run this script to start the server locally
+# ▶️ Run this script to start the server (local or hosted)
 if __name__ == '__main__':
-    ip = get_local_ip()
-
-    # Only ask the user once (on the main process)
-    if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
-        print(f"\n📡 Your local Wi-Fi IP address is: http://{ip}:5000")
-        proceed = input("🚀 Do you want to start the server? (y/n): ").strip().lower()
-        if proceed != 'y':
-            print("❌ Server not started. Exiting.")
-            exit()
-
-    # Run the server (this part runs twice, but the second time is real)
+    # ✅ No input prompts (so it's safe for Render)
     print("✅ Starting Flask server...\n")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
 
 # ======================================================
 # 📌 HOW TO RUN & TEST
