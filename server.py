@@ -84,6 +84,12 @@ def api_generate_heatmap():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# Allow iframe embedding for heatmap files
+@app.after_request
+def allow_iframe(response):
+    response.headers['X-Frame-Options'] = 'ALLOWALL'
+    return response
+
 # ▶️ Run this script to start the server (local or hosted)
 if __name__ == '__main__':
     # ✅ No input prompts (so it's safe for Render)
