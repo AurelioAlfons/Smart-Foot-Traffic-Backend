@@ -10,7 +10,7 @@ from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
 import os
 import sys
-from get_ip import get_local_ip
+from backend.utils.get_ip import get_local_ip
 
 # 🔧 Initialize the Flask app
 app = Flask(__name__)
@@ -57,15 +57,24 @@ def api_generate_heatmap():
         # 📎 Build the heatmap file URL
         label = season_filter if season_filter else date_filter
         file_name = f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
-        # Localhost -> Is using this device (Computer) to access the server
-        # Port 5000 -> Default port for Flask server
-        # Heatmap URL -> Localhost + Port + File name
-        # Example: http://localhost:5000/heatmaps/heatmap_2025-04-20_14-00_Pedestrian_Count.html
-        # ---------------------------------------------
-        # This URL is only used to access the heatmap file from the server
-        # ---------------------------------------------
+
+        # ============================================================
+        # 🌐 Localhost Settings & Heatmap Access URL Explanation
+        # 
+        # - 'localhost' refers to the current device running the server.
+        # - Port 5000 is the default for Flask.
+        # - Heatmaps are served as static HTML files from the '/heatmaps' route.
+        #
+        # 🔗 Example Heatmap URL:
+        #   http://localhost:5000/heatmaps/heatmap_2025-04-20_14-00_Pedestrian_Count.html
+        #
+        # 💡 Note:
+        # This URL is only for local access to heatmap files via the Flask server.
+        # ============================================================
+
         # heatmap_url = f"http://localhost:5000/heatmaps/{file_name}"
         ip = get_local_ip()
+        # If you use a different wifi then change the IP
         heatmap_url = f"http://{ip}:5000/heatmaps/{file_name}"
 
         return jsonify({"status": "success", "heatmap_url": heatmap_url}), 200
