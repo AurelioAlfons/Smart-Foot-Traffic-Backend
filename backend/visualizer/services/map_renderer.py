@@ -20,19 +20,19 @@ def render_heatmap_map(df, selected_type, label, time_filter):
     """
 
     # 🧭 Define the strict visible boundary (based on screenshot view)
-    bounds = [[-37.8055, 144.874], [-37.7845, 144.911]]  # top-left to bottom-right
+    bounds = [[-37.809, 144.870], [-37.781, 144.915]] # top-left to bottom-right
 
     # 🗺️ Initialize map with locked view settings
     base_map = folium.Map(
         location=[-37.7975, 144.8876],  # Center of Footscray
         zoom_start=15.5,               # Initial zoom
         min_zoom=15,                   # Restrict zoom out
-        max_zoom=17,                   # Allow zoom in
-        max_bounds=True,              # Restrict dragging outside bounds
+        max_zoom=20,                   # Allow zoom in
+        max_bounds=True,              # Enable bounds locking
         tiles='cartodbpositron'
     )
 
-    # 🔘 Draw circles and data markers for each sensor
+    # 🔘 Add traffic circles and markers per location
     for loc, coords in LOCATION_COORDINATES.items():
         row_data = df[df["Location"] == loc]
 
@@ -57,10 +57,13 @@ def render_heatmap_map(df, selected_type, label, time_filter):
         add_zone_circle(base_map, loc, fill_color, tooltip_html, LOCATION_CENTERS)
         add_center_marker(base_map, coords, cnt, fill_color)
 
-    # 📌 Visually lock the viewport to the bounds (at min zoom level)
+    # 📌 Set initial viewport bounds
     base_map.fit_bounds(bounds)
 
-    # 📋 Add bottom description panel
+    # 🔒 Enforce locked bounds
+    base_map.options['maxBounds'] = bounds
+
+    # 📋 Add dynamic description box
     base_map.get_root().html.add_child(
         generate_description_box(label, time_filter or "All", selected_type, df["Location"].unique())
     )
