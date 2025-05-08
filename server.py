@@ -76,9 +76,14 @@ def api_generate_heatmap():
         # This URL is only for local access to heatmap files via the Flask server.
         # ============================================================
 
-        # ⛳ Replace with request.host_url for compatibility with Render
-        # heatmap_url = f"{request.host_url}heatmaps/{file_name}"
-        heatmap_url = f"https://smart-foot-traffic-backend.onrender.com/heatmaps/{file_name}"
+        # ⛳ Generate the base URL from request context
+        base_url = request.host_url.rstrip('/')  # Remove trailing slash if any
+
+        # If running locally (http), use as-is; if on Render, manually force https
+        if "localhost" in base_url or "127.0.0.1" in base_url:
+            heatmap_url = f"{base_url}/heatmaps/{file_name}"
+        else:
+            heatmap_url = f"https://smart-foot-traffic-backend.onrender.com/heatmaps/{file_name}"
 
         return jsonify({"status": "success", "heatmap_url": heatmap_url}), 200
 
