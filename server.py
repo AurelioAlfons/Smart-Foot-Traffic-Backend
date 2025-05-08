@@ -77,7 +77,8 @@ def api_generate_heatmap():
         # ============================================================
 
         # ⛳ Replace with request.host_url for compatibility with Render
-        heatmap_url = f"{request.host_url}heatmaps/{file_name}"
+        # heatmap_url = f"{request.host_url}heatmaps/{file_name}"
+        heatmap_url = f"https://smart-foot-traffic-backend.onrender.com/heatmaps/{file_name}"
 
         return jsonify({"status": "success", "heatmap_url": heatmap_url}), 200
 
