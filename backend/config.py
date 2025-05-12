@@ -8,10 +8,10 @@ load_dotenv()
 # 🌐 DEFAULT: Connect to Railway MySQL (Cloud)
 # ==========================================
 DB_CONFIG = {
-    "host": "nozomi.proxy.rlwy.net",
-    "port": 58634,
+    "host": "metro.proxy.rlwy.net",
+    "port": 56408,
     "user": "root",
-    "password": "kmAAQDQZNjKnutYLIpRSdPIrCnRkEkvT",
+    "password": "FhhxYrQmqSbGiJUbbhnHWfVUeXWyOBiD",
     "database": "railway"
 }
 
