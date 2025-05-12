@@ -26,6 +26,38 @@ from backend.visualizer.services.map_renderer import render_heatmap_map
 
 console = Console()
 
+# 🔎 Check if weather data already exists for date
+def weather_exists(date_filter):
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 1 FROM weather_season_data 
+            WHERE DATE(Date_ID) = %s LIMIT 1
+        """, (date_filter,))
+        exists = cursor.fetchone() is not None
+        cursor.close()
+        conn.close()
+        return exists
+    except mysql.connector.Error:
+        return False
+
+# 🔎 Check if temperature data already exists for date
+def temperature_exists(date_filter):
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 1 FROM weather_season_data 
+            WHERE DATE(Date_ID) = %s AND Temperature IS NOT NULL LIMIT 1
+        """, (date_filter,))
+        exists = cursor.fetchone() is not None
+        cursor.close()
+        conn.close()
+        return exists
+    except mysql.connector.Error:
+        return False
+
 # 🔥 Main function to generate the heatmap and save as HTML
 def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestrian Count", season_filter=None):
     label = season_filter if season_filter else date_filter
@@ -33,11 +65,17 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
     heatmap_url = None
     existing_id = None
 
+    # 🧱 Prepare filename early for fast checks
+    filename = os.path.join(
+        "heatmaps",
+        f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
+    )
+
+    # 🔍 Check database for existing entry
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
 
-        # 🔍 Check for existing heatmap entry
         cursor.execute("""
             SELECT Heatmap_ID FROM heatmaps
             WHERE Traffic_Type = %s AND Date_Filter = %s AND Time_Filter = %s
@@ -46,17 +84,12 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
         result = cursor.fetchone()
         if result:
             existing_id = result[0]
-            console.print(f"[yellow]♻️ Regenerating existing heatmap ID {existing_id}[/yellow]")
+            console.print(f"[yellow]♻️ Heatmap ID {existing_id} already exists in DB[/yellow]")
 
-            # Check if the file already exists
-            filename = os.path.join(
-                "heatmaps",
-                f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
-            )
-
-            if os.path.exists(filename):
-                console.print(f"[yellow]⚠️ Heatmap already exists on disk and in DB for {selected_type} at {date_filter} {time_filter}. Skipping.[/yellow]")
-                return
+        # ✅ If file already exists, skip everything else
+        if os.path.exists(filename):
+            console.print(f"[green]✅ Skipping generation. File already exists: {filename}[/green]")
+            return
 
         cursor.close()
         conn.close()
@@ -80,8 +113,15 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
 
         # 🧠 Auto-fetch weather & temperature if not assigned yet
         console.print("🔍 Checking for missing weather or temperature...")
-        assign_weather(date_filter)
-        assign_temperature(date_filter)
+        if not weather_exists(date_filter):
+            assign_weather(date_filter)
+        else:
+            console.print(f"[green]✅ Weather already assigned for {date_filter}[/green]")
+
+        if not temperature_exists(date_filter):
+            assign_temperature(date_filter)
+        else:
+            console.print(f"[green]✅ Temperature already assigned for {date_filter}[/green]")
 
         # 📊 Load and prepare the data
         df = fetch_traffic_data(date_filter=date_filter, time_filter=time_filter, selected_type=selected_type, season_filter=season_filter)
@@ -95,11 +135,6 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
 
         # 📁 Save the map to HTML
         os.makedirs("heatmaps", exist_ok=True)
-        filename = os.path.join(
-            "heatmaps",
-            f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
-        )
-
         with open(filename, "w", encoding="utf-8", errors="ignore") as f:
             f.write(base_map.get_root().render())
 
@@ -168,11 +203,4 @@ if __name__ == "__main__":
     generate_heatmap("2025-02-27", "01:00:00", "Vehicle Count")
     generate_heatmap("2025-02-27", "01:00:00", "Pedestrian Count")
     # generate_heatmap(...)
-# generate_heatmap("2025-02-28", "12:00:00", "Pedestrian Count")
-# generate_heatmap("2025-02-28", "12:00:00", "Vehicle Count")
-# generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
-# generate_heatmap("2025-03-03", "01:00:00", "Vehicle Count")
-# generate_heatmap("2024-04-11", "20:00:00", "Vehicle Count")
-# generate_heatmap("2025-03-03", "12:00:00", "Cyclist Count")
-# generate_heatmap("2025-03-03", "12:00:00", "Pedestrian Count")
 # generate_heatmap(None, None, "Vehicle Count", "Autumn")
