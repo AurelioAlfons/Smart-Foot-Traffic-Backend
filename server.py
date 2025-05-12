@@ -1,5 +1,5 @@
 # ==========================================
-# 🛰️ Flask Server to Serve Heatmaps + API
+# 🚀 Flask Server to Serve Heatmaps + API
 # ==========================================
 # This server allows:
 # - Access generated heatmap .html files
@@ -10,6 +10,7 @@ from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
 import os
 import sys
+import traceback
 
 # 🔧 Initialize the Flask app
 app = Flask(__name__)
@@ -58,7 +59,7 @@ def api_generate_heatmap():
             season_filter=season_filter
         )
 
-        # 📎 Build the heatmap file URL
+        # 📍 Build the heatmap file URL
         label = season_filter if season_filter else date_filter
         file_name = f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
 
@@ -88,6 +89,8 @@ def api_generate_heatmap():
         return jsonify({"status": "success", "heatmap_url": heatmap_url}), 200
 
     except Exception as e:
+        print("\n❌ Error during heatmap generation:")
+        traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
 # Allow iframe embedding for heatmap files

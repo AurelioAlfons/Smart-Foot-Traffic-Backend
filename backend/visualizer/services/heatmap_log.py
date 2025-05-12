@@ -25,5 +25,6 @@ def log_heatmap_duration(date_filter, time_filter, selected_type, season_filter,
 
     console.print(log_msg)
     os.makedirs("logs", exist_ok=True)
-    with open("logs/heatmap_profiling.log", "a") as f:
+    with open("logs/heatmap_profiling.log", "a", encoding="utf-8") as f:
         f.write(log_msg)
+
