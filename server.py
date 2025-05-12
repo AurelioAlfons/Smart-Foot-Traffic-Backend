@@ -10,6 +10,7 @@ from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
 import os
 import sys
+from threading import Thread  # ✅ NEW: For background preloading
 
 # 🔧 Initialize the Flask app
 app = Flask(__name__)
@@ -90,6 +91,27 @@ def api_generate_heatmap():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# 🧠 API to preload heatmap in the background (runs silently as user selects parameters)
+@app.route('/api/preload_heatmap', methods=['POST'])
+def api_preload_heatmap():
+    try:
+        data = request.get_json()
+
+        def background_task():
+            generate_heatmap(
+                date_filter=data.get('date'),
+                time_filter=data.get('time'),
+                selected_type=data.get('traffic_type'),
+                season_filter=data.get('season')
+            )
+
+        Thread(target=background_task).start()
+
+        return jsonify({"status": "Preloading started"}), 202
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 # Allow iframe embedding for heatmap files
 @app.after_request
 def allow_iframe(response):
@@ -115,5 +137,6 @@ if __name__ == '__main__':
 #    - Browser: http://localhost:5000/
 #    - Heatmap: http://localhost:5000/heatmaps/your_file.html
 #    - API: POST to http://localhost:5000/api/generate_heatmap
+#    - NEW: POST to http://localhost:5000/api/preload_heatmap
 # ======================================================
 # END OF FILE
