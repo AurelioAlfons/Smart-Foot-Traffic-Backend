@@ -2,6 +2,7 @@ import folium
 from datetime import datetime
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 
+
 def generate_description_box(date_filter, time_filter, selected_type, included_locations):
     traffic_label = selected_type.replace(" Count", "")
     all_locations = sorted(LOCATION_COORDINATES.keys())
@@ -12,6 +13,19 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
         "Winter": "June – August",
         "Spring": "September – November"
     }
+
+    # 🕒 Convert time_filter (e.g. "00:00:00") to Duration format (e.g. "00:00 - 01:00")
+    def convert_time_to_duration(time_str):
+        try:
+            dt = datetime.strptime(time_str, "%H:%M:%S")
+            start = dt.strftime("%H:%M")
+            end_dt = dt.replace(hour=(dt.hour + 1) % 24)
+            end = end_dt.strftime("%H:%M")
+            return f"{start} - {end}"
+        except:
+            return time_str  # fallback
+
+    duration_str = convert_time_to_duration(time_filter)
 
     # 📅 Auto-assign season if date_filter is a date string
     def get_season_from_date(date_str):
@@ -58,7 +72,7 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
         <b>🌦️ Season:</b> {current_season or "N/A"}<br>
         <b>🗓️ Date:</b> {date_filter}<br>
-        <b>🕒 Time:</b> {time_filter}<br>
+        <b>🕒 Time:</b> {duration_str}<br>
         <b>📊 Type:</b> {traffic_label}<br>
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
         <b>📍 Locations:</b>
@@ -73,4 +87,4 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
             <span style="display:inline-block;width:12px;height:12px;background:#8b4dff;margin-right:6px;"></span>Vehicle
         </div>
     </div>
-""")
+    """)
