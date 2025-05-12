@@ -54,9 +54,9 @@ def check_weather_and_temp_exists(date_filter):
 
 
 # 🔥 Main function to generate the heatmap and log phase timings
-def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestrian Count", season_filter=None):
+def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestrian Count"):
     start = time.time()
-    label = season_filter if season_filter else date_filter
+    label = date_filter
 
     timings = {}
     def mark(name):
@@ -128,7 +128,6 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
             date_filter=date_filter,
             time_filter=time_filter,
             selected_type=selected_type,
-            season_filter=season_filter
         )
         mark("fetch")
         progress.update(task, advance=1, description="Creating map...")
@@ -183,9 +182,8 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
             return
 
     # ⏱️ Delegate log printing and saving
-    log_heatmap_duration(date_filter, time_filter, selected_type, season_filter, timings, start)
-
-
+    log_heatmap_duration(date_filter, time_filter, selected_type, None, timings, start)
+    
 # =====================================================
 # ▶️ ONLY RUN WHEN THIS FILE IS RUN DIRECTLY (NOT WHEN IMPORTED)
 # =====================================================

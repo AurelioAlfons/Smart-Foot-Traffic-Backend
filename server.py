@@ -49,18 +49,16 @@ def api_generate_heatmap():
         date_filter = data.get('date')          # "2025-04-20"
         time_filter = data.get('time')           # "14:00:00"
         traffic_type = data.get('traffic_type')  # "Pedestrian Count"
-        season_filter = data.get('season')       
 
         # Generate the heatmap using the function
         generate_heatmap(
             date_filter=date_filter,
             time_filter=time_filter,
             selected_type=traffic_type,
-            season_filter=season_filter
         )
 
         # 📍 Build the heatmap file URL
-        label = season_filter if season_filter else date_filter
+        label = date_filter
         file_name = f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
 
         # ============================================================
