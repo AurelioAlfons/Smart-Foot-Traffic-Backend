@@ -101,7 +101,10 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
         console.print(f"[red]❌ DB check failed:[/red] {e}")
         return
 
-    console.print(f"\n📌 Generating heatmap for: [bold magenta]{selected_type}[/bold magenta] at [cyan]{label}[/cyan]")
+    # ⏰ Build full label with time if available
+    full_label = f"{label} {time_filter}" if time_filter else label
+
+    console.print(f"\n📌 Generating heatmap for: [bold magenta]{selected_type}[/bold magenta] at [cyan]{full_label}[/cyan]")
 
     progress = Progress(
         TextColumn("[bold cyan]🔄 Progress"),
