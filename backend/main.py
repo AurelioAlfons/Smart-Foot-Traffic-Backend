@@ -34,6 +34,13 @@ print("🛠️  0. Initializing database tables...")
 print("========================================")
 subprocess.run([python_exec, "backend/db/init_db.py"])
 
+# ➕ Automatically create missing indexes
+print("\n========================================")
+print("⚡  Creating missing indexes if needed...")
+print("========================================")
+from backend.db.index_setup import create_indexes_if_missing
+create_indexes_if_missing()
+
 # =====================================================
 # 🔄 Step 1: Preprocess the raw CSV data
 # =====================================================
