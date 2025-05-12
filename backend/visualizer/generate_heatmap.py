@@ -17,7 +17,6 @@ from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 
 from backend.visualizer.services.heatmap_log import log_heatmap_duration
 
-
 # 🔧 Allow importing files from the project root
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
@@ -30,37 +29,29 @@ from backend.visualizer.services.map_renderer import render_heatmap_map
 
 console = Console()
 
-# 🔎 Check if weather data already exists for date
-def weather_exists(date_filter):
+# 🔎 Check if weather & temp exist
+def check_weather_and_temp_exists(date_filter):
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT 1 FROM weather_season_data 
-            WHERE DATE(Date_ID) = %s LIMIT 1
+            SELECT
+                MAX(CASE WHEN Weather IS NOT NULL THEN 1 ELSE 0 END),
+                MAX(CASE WHEN Temperature IS NOT NULL THEN 1 ELSE 0 END)
+            FROM weather_season_data
+            WHERE DATE(Date_ID) = %s
         """, (date_filter,))
-        exists = cursor.fetchone() is not None
+        result = cursor.fetchone()
         cursor.close()
         conn.close()
-        return exists
-    except mysql.connector.Error:
-        return False
 
-# 🔎 Check if temperature data already exists for date
-def temperature_exists(date_filter):
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT 1 FROM weather_season_data 
-            WHERE DATE(Date_ID) = %s AND Temperature IS NOT NULL LIMIT 1
-        """, (date_filter,))
-        exists = cursor.fetchone() is not None
-        cursor.close()
-        conn.close()
-        return exists
+        weather_exists = result[0] == 1
+        temperature_exists = result[1] == 1
+        return weather_exists, temperature_exists
+
     except mysql.connector.Error:
-        return False
+        return False, False
+
 
 # 🔥 Main function to generate the heatmap and log phase timings
 def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestrian Count", season_filter=None):
@@ -117,16 +108,16 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
     with progress:
         task = progress.add_task("Fetching data...", total=3)
 
-        # 🧠 Assign weather
-        console.print("[cyan]🔍 Checking for missing weather or temperature...[/cyan]")
-        if not weather_exists(date_filter):
+        # 🧠 Assign weather and temperature only if missing
+        weather_ok, temp_ok = check_weather_and_temp_exists(date_filter)
+
+        if not weather_ok:
             assign_weather(date_filter)
         else:
             console.print(f"[green]✅ Weather already assigned for {date_filter}[/green]")
         mark("weather")
 
-        # 🌡️ Assign temperature
-        if not temperature_exists(date_filter):
+        if not temp_ok:
             assign_temperature(date_filter)
         else:
             console.print(f"[green]✅ Temperature already assigned for {date_filter}[/green]")
