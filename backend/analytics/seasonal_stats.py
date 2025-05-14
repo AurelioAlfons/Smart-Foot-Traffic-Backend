@@ -7,6 +7,7 @@ from pprint import pprint
 
 from backend.analytics.bar_chart.generate_barchart import export_bar_chart_html
 from backend.config import DB_CONFIG
+from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES  # ✅ Import sensor list
 
 
 def get_summary_stats(date, time_input, traffic_type):
@@ -35,16 +36,15 @@ def get_summary_stats(date, time_input, traffic_type):
         }
     }
 
-    bar_chart = {}     # full-day total per location (unused now)
-    line_chart = {}    # total count per hour
+    bar_chart = {}
+    line_chart = {}
 
     try:
-        # 🔹 Determine season (based on month)
+        # 🔹 Determine season
         month = int(date.split("-")[1])
         summary["season"] = get_season_from_month(month)
 
         print("📊 Querying hourly and location-based traffic data...")
-        # 🔹 Get full-day counts by location/hour
         cursor.execute("""
             SELECT 
                 HOUR(pd.Date_Time) AS hour,
@@ -59,7 +59,6 @@ def get_summary_stats(date, time_input, traffic_type):
         rows = cursor.fetchall()
         print(f"✅ Fetched {len(rows)} rows of data.")
 
-        # 🔹 Structure for calculations
         location_totals = {}
         hourly_totals = [0] * 24
 
@@ -68,25 +67,16 @@ def get_summary_stats(date, time_input, traffic_type):
             loc = row['Location']
             cnt = int(row['count'])
 
-            # Total per hour
             hourly_totals[hr] += cnt
-
-            # Total per location
             location_totals[loc] = location_totals.get(loc, 0) + cnt
-
-            # Full-day bar chart (optional)
             bar_chart[loc] = bar_chart.get(loc, 0) + cnt
-
-            # Line chart
             time_label = f"{hr:02d}:00"
             line_chart[time_label] = line_chart.get(time_label, 0) + cnt
 
-            # Selected hour bar chart
             if time_input and hr == int(time_input[:2]):
                 summary['selected_hour']['total_count'] += cnt
                 summary['selected_hour']['per_location'][loc] = cnt
 
-        # 🔹 Summary values
         summary['total_daily_count'] = sum(hourly_totals)
         summary['average_hourly_count'] = round(summary['total_daily_count'] / 24, 2)
 
@@ -104,12 +94,20 @@ def get_summary_stats(date, time_input, traffic_type):
         summary['weather'] = "Sunny"
         summary['temperature'] = "18°C"
 
+        # 🔁 Generate bar chart HTML
         export_bar_chart_html(
             summary['selected_hour']['per_location'],
             date=date,
             time=time_input,
             traffic_type=traffic_type
         )
+
+        # ✅ Generate location availability list
+        included_locations = summary['selected_hour']['per_location'].keys()
+        location_availability = {
+            loc: loc in included_locations
+            for loc in LOCATION_COORDINATES.keys()
+        }
 
     except Exception as e:
         print("❌ Error in seasonal_stats:", e)
@@ -123,8 +121,9 @@ def get_summary_stats(date, time_input, traffic_type):
 
     return {
         "summary": summary,
-        "bar_chart": summary['selected_hour']['per_location'],  # ✅ Matches chart output
-        "line_chart": line_chart
+        "bar_chart": summary['selected_hour']['per_location'],
+        "line_chart": line_chart,
+        "location_availability": location_availability  # ✅ Now passed to frontend
     }
 
 
