@@ -4,21 +4,21 @@ import plotly.express as px
 def export_bar_chart_html(bar_data: dict, date=None, time=None, traffic_type=None):
     if not bar_data:
         print("⚠️ No bar chart data to export.")
-        return
+        return None  # Explicitly return None if no data
 
-    # 🛡️ Make sure the output folder exists
+    # 🛡️ Ensure the output folder exists
     os.makedirs("barchart", exist_ok=True)
 
-    # 🧠 Generate dynamic filename if all params are provided
+    # 🧠 Generate dynamic filename with consistent format
     filename = "bar_chart.html"
     if date and time and traffic_type:
         safe_type = traffic_type.replace(" ", "")
-        hour_str = time[:2]
-        filename = f"bar_{date}_{hour_str}_{safe_type}.html"
+        safe_time = time.replace(":", "-")
+        filename = f"bar_{date}_{safe_time}_{safe_type}.html"
 
-    output_path = f"barchart/{filename}"
+    output_path = os.path.join("barchart", filename)
 
-    # 📊 Generate and save bar chart
+    # 📊 Create and save bar chart
     fig = px.bar(
         x=list(bar_data.keys()),
         y=list(bar_data.values()),
@@ -33,3 +33,5 @@ def export_bar_chart_html(bar_data: dict, date=None, time=None, traffic_type=Non
     )
     fig.write_html(output_path)
     print(f"✅ Plotly bar chart saved to {output_path}")
+
+    return output_path  # ✅ Return the full path to use in URL or DB

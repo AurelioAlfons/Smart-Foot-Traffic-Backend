@@ -51,7 +51,7 @@ def serve_heatmap(filename):
 def serve_barchart(filename):
     return send_from_directory(BARCHART_FOLDER, filename)
 
-# 🚀 Generate heatmap file and return URL
+# 🚀 Generate heatmap and barchart, return both URLs
 @app.route('/api/generate_heatmap', methods=['POST'])
 def api_generate_heatmap():
     try:
@@ -60,21 +60,27 @@ def api_generate_heatmap():
         time_filter = data.get('time')
         traffic_type = data.get('traffic_type')
 
+        # 🔁 Generate heatmap (this already saves to DB)
         generate_heatmap(
             date_filter=date_filter,
             time_filter=time_filter,
             selected_type=traffic_type,
         )
 
-        file_name = f"heatmap_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
-
+        # 🌐 Base URL handling (localhost or production)
         base_url = request.host_url.rstrip('/')
         if "localhost" in base_url or "127.0.0.1" in base_url:
-            heatmap_url = f"{base_url}/heatmaps/{file_name}"
+            heatmap_url = f"{base_url}/heatmaps/heatmap_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
+            barchart_url = f"{base_url}/barchart/barchart_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
         else:
-            heatmap_url = f"https://smart-foot-traffic-backend.onrender.com/heatmaps/{file_name}"
+            heatmap_url = f"https://smart-foot-traffic-backend.onrender.com/heatmaps/heatmap_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
+            barchart_url = f"https://smart-foot-traffic-backend.onrender.com/barchart/barchart_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
 
-        return jsonify({"status": "success", "heatmap_url": heatmap_url}), 200
+        return jsonify({
+            "status": "success",
+            "heatmap_url": heatmap_url,
+            "barchart_url": barchart_url
+        }), 200
 
     except Exception as e:
         print("❌ Error generating heatmap:")

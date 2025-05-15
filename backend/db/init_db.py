@@ -71,7 +71,8 @@ CREATE_QUERIES = [
         Date_Filter DATE,                           -- Filter used for date
         Time_Filter TIME,                           -- Filter used for time
         Status VARCHAR(20) DEFAULT 'Generated',     -- Status info (optional)
-        Heatmap_URL VARCHAR(255)                    -- Where the map is saved
+        Heatmap_URL VARCHAR(255),                   -- Where the map is saved
+        BarChart_URL VARCHAR(255)                   -- Where the bar chart is saved
     );
     """
 ]

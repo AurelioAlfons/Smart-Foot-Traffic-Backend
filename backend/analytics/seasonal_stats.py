@@ -1,5 +1,4 @@
-# analytics/seasonal_stats.py
-
+import os
 import mysql.connector
 from datetime import datetime
 import time
@@ -7,7 +6,7 @@ from pprint import pprint
 
 from backend.analytics.bar_chart.generate_barchart import export_bar_chart_html
 from backend.config import DB_CONFIG
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES  # ✅ Import sensor list
+from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 
 
 def get_summary_stats(date, time_input, traffic_type):
@@ -90,19 +89,49 @@ def get_summary_stats(date, time_input, traffic_type):
                 "count": hourly_totals[peak_hr]
             }
 
-        # 🔹 Static weather placeholder
+        # 🔹 Static placeholders
         summary['weather'] = "Sunny"
         summary['temperature'] = "18°C"
 
-        # 🔁 Generate bar chart HTML
-        export_bar_chart_html(
+        # 🔁 Generate and get path to bar chart
+        barchart_path = export_bar_chart_html(
             summary['selected_hour']['per_location'],
             date=date,
             time=time_input,
             traffic_type=traffic_type
         )
 
-        # ✅ Generate location availability list
+        barchart_url = None
+        if barchart_path:
+            barchart_url = f"http://localhost:5000/{barchart_path.replace(os.sep, '/')}"
+
+        # 🔁 Update BarChart_URL in heatmaps table
+        if barchart_url:
+            cursor.close()
+            connection.close()
+            connection = mysql.connector.connect(**DB_CONFIG)
+            cursor = connection.cursor()
+
+            cursor.execute("""
+                SELECT Heatmap_ID FROM heatmaps
+                WHERE Traffic_Type = %s AND Date_Filter = %s AND Time_Filter = %s
+            """, (traffic_type, date, time_input))
+            result = cursor.fetchone()
+
+            if result:
+                heatmap_id = result[0]
+                cursor.execute("""
+                    UPDATE heatmaps
+                    SET BarChart_URL = %s
+                    WHERE Heatmap_ID = %s
+                """, (barchart_url, heatmap_id))
+                print(f"🟩 Bar chart URL updated in heatmaps for ID {heatmap_id}")
+            else:
+                print("⚠️ No matching heatmap found. Bar chart URL not inserted.")
+
+            connection.commit()
+
+        # ✅ Build location availability map
         included_locations = summary['selected_hour']['per_location'].keys()
         location_availability = {
             loc: loc in included_locations
@@ -113,8 +142,8 @@ def get_summary_stats(date, time_input, traffic_type):
         print("❌ Error in seasonal_stats:", e)
 
     finally:
-        cursor.close()
-        connection.close()
+        if cursor: cursor.close()
+        if connection: connection.close()
 
     duration = round(time.time() - start_time, 2)
     print(f"\n✅ Summary generation complete in {duration}s\n")
@@ -123,7 +152,7 @@ def get_summary_stats(date, time_input, traffic_type):
         "summary": summary,
         "bar_chart": summary['selected_hour']['per_location'],
         "line_chart": line_chart,
-        "location_availability": location_availability  # ✅ Now passed to frontend
+        "location_availability": location_availability
     }
 
 
