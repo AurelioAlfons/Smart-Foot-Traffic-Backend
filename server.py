@@ -25,7 +25,7 @@ BARCHART_FOLDER = os.path.join(os.getcwd(), 'barchart')
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # ✅ Import core logic
-from backend.analytics.seasonal_stats import get_summary_stats
+from backend.analytics.statistics import get_summary_stats
 from backend.visualizer.generate_heatmap import generate_heatmap
 
 # ✅ Health check route for Render or local testing
