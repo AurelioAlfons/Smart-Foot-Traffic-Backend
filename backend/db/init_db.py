@@ -1,5 +1,5 @@
 # ================================================================
-# 🗃️ Database Setup for Smart Foot Traffic
+# Database Setup for Smart Foot Traffic
 # ------------------------------------------------
 # This file is used to create the database table from scratch
 # So it checks if the database already has the tables or not

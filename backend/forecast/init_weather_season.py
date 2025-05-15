@@ -1,5 +1,5 @@
 # ===========================================================
-# 🌦️ Step 2: Set Default Weather & Season Values in Database
+# Step 2: Set Default Weather & Season Values in Database
 # -----------------------------------------------------------
 # - Loops through all cleaned traffic data rows
 # - Resets weather to 'Undefined' and temperature to NULL

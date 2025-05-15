@@ -1,5 +1,5 @@
 # ===========================================================
-# 🌡️ Assign Real Temperature from Open-Meteo (Step 3)
+# Assign Real Temperature from Open-Meteo (Step 3)
 # -----------------------------------------------------------
 # - Gets hourly temperature from Open-Meteo API
 # - Matches by date, time, and location

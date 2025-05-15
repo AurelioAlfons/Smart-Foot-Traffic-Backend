@@ -1,5 +1,5 @@
 # ================================================
-# 💻 Flask Backend API for Smart Foot Traffic System
+# Flask Backend API for Smart Foot Traffic System
 # --------------------------------
 # - Serves heatmap and bar chart HTML files
 # - Provides API to generate heatmaps and summary stats

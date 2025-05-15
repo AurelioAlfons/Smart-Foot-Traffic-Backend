@@ -1,5 +1,5 @@
 # ===========================================================
-# 🌦️ Assign Real Weather per Hour (Step 3)
+# Assign Real Weather per Hour (Step 3)
 # -----------------------------------------------------------
 # - Gets hourly weather from Open-Meteo API using weather codes
 # - Converts weather codes to readable labels (e.g. "Clear", "Rain")

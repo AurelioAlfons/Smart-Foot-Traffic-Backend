@@ -1,5 +1,5 @@
 # ======================================
-# 📡 Get Local Wi-Fi IP Address
+# Get Local Wi-Fi IP Address
 # --------------------------------------
 # - Finds your computer's IP on the local network (e.g. 192.168.x.x)
 # - Useful for testing server access from phone/devices

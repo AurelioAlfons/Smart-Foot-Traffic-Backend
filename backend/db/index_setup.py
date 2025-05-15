@@ -1,5 +1,5 @@
 # ======================================
-# 🔧 Set Up Indexes for Smart Foot Traffic DB
+# Set Up Indexes for Smart Foot Traffic DB
 # ======================================
 # - Makes sure useful indexes are added to speed things up
 # - Only runs if index doesn’t already exist

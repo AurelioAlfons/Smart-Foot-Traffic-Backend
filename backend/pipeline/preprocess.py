@@ -1,5 +1,5 @@
 # ============================================================
-# 🧼 Preprocess Traffic CSV Files for Smart Foot Traffic System
+# Preprocess Traffic CSV Files for Smart Foot Traffic System
 # ------------------------------------------------------------
 # - Reads and cleans traffic data from CSV folders
 # - Converts timestamps, fills gaps, calculates hourly data

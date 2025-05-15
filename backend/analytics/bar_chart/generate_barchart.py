@@ -1,5 +1,5 @@
 # ====================================================
-# 📊 Bar Chart Generator for Smart Foot Traffic System
+# Bar Chart Generator for Smart Foot Traffic System
 # ----------------------------------------------------
 # - Creates a Plotly bar chart by location and time
 # - Saves chart as HTML to local barchart/ folder

@@ -1,5 +1,5 @@
 # ===========================================================
-# 🍁 Assign Season to Each Data Row (Step 2 Alt)
+# Assign Season to Each Data Row (Step 2 Alt)
 # -----------------------------------------------------------
 # - Reads the date from each traffic record
 # - Figures out the season (Summer, Autumn, etc.) from the month
