@@ -6,60 +6,7 @@ This project is a backend system designed to clean, process, and store traffic d
 
 🗂️ Project Structure
 
-![image](https://github.com/user-attachments/assets/cc342aa7-336f-461f-aab0-3a2ab3a24b8e)
-![image](https://github.com/user-attachments/assets/78ab8065-774c-47b5-ac7e-cb35f0426fe1)
-
-backend/
-├── analytics/                        🧠 Analytics logic (summary, charts)
-│   ├── bar_chart/
-│   │   └── generate_barchart.py     📊 Generates Plotly bar chart HTML
-│   └── seasonal_stats.py            📈 Generates summary stats for dashboard
-│
-├── db/
-│   ├── index_setup.py               🧩 Creates indexes for optimization
-│   └── init_db.py                   🗃️ Resets all MySQL tables
-│
-├── forecast/                        🌦️ Weather and season logic
-│   ├── init_weather_season.py       🌱 Resets weather + assigns season
-│   ├── season.py                    🍁 Maps month to season
-│   ├── temperature.py               🌡️ Fetches real temperature via API
-│   └── weather.py                   🌧️ Fetches real weather via API
-│
-├── pipeline/                        🛠️ Preprocessing engine
-│   ├── helpers/
-│   │   └── helpers.py               🧪 Location extractor, hour checker
-│   └── preprocess.py                🧼 Main logic for processing CSVs
-│
-├── utils/
-│   └── get_ip.py                    🌐 Prints local IP address for dev
-│
-├── visualizer/
-│   ├── generate_heatmap.py          🗺️ Generates heatmap HTML from DB
-│   ├── services/
-│   │   ├── data_fetcher.py          🧲 Queries traffic data for maps
-│   │   ├── db_logger.py             📝 Logs heatmap info to MySQL
-│   │   ├── heatmap_log.py           ⏱️ Logs timing info to console + file
-│   │   └── map_renderer.py          🖼️ Renders Folium map with all layers
-│   └── utils/
-│       ├── description_box.py       🧾 Sidebar with heatmap info
-│       ├── heatmap_colors.py        🎨 Color scale for traffic intensity
-│       ├── map_shapes.py            🔵 Adds zone circles to the map
-│       ├── marker_helpers.py        🏷️ Adds label markers to the map
-│       ├── sensor_locations.py      📍 Coordinates for each location
-│       └── tooltip_box.py           💬 Tooltip popup generator
-│
-config.py                            ⚙️ MySQL connection config
-main.py                              🚀 Optional main entry point
-server.py                            🌐 Flask server to serve heatmaps/charts
-start_server.bat                     🧮 Windows helper to run the server
-requirements.txt                     📦 List of required Python packages
-README.md                            📘 Project overview
-.env                                 🔐 Local environment variables
-
-barchart/                            📊 Output bar chart HTML files
-heatmaps/                            🗺️ Output heatmap HTML files
-logs/                                📁 Log files for profiling
-data/                                🧾 Raw CSV files
+![image](https://github.com/user-attachments/assets/207ab51c-0ae6-4971-a29a-71dfefeee347)
 
 --------------------------------------------------
 
