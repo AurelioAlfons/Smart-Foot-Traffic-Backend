@@ -168,17 +168,23 @@ def apply_cors_headers(response):
     return response
 
 # 🌍 Preload default map
+# 🌍 Preload default map
 @app.before_request
 def ensure_default_map():
     global default_map_generated
-    if not default_map_generated:
-        path = os.path.join(HEATMAP_FOLDER, 'default_map.html')
-        if not os.path.exists(path):
-            print("🛠 Generating default_map.html...")
-            generate_default_map()
-        else:
-            print("✅ default_map.html already exists.")
+    path = os.path.join(HEATMAP_FOLDER, 'default_map.html')
+
+    if not os.path.exists(path):
+        print("🛠 default_map.html not found in HEATMAP_FOLDER. Generating...")
+        generate_default_map()
         default_map_generated = True
+    elif not default_map_generated:
+        print("🔄 default_map.html exists, but forcing regeneration for fresh load...")
+        generate_default_map()
+        default_map_generated = True
+    else:
+        print("✅ default_map.html already exists and is loaded.")
+
 
 # ▶️ Launch server
 if __name__ == '__main__':

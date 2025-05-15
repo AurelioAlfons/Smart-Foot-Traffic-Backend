@@ -1,0 +1,1778 @@
+[
+  {
+    "name": "Buckingham Street/Geelong Road",
+    "type": "Bus Stop",
+    "lat": -37.8006707,
+    "lon": 144.8893906
+  },
+  {
+    "name": "Batman Street/Geelong Road",
+    "type": "Bus Stop",
+    "lat": -37.800436,
+    "lon": 144.8891613
+  },
+  {
+    "name": "Epsom Road",
+    "type": "Bus Stop",
+    "lat": -37.7886233,
+    "lon": 144.9202073
+  },
+  {
+    "name": "Barkly Street/Geelong Road",
+    "type": "Bus Stop",
+    "lat": -37.798766,
+    "lon": 144.8931201
+  },
+  {
+    "name": "Stop 63: Footscray Market",
+    "type": "Tram Stop",
+    "lat": -37.8001007,
+    "lon": 144.9011424
+  },
+  {
+    "name": "Stop 62: Nicholson Street",
+    "type": "Tram Stop",
+    "lat": -37.7998081,
+    "lon": 144.8997947
+  },
+  {
+    "name": "Stop 50: Williamson Road",
+    "type": "Tram Stop",
+    "lat": -37.7752426,
+    "lon": 144.8830504
+  },
+  {
+    "name": "Kensington",
+    "type": "Train Station",
+    "lat": -37.7939378,
+    "lon": 144.9305645
+  },
+  {
+    "name": "Stop 59: Droop Street",
+    "type": "Tram Stop",
+    "lat": -37.7923466,
+    "lon": 144.8934268
+  },
+  {
+    "name": "Stop 26: Newmarket Station",
+    "type": "Tram Stop",
+    "lat": -37.7880591,
+    "lon": 144.9283875
+  },
+  {
+    "name": "Stop 26: Newmarket Station",
+    "type": "Tram Stop",
+    "lat": -37.7880018,
+    "lon": 144.9281253
+  },
+  {
+    "name": "Stop 28: Smithfield Road",
+    "type": "Tram Stop",
+    "lat": -37.7876565,
+    "lon": 144.924878
+  },
+  {
+    "name": "Stop 28: Smithfield Road",
+    "type": "Tram Stop",
+    "lat": -37.7877406,
+    "lon": 144.9253926
+  },
+  {
+    "name": "Stop 29: Ascot Vale Road",
+    "type": "Tram Stop",
+    "lat": -37.7873806,
+    "lon": 144.9220091
+  },
+  {
+    "name": "Stop 29: Ascot Vale Road",
+    "type": "Tram Stop",
+    "lat": -37.7874163,
+    "lon": 144.9218692
+  },
+  {
+    "name": "Stop 30: Flemington Drive",
+    "type": "Tram Stop",
+    "lat": -37.7860789,
+    "lon": 144.9200091
+  },
+  {
+    "name": "Stop 30: Flemington Racecourse",
+    "type": "Tram Stop",
+    "lat": -37.7859105,
+    "lon": 144.9197823
+  },
+  {
+    "name": "Stop 31: Racing Victoria",
+    "type": "Tram Stop",
+    "lat": -37.7839756,
+    "lon": 144.9179913
+  },
+  {
+    "name": "Stop 31: Racing Victoria",
+    "type": "Tram Stop",
+    "lat": -37.7843725,
+    "lon": 144.9183024
+  },
+  {
+    "name": "Stop 32: Sandown Road",
+    "type": "Tram Stop",
+    "lat": -37.7826427,
+    "lon": 144.9167257
+  },
+  {
+    "name": "Stop 33: Melbourne Showgrounds",
+    "type": "Tram Stop",
+    "lat": -37.7803846,
+    "lon": 144.9147742
+  },
+  {
+    "name": "Stop 34: Burrowes Street",
+    "type": "Tram Stop",
+    "lat": -37.7786465,
+    "lon": 144.9150225
+  },
+  {
+    "name": "Stop 35: Bloomfield Road",
+    "type": "Tram Stop",
+    "lat": -37.7758989,
+    "lon": 144.9155149
+  },
+  {
+    "name": "Stop 35: Munro Street",
+    "type": "Tram Stop",
+    "lat": -37.7760721,
+    "lon": 144.9154452
+  },
+  {
+    "name": "Stop 50: Williamson Road",
+    "type": "Tram Stop",
+    "lat": -37.7752552,
+    "lon": 144.8828783
+  },
+  {
+    "name": "Stop 63: Footscray Market",
+    "type": "Tram Stop",
+    "lat": -37.7998885,
+    "lon": 144.9008628
+  },
+  {
+    "name": "Stop 62: Nicholson Street",
+    "type": "Tram Stop",
+    "lat": -37.7992918,
+    "lon": 144.8993369
+  },
+  {
+    "name": "Stop 61: Geelong Road",
+    "type": "Tram Stop",
+    "lat": -37.7967581,
+    "lon": 144.8971597
+  },
+  {
+    "name": "Stop 61: Geelong Road",
+    "type": "Tram Stop",
+    "lat": -37.7962345,
+    "lon": 144.8967711
+  },
+  {
+    "name": "Stop 60: Tiernan Street",
+    "type": "Tram Stop",
+    "lat": -37.794664,
+    "lon": 144.8954499
+  },
+  {
+    "name": "Stop 60: Tiernan Street",
+    "type": "Tram Stop",
+    "lat": -37.7948603,
+    "lon": 144.8955602
+  },
+  {
+    "name": "Stop 59: Droop Street",
+    "type": "Tram Stop",
+    "lat": -37.7925626,
+    "lon": 144.8936402
+  },
+  {
+    "name": "Stop 55: Lyric Street",
+    "type": "Tram Stop",
+    "lat": -37.782249,
+    "lon": 144.8912054
+  },
+  {
+    "name": "Stop 57: Titch Street",
+    "type": "Tram Stop",
+    "lat": -37.7887498,
+    "lon": 144.8899855
+  },
+  {
+    "name": "Stop 57: Titch Street",
+    "type": "Tram Stop",
+    "lat": -37.7885912,
+    "lon": 144.8899846
+  },
+  {
+    "name": "Stop 56: Edgewater Boulevard",
+    "type": "Tram Stop",
+    "lat": -37.7843912,
+    "lon": 144.8908229
+  },
+  {
+    "name": "Stop 56: Edgewater Boulevard",
+    "type": "Tram Stop",
+    "lat": -37.7848714,
+    "lon": 144.890688
+  },
+  {
+    "name": "Stop 55: Lyric Street",
+    "type": "Tram Stop",
+    "lat": -37.7820939,
+    "lon": 144.8912741
+  },
+  {
+    "name": "Footscray (Bay 10)",
+    "type": "Bus Stop",
+    "lat": -37.8001739,
+    "lon": 144.9010337
+  },
+  {
+    "name": "Footscray Plaza Shopping Centre (Bay 6)",
+    "type": "Bus Stop",
+    "lat": -37.8009814,
+    "lon": 144.9000357
+  },
+  {
+    "name": "Footscray Plaza Shopping Centre (Bay 7)",
+    "type": "Bus Stop",
+    "lat": -37.8010074,
+    "lon": 144.9002674
+  },
+  {
+    "name": "Footscray (Bay 8)",
+    "type": "Bus Stop",
+    "lat": -37.801035,
+    "lon": 144.900513
+  },
+  {
+    "name": "Footscray Station (Bay 16)",
+    "type": "Bus Stop",
+    "lat": -37.8012545,
+    "lon": 144.9018144
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7811802,
+    "lon": 144.922577
+  },
+  {
+    "name": "RAS Showgrounds/Langs Rd",
+    "type": "Bus Stop",
+    "lat": -37.7831058,
+    "lon": 144.9073968
+  },
+  {
+    "name": "Cairncross Lane/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.795549,
+    "lon": 144.925039
+  },
+  {
+    "name": "Kensington Station/Macaulay Road",
+    "type": "Bus Stop",
+    "lat": -37.7943578,
+    "lon": 144.9299777
+  },
+  {
+    "name": "Edinburgh St",
+    "type": "Bus Stop",
+    "lat": -37.785309,
+    "lon": 144.9216794
+  },
+  {
+    "name": "All Saints Anglican Church/Charles St",
+    "type": "Bus Stop",
+    "lat": -37.7803381,
+    "lon": 144.9068232
+  },
+  {
+    "name": "Derby Street/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7952106,
+    "lon": 144.9259614
+  },
+  {
+    "name": "Mercantile Parade/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7972978,
+    "lon": 144.9223225
+  },
+  {
+    "name": "Childers Street/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7982718,
+    "lon": 144.9206265
+  },
+  {
+    "name": "Dynon Road/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.8004337,
+    "lon": 144.9168738
+  },
+  {
+    "name": "Moreland Street/Hopkins Street",
+    "type": "Bus Stop",
+    "lat": -37.800753,
+    "lon": 144.9072723
+  },
+  {
+    "name": "Whitehall Street/Hopkins Street",
+    "type": "Bus Stop",
+    "lat": -37.8005567,
+    "lon": 144.905682
+  },
+  {
+    "name": "Sabre Drive/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.8245288,
+    "lon": 144.9065467
+  },
+  {
+    "name": "Bayside Avenue/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.8214558,
+    "lon": 144.9161726
+  },
+  {
+    "name": "DST Group/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.8220779,
+    "lon": 144.9132202
+  },
+  {
+    "name": "Footscray Station (Bay 18)",
+    "type": "Bus Stop",
+    "lat": -37.8011105,
+    "lon": 144.9021493
+  },
+  {
+    "name": "Footscray Station (Bay 17)",
+    "type": "Bus Stop",
+    "lat": -37.8011974,
+    "lon": 144.9019473
+  },
+  {
+    "name": "Footscray Station (Bay 15)",
+    "type": "Bus Stop",
+    "lat": -37.8013194,
+    "lon": 144.9016635
+  },
+  {
+    "name": "Footscray Station (Bay 13)",
+    "type": "Bus Stop",
+    "lat": -37.8013459,
+    "lon": 144.9012907
+  },
+  {
+    "name": "Footscray Station (Bay 14)",
+    "type": "Bus Stop",
+    "lat": -37.8016845,
+    "lon": 144.9004626
+  },
+  {
+    "name": "Leeds Street (Bay 11)",
+    "type": "Bus Stop",
+    "lat": -37.7999832,
+    "lon": 144.902041
+  },
+  {
+    "name": "Leeds Street (Bay 12)",
+    "type": "Bus Stop",
+    "lat": -37.8000446,
+    "lon": 144.9014228
+  },
+  {
+    "name": "Stop 64: Footscray Station",
+    "type": "Tram Stop",
+    "lat": -37.8011698,
+    "lon": 144.9009425
+  },
+  {
+    "name": "Ballarat Road",
+    "type": "Bus Stop",
+    "lat": -37.790677,
+    "lon": 144.8895176
+  },
+  {
+    "name": "Birdwood Street/Gordon Street",
+    "type": "Bus Stop",
+    "lat": -37.785269,
+    "lon": 144.8905452
+  },
+  {
+    "name": "Commercial Road",
+    "type": "Bus Stop",
+    "lat": -37.7920833,
+    "lon": 144.8922829
+  },
+  {
+    "name": "Commercial Road",
+    "type": "Bus Stop",
+    "lat": -37.7921904,
+    "lon": 144.8930608
+  },
+  {
+    "name": "Farnsworth Avenue",
+    "type": "Bus Stop",
+    "lat": -37.7931378,
+    "lon": 144.8940478
+  },
+  {
+    "name": "Farnsworth Avenue",
+    "type": "Bus Stop",
+    "lat": -37.7931845,
+    "lon": 144.894304
+  },
+  {
+    "name": "Geelong Road",
+    "type": "Bus Stop",
+    "lat": -37.7961089,
+    "lon": 144.8967347
+  },
+  {
+    "name": "Geelong Road",
+    "type": "Bus Stop",
+    "lat": -37.7969381,
+    "lon": 144.8972329
+  },
+  {
+    "name": "Gordon Street",
+    "type": "Bus Stop",
+    "lat": -37.7913881,
+    "lon": 144.8904537
+  },
+  {
+    "name": "Gordon Street",
+    "type": "Bus Stop",
+    "lat": -37.7914708,
+    "lon": 144.8901492
+  },
+  {
+    "name": "Highpoint Shopping Centre",
+    "type": "Bus Stop",
+    "lat": -37.7759112,
+    "lon": 144.8863036
+  },
+  {
+    "name": "Highpoint Shopping Centre",
+    "type": "Bus Stop",
+    "lat": -37.7760248,
+    "lon": 144.888426
+  },
+  {
+    "name": "Lindenow Street",
+    "type": "Bus Stop",
+    "lat": -37.7795583,
+    "lon": 144.8846943
+  },
+  {
+    "name": "Lyric Street",
+    "type": "Bus Stop",
+    "lat": -37.7816271,
+    "lon": 144.8914203
+  },
+  {
+    "name": "Macedon Street",
+    "type": "Bus Stop",
+    "lat": -37.7814363,
+    "lon": 144.8912982
+  },
+  {
+    "name": "Monash Street/Gordan Street",
+    "type": "Bus Stop",
+    "lat": -37.7842838,
+    "lon": 144.890913
+  },
+  {
+    "name": "Nicholson Street",
+    "type": "Bus Stop",
+    "lat": -37.7992069,
+    "lon": 144.8991406
+  },
+  {
+    "name": "Nicholson Street",
+    "type": "Bus Stop",
+    "lat": -37.7992822,
+    "lon": 144.8993994
+  },
+  {
+    "name": "River Street",
+    "type": "Bus Stop",
+    "lat": -37.778952,
+    "lon": 144.8849645
+  },
+  {
+    "name": "Stop 51: Highpoint Shopping Centre",
+    "type": "Tram Stop",
+    "lat": -37.7760313,
+    "lon": 144.8856206
+  },
+  {
+    "name": "Stop 51: Highpoint Shopping Centre",
+    "type": "Tram Stop",
+    "lat": -37.776295,
+    "lon": 144.8856071
+  },
+  {
+    "name": "Stop 52: River Street",
+    "type": "Tram Stop",
+    "lat": -37.7784922,
+    "lon": 144.8851856
+  },
+  {
+    "name": "Stop 52: River Street",
+    "type": "Tram Stop",
+    "lat": -37.7792978,
+    "lon": 144.8857119
+  },
+  {
+    "name": "Stop 53: Maribyrnong Secondary College",
+    "type": "Tram Stop",
+    "lat": -37.7795514,
+    "lon": 144.887737
+  },
+  {
+    "name": "Stop 53: Maribyrnong Secondary College",
+    "type": "Tram Stop",
+    "lat": -37.7795578,
+    "lon": 144.8880269
+  },
+  {
+    "name": "Stop 54: Gordon Street",
+    "type": "Tram Stop",
+    "lat": -37.7799445,
+    "lon": 144.890877
+  },
+  {
+    "name": "Stop 54: Gordon Street",
+    "type": "Tram Stop",
+    "lat": -37.7799489,
+    "lon": 144.8911609
+  },
+  {
+    "name": "Stop 58: Ballarat Road",
+    "type": "Tram Stop",
+    "lat": -37.7904514,
+    "lon": 144.8896283
+  },
+  {
+    "name": "Stop 58: Ballarat Road",
+    "type": "Tram Stop",
+    "lat": -37.7905143,
+    "lon": 144.8896556
+  },
+  {
+    "name": "Tiernan Street",
+    "type": "Bus Stop",
+    "lat": -37.794594,
+    "lon": 144.895476
+  },
+  {
+    "name": "Tiernan Street",
+    "type": "Bus Stop",
+    "lat": -37.7947895,
+    "lon": 144.8954331
+  },
+  {
+    "name": "Titch Street",
+    "type": "Bus Stop",
+    "lat": -37.7887994,
+    "lon": 144.890053
+  },
+  {
+    "name": "Williamson Road",
+    "type": "Bus Stop",
+    "lat": -37.7765935,
+    "lon": 144.8852344
+  },
+  {
+    "name": "16 Williamson Road",
+    "type": "Bus Stop",
+    "lat": -37.7752507,
+    "lon": 144.8836172
+  },
+  {
+    "name": "16 Williamson Road",
+    "type": "Bus Stop",
+    "lat": -37.7754224,
+    "lon": 144.8839477
+  },
+  {
+    "name": "Epsom Road",
+    "type": "Bus Stop",
+    "lat": -37.786964,
+    "lon": 144.9215661
+  },
+  {
+    "name": "Stop 32: Sandown Road",
+    "type": "Tram Stop",
+    "lat": -37.7825297,
+    "lon": 144.9165713
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7930678,
+    "lon": 144.8729233
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7926545,
+    "lon": 144.8685728
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7925655,
+    "lon": 144.8686479
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.793195,
+    "lon": 144.8734061
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7941742,
+    "lon": 144.8789019
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7952997,
+    "lon": 144.8811711
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7933985,
+    "lon": 144.87512
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7929004,
+    "lon": 144.8707668
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7927584,
+    "lon": 144.8705013
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7941255,
+    "lon": 144.8785908
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7935384,
+    "lon": 144.877247
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7933073,
+    "lon": 144.8749806
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7951428,
+    "lon": 144.8806481
+  },
+  {
+    "name": "Yarraville Gardens/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8139494,
+    "lon": 144.897406
+  },
+  {
+    "name": "Somerville Road/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8147225,
+    "lon": 144.8970259
+  },
+  {
+    "name": "Simpson St/Fehon St",
+    "type": "Bus Stop",
+    "lat": -37.8170205,
+    "lon": 144.88736
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8170205,
+    "lon": 144.8871874
+  },
+  {
+    "name": "Blackwood St/Fehon St",
+    "type": "Bus Stop",
+    "lat": -37.8184203,
+    "lon": 144.8871095
+  },
+  {
+    "name": "Francis St/Fehon St",
+    "type": "Bus Stop",
+    "lat": -37.820464,
+    "lon": 144.8867682
+  },
+  {
+    "name": "Francis St/Fehon St",
+    "type": "Bus Stop",
+    "lat": -37.820324,
+    "lon": 144.8866505
+  },
+  {
+    "name": "Powell St/Francis St",
+    "type": "Bus Stop",
+    "lat": -37.8204923,
+    "lon": 144.8847181
+  },
+  {
+    "name": "Williamstown Rd/Francis St",
+    "type": "Bus Stop",
+    "lat": -37.8201526,
+    "lon": 144.8817824
+  },
+  {
+    "name": "Williamstown Rd/Francis St",
+    "type": "Bus Stop",
+    "lat": -37.820294,
+    "lon": 144.8814225
+  },
+  {
+    "name": "Severn St/Francis St",
+    "type": "Bus Stop",
+    "lat": -37.8200005,
+    "lon": 144.8790939
+  },
+  {
+    "name": "Severn St/Francis St",
+    "type": "Bus Stop",
+    "lat": -37.8198837,
+    "lon": 144.8793176
+  },
+  {
+    "name": "Francis St/Williamstown Rd",
+    "type": "Bus Stop",
+    "lat": -37.8207864,
+    "lon": 144.8818565
+  },
+  {
+    "name": "Ballarat Street/Francis Street",
+    "type": "Bus Stop",
+    "lat": -37.8211386,
+    "lon": 144.8905877
+  },
+  {
+    "name": "Hughes Street/Francis Street",
+    "type": "Bus Stop",
+    "lat": -37.8212971,
+    "lon": 144.8906734
+  },
+  {
+    "name": "Stephen Street/Francis Street",
+    "type": "Bus Stop",
+    "lat": -37.8213842,
+    "lon": 144.8927442
+  },
+  {
+    "name": "Stephen Street/Francis Street",
+    "type": "Bus Stop",
+    "lat": -37.8214907,
+    "lon": 144.8923613
+  },
+  {
+    "name": "Hyde Street/Francis Street",
+    "type": "Bus Stop",
+    "lat": -37.8216722,
+    "lon": 144.8952929
+  },
+  {
+    "name": "Hyde Street/Francis Street",
+    "type": "Bus Stop",
+    "lat": -37.8218149,
+    "lon": 144.8952255
+  },
+  {
+    "name": "Kent Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8199837,
+    "lon": 144.8960922
+  },
+  {
+    "name": "Little Hyde Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8199598,
+    "lon": 144.8962923
+  },
+  {
+    "name": "York Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8182308,
+    "lon": 144.8965854
+  },
+  {
+    "name": "York Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8181206,
+    "lon": 144.8964237
+  },
+  {
+    "name": "Lennox Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8163772,
+    "lon": 144.8967329
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8166797,
+    "lon": 144.8968584
+  },
+  {
+    "name": "Harris Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8111559,
+    "lon": 144.8984802
+  },
+  {
+    "name": "Princess Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8111803,
+    "lon": 144.8981323
+  },
+  {
+    "name": "Lyons Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8081678,
+    "lon": 144.899552
+  },
+  {
+    "name": "Lyons Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8088018,
+    "lon": 144.8995688
+  },
+  {
+    "name": "Hyde Street/Bristow Street",
+    "type": "Bus Stop",
+    "lat": -37.8067556,
+    "lon": 144.8998747
+  },
+  {
+    "name": "Napier Street/Hyde Street",
+    "type": "Bus Stop",
+    "lat": -37.8047051,
+    "lon": 144.9011345
+  },
+  {
+    "name": "Buckley Street/Albert Street",
+    "type": "Bus Stop",
+    "lat": -37.8044213,
+    "lon": 144.8974364
+  },
+  {
+    "name": "Whitehall Street/Hopkins Street",
+    "type": "Bus Stop",
+    "lat": -37.8003809,
+    "lon": 144.9056891
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8026489,
+    "lon": 144.8847644
+  },
+  {
+    "name": "Footscray Bus Depot/Buckley St",
+    "type": "Bus Stop",
+    "lat": -37.803907,
+    "lon": 144.8964096
+  },
+  {
+    "name": "Summerhill Rd",
+    "type": "Bus Stop",
+    "lat": -37.7977842,
+    "lon": 144.881159
+  },
+  {
+    "name": "Sunshine Road",
+    "type": "Bus Stop",
+    "lat": -37.8011749,
+    "lon": 144.8716466
+  },
+  {
+    "name": "Footscray (Bay 5)",
+    "type": "Bus Stop",
+    "lat": -37.8009335,
+    "lon": 144.8996092
+  },
+  {
+    "name": "Footscray Plaza Shopping Centre (Bay 2)",
+    "type": "Bus Stop",
+    "lat": -37.8008499,
+    "lon": 144.898418
+  },
+  {
+    "name": "Footscray (Bay 1)",
+    "type": "Bus Stop",
+    "lat": -37.8008292,
+    "lon": 144.8982331
+  },
+  {
+    "name": "Gordon St",
+    "type": "Bus Stop",
+    "lat": -37.7986181,
+    "lon": 144.8876898
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7982415,
+    "lon": 144.8843455
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7965322,
+    "lon": 144.8692562
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7961812,
+    "lon": 144.8662351
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7848974,
+    "lon": 144.8923212
+  },
+  {
+    "name": "Kensington Station/Macaulay Road",
+    "type": "Bus Stop",
+    "lat": -37.7944378,
+    "lon": 144.9295104
+  },
+  {
+    "name": "Derby Street/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7947729,
+    "lon": 144.9264161
+  },
+  {
+    "name": "Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7996101,
+    "lon": 144.9183143
+  },
+  {
+    "name": "Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.799261,
+    "lon": 144.9186184
+  },
+  {
+    "name": "Hobsons Road/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7982411,
+    "lon": 144.9203939
+  },
+  {
+    "name": "Dynon Road/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.8003903,
+    "lon": 144.9166611
+  },
+  {
+    "name": "Kensington Road/Dynon Road",
+    "type": "Bus Stop",
+    "lat": -37.8013903,
+    "lon": 144.914426
+  },
+  {
+    "name": "Moreland Street/Hopkins Street",
+    "type": "Bus Stop",
+    "lat": -37.8005655,
+    "lon": 144.9073405
+  },
+  {
+    "name": "Train Replacement Bus & Coach Stop",
+    "type": "Bus Stop",
+    "lat": -37.8019286,
+    "lon": 144.9002708
+  },
+  {
+    "name": "Nicholson Street/Irving Street",
+    "type": "Bus Stop",
+    "lat": -37.8020902,
+    "lon": 144.8983008
+  },
+  {
+    "name": "Nicholson Street/Irving Street",
+    "type": "Bus Stop",
+    "lat": -37.8021273,
+    "lon": 144.8984188
+  },
+  {
+    "name": "Footscray Plaza Shopping Centre/French Street",
+    "type": "Bus Stop",
+    "lat": -37.8011652,
+    "lon": 144.8970254
+  },
+  {
+    "name": "Footscray Station (Bay 20)",
+    "type": "Bus Stop",
+    "lat": -37.8009765,
+    "lon": 144.9024609
+  },
+  {
+    "name": "Footscray Station (Bay 19)",
+    "type": "Bus Stop",
+    "lat": -37.8010266,
+    "lon": 144.9023444
+  },
+  {
+    "name": "Footscray (Bay 4)",
+    "type": "Bus Stop",
+    "lat": -37.8009077,
+    "lon": 144.8989351
+  },
+  {
+    "name": "Footscray (Bay 2)",
+    "type": "Bus Stop",
+    "lat": -37.8008762,
+    "lon": 144.8986536
+  },
+  {
+    "name": "Sims Street/Dynon Road",
+    "type": "Bus Stop",
+    "lat": -37.8015197,
+    "lon": 144.9136702
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8035547,
+    "lon": 144.9320269
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8038556,
+    "lon": 144.9324211
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.802859,
+    "lon": 144.9278198
+  },
+  {
+    "name": "Lloyd Street/Dynon Road",
+    "type": "Bus Stop",
+    "lat": -37.803259,
+    "lon": 144.9298643
+  },
+  {
+    "name": "Dp world. Get to port",
+    "type": "Bus Stop",
+    "lat": -37.8146382,
+    "lon": 144.9088009
+  },
+  {
+    "name": "Flemington Racecourse",
+    "type": "Bus Stop",
+    "lat": -37.7889807,
+    "lon": 144.9037966
+  },
+  {
+    "name": "Flemington Racecourse",
+    "type": "Bus Stop",
+    "lat": -37.7894473,
+    "lon": 144.9037274
+  },
+  {
+    "name": "James St/Charles St",
+    "type": "Bus Stop",
+    "lat": -37.7803454,
+    "lon": 144.9069525
+  },
+  {
+    "name": "Monash St/Chauvel St",
+    "type": "Bus Stop",
+    "lat": -37.7815737,
+    "lon": 144.9068178
+  },
+  {
+    "name": "Elliott St/Chauvel St",
+    "type": "Bus Stop",
+    "lat": -37.7819013,
+    "lon": 144.9072726
+  },
+  {
+    "name": "RAS Showgrounds/Langs Rd",
+    "type": "Bus Stop",
+    "lat": -37.7827701,
+    "lon": 144.9077013
+  },
+  {
+    "name": "74 Francis St",
+    "type": "Bus Stop",
+    "lat": -37.7771045,
+    "lon": 144.9178713
+  },
+  {
+    "name": "67 Francis St",
+    "type": "Bus Stop",
+    "lat": -37.7772026,
+    "lon": 144.917878
+  },
+  {
+    "name": "Union Rd/Francis St",
+    "type": "Bus Stop",
+    "lat": -37.7769632,
+    "lon": 144.9155442
+  },
+  {
+    "name": "Union Rd/Miriams St",
+    "type": "Bus Stop",
+    "lat": -37.7767977,
+    "lon": 144.915099
+  },
+  {
+    "name": "Epsom Rd/Miriams St",
+    "type": "Bus Stop",
+    "lat": -37.7765593,
+    "lon": 144.911446
+  },
+  {
+    "name": "Epsom Rd/Miriams St",
+    "type": "Bus Stop",
+    "lat": -37.7766553,
+    "lon": 144.9115043
+  },
+  {
+    "name": "Epsom Rd/Charles St",
+    "type": "Bus Stop",
+    "lat": -37.7775428,
+    "lon": 144.9115529
+  },
+  {
+    "name": "Epsom Rd/Charles St",
+    "type": "Bus Stop",
+    "lat": -37.7778152,
+    "lon": 144.911266
+  },
+  {
+    "name": "Kirk St",
+    "type": "Bus Stop",
+    "lat": -37.7789597,
+    "lon": 144.9093329
+  },
+  {
+    "name": "Kirk St",
+    "type": "Bus Stop",
+    "lat": -37.7787512,
+    "lon": 144.9095076
+  },
+  {
+    "name": "Westside Avenue/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.8208768,
+    "lon": 144.9190245
+  },
+  {
+    "name": "Westside Avenue/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.8211122,
+    "lon": 144.9185367
+  },
+  {
+    "name": "DST Group/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.821853,
+    "lon": 144.9133781
+  },
+  {
+    "name": "Bayside Avenue/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.8212481,
+    "lon": 144.9164633
+  },
+  {
+    "name": "Sabre Drive/Lorimer Street",
+    "type": "Bus Stop",
+    "lat": -37.8246388,
+    "lon": 144.9066552
+  },
+  {
+    "name": "Gatehouse Dr/Smithfield Rd",
+    "type": "Bus Stop",
+    "lat": -37.7908895,
+    "lon": 144.9200473
+  },
+  {
+    "name": "Gatehouse Dr/Smithfield Rd",
+    "type": "Bus Stop",
+    "lat": -37.7918449,
+    "lon": 144.9189391
+  },
+  {
+    "name": "Mercantile Parade/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7971055,
+    "lon": 144.9223715
+  },
+  {
+    "name": "Altona Street/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.7961861,
+    "lon": 144.9242648
+  },
+  {
+    "name": "Devon Street/Kensington Road",
+    "type": "Bus Stop",
+    "lat": -37.796362,
+    "lon": 144.9236549
+  },
+  {
+    "name": "Buckley Street",
+    "type": "Bus Stop",
+    "lat": -37.8039047,
+    "lon": 144.8989048
+  },
+  {
+    "name": "Irving Street",
+    "type": "Bus Stop",
+    "lat": -37.8029563,
+    "lon": 144.8989073
+  },
+  {
+    "name": "Cowper Street",
+    "type": "Bus Stop",
+    "lat": -37.8044703,
+    "lon": 144.9023705
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8164024,
+    "lon": 144.881307
+  },
+  {
+    "name": "Yarraville Oval",
+    "type": "Bus Stop",
+    "lat": -37.8158921,
+    "lon": 144.8833084
+  },
+  {
+    "name": "High Street",
+    "type": "Bus Stop",
+    "lat": -37.8159791,
+    "lon": 144.8797882
+  },
+  {
+    "name": "Yarraville Oval",
+    "type": "Bus Stop",
+    "lat": -37.8157551,
+    "lon": 144.8834619
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.81628,
+    "lon": 144.8813841
+  },
+  {
+    "name": "Donald Street",
+    "type": "Bus Stop",
+    "lat": -37.7979357,
+    "lon": 144.903691
+  },
+  {
+    "name": "Donald Street",
+    "type": "Bus Stop",
+    "lat": -37.7985389,
+    "lon": 144.9037479
+  },
+  {
+    "name": "Lynch Street",
+    "type": "Bus Stop",
+    "lat": -37.7964613,
+    "lon": 144.9041209
+  },
+  {
+    "name": "Footscray Park",
+    "type": "Bus Stop",
+    "lat": -37.7952189,
+    "lon": 144.9061206
+  },
+  {
+    "name": "Barkly Street",
+    "type": "Bus Stop",
+    "lat": -37.7980016,
+    "lon": 144.8882269
+  },
+  {
+    "name": "Summerhill Road",
+    "type": "Bus Stop",
+    "lat": -37.7884188,
+    "lon": 144.8824675
+  },
+  {
+    "name": "Eleanor Street",
+    "type": "Bus Stop",
+    "lat": -37.7896901,
+    "lon": 144.8856021
+  },
+  {
+    "name": "Barkly Street",
+    "type": "Bus Stop",
+    "lat": -37.7981647,
+    "lon": 144.8883653
+  },
+  {
+    "name": "Geelong Road",
+    "type": "Bus Stop",
+    "lat": -37.7988787,
+    "lon": 144.8912516
+  },
+  {
+    "name": "Thomson Street",
+    "type": "Bus Stop",
+    "lat": -37.7856527,
+    "lon": 144.8756569
+  },
+  {
+    "name": "Gordon Street",
+    "type": "Bus Stop",
+    "lat": -37.7962557,
+    "lon": 144.8882193
+  },
+  {
+    "name": "Rosamond Road",
+    "type": "Bus Stop",
+    "lat": -37.7882998,
+    "lon": 144.8825682
+  },
+  {
+    "name": "Short Street",
+    "type": "Bus Stop",
+    "lat": -37.7855687,
+    "lon": 144.875832
+  },
+  {
+    "name": "Studley Street",
+    "type": "Bus Stop",
+    "lat": -37.7871862,
+    "lon": 144.8794358
+  },
+  {
+    "name": "Eleanor Street",
+    "type": "Bus Stop",
+    "lat": -37.7895254,
+    "lon": 144.8855934
+  },
+  {
+    "name": "Shepherd Street",
+    "type": "Bus Stop",
+    "lat": -37.7944016,
+    "lon": 144.8890091
+  },
+  {
+    "name": "Pullar Street",
+    "type": "Bus Stop",
+    "lat": -37.7842369,
+    "lon": 144.8725384
+  },
+  {
+    "name": "Geelong Road",
+    "type": "Bus Stop",
+    "lat": -37.7987598,
+    "lon": 144.8915035
+  },
+  {
+    "name": "Footscray Hospital",
+    "type": "Bus Stop",
+    "lat": -37.7921539,
+    "lon": 144.8892498
+  },
+  {
+    "name": "Richelieu Street",
+    "type": "Bus Stop",
+    "lat": -37.7843978,
+    "lon": 144.872565
+  },
+  {
+    "name": "Shepherd Street",
+    "type": "Bus Stop",
+    "lat": -37.7949873,
+    "lon": 144.8887498
+  },
+  {
+    "name": "Park Street",
+    "type": "Bus Stop",
+    "lat": -37.7904977,
+    "lon": 144.8879723
+  },
+  {
+    "name": "Havelock Street",
+    "type": "Bus Stop",
+    "lat": -37.7871205,
+    "lon": 144.8796548
+  },
+  {
+    "name": "Footscray Hospital",
+    "type": "Bus Stop",
+    "lat": -37.7924601,
+    "lon": 144.8893744
+  },
+  {
+    "name": "Essex Street",
+    "type": "Bus Stop",
+    "lat": -37.7965383,
+    "lon": 144.8884932
+  },
+  {
+    "name": "Somerville Road",
+    "type": "Bus Stop",
+    "lat": -37.8127216,
+    "lon": 144.8803784
+  },
+  {
+    "name": "Hamilton Street",
+    "type": "Bus Stop",
+    "lat": -37.8130725,
+    "lon": 144.8863817
+  },
+  {
+    "name": "St Pauls Church",
+    "type": "Bus Stop",
+    "lat": -37.811987,
+    "lon": 144.8755429
+  },
+  {
+    "name": "Albion Street",
+    "type": "Bus Stop",
+    "lat": -37.8114141,
+    "lon": 144.871714
+  },
+  {
+    "name": "Somerville Road",
+    "type": "Bus Stop",
+    "lat": -37.8129031,
+    "lon": 144.8892394
+  },
+  {
+    "name": "Tuppen Street",
+    "type": "Bus Stop",
+    "lat": -37.8122964,
+    "lon": 144.8783554
+  },
+  {
+    "name": "Kingsville Street",
+    "type": "Bus Stop",
+    "lat": -37.8121053,
+    "lon": 144.8778927
+  },
+  {
+    "name": "Gamon Street",
+    "type": "Bus Stop",
+    "lat": -37.8065865,
+    "lon": 144.8906145
+  },
+  {
+    "name": "Somerville Rd/Geelong Rd",
+    "type": "Bus Stop",
+    "lat": -37.811559,
+    "lon": 144.8688391
+  },
+  {
+    "name": "Pilgrim Street",
+    "type": "Bus Stop",
+    "lat": -37.8052511,
+    "lon": 144.8919886
+  },
+  {
+    "name": "Somerville Road",
+    "type": "Bus Stop",
+    "lat": -37.8125878,
+    "lon": 144.8802791
+  },
+  {
+    "name": "Somerville Road",
+    "type": "Bus Stop",
+    "lat": -37.8130754,
+    "lon": 144.883302
+  },
+  {
+    "name": "Bishop Street",
+    "type": "Bus Stop",
+    "lat": -37.8117978,
+    "lon": 144.8751812
+  },
+  {
+    "name": "Austin Street",
+    "type": "Bus Stop",
+    "lat": -37.8055266,
+    "lon": 144.8920808
+  },
+  {
+    "name": "Seddon Street",
+    "type": "Bus Stop",
+    "lat": -37.8087543,
+    "lon": 144.8899509
+  },
+  {
+    "name": "O'Farrell Street",
+    "type": "Bus Stop",
+    "lat": -37.8103874,
+    "lon": 144.8896804
+  },
+  {
+    "name": "Station Road",
+    "type": "Bus Stop",
+    "lat": -37.8067878,
+    "lon": 144.8903041
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7849654,
+    "lon": 144.9219111
+  },
+  {
+    "name": "Epsom Road",
+    "type": "Bus Stop",
+    "lat": -37.7868691,
+    "lon": 144.9214113
+  },
+  {
+    "name": "Dover Street",
+    "type": "Bus Stop",
+    "lat": -37.7826004,
+    "lon": 144.9223182
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7952525,
+    "lon": 144.9086251
+  },
+  {
+    "name": "Stirling Street",
+    "type": "Bus Stop",
+    "lat": -37.7960408,
+    "lon": 144.9040236
+  },
+  {
+    "name": "Footscray Park",
+    "type": "Bus Stop",
+    "lat": -37.7949592,
+    "lon": 144.9062045
+  },
+  {
+    "name": "Jamieson Avenue",
+    "type": "Bus Stop",
+    "lat": -37.7956629,
+    "lon": 144.9100805
+  },
+  {
+    "name": "Victoria Street",
+    "type": "Bus Stop",
+    "lat": -37.8065742,
+    "lon": 144.8915739
+  },
+  {
+    "name": "Kingston Avenue",
+    "type": "Bus Stop",
+    "lat": -37.7845243,
+    "lon": 144.9054291
+  },
+  {
+    "name": "Kingston Avenue",
+    "type": "Bus Stop",
+    "lat": -37.784758,
+    "lon": 144.905508
+  },
+  {
+    "name": "Leonard Crescent",
+    "type": "Bus Stop",
+    "lat": -37.7863826,
+    "lon": 144.9050462
+  },
+  {
+    "name": "Leonard Crescent",
+    "type": "Bus Stop",
+    "lat": -37.7865407,
+    "lon": 144.9051759
+  },
+  {
+    "name": "Roberts St/Geelong Rd",
+    "type": "Bus Stop",
+    "lat": -37.8101857,
+    "lon": 144.8709077
+  },
+  {
+    "name": "Ormond Rd",
+    "type": "Bus Stop",
+    "lat": -37.8084908,
+    "lon": 144.8739735
+  },
+  {
+    "name": "Bishop St",
+    "type": "Bus Stop",
+    "lat": -37.8080067,
+    "lon": 144.8755146
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8093388,
+    "lon": 144.8731672
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8075708,
+    "lon": 144.8704644
+  },
+  {
+    "name": "Beaumont Pde",
+    "type": "Bus Stop",
+    "lat": -37.8076547,
+    "lon": 144.8702634
+  },
+  {
+    "name": "Epsom Road",
+    "type": "Bus Stop",
+    "lat": -37.7894209,
+    "lon": 144.9222787
+  },
+  {
+    "name": "Epsom Road",
+    "type": "Bus Stop",
+    "lat": -37.7895847,
+    "lon": 144.9224489
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8066552,
+    "lon": 144.8773881
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7963985,
+    "lon": 144.8689683
+  },
+  {
+    "name": "Bayview Rd/Somerville Rd",
+    "type": "Bus Stop",
+    "lat": -37.812861,
+    "lon": 144.8844658
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8122331,
+    "lon": 144.8836712
+  },
+  {
+    "name": "Wales Street",
+    "type": "Bus Stop",
+    "lat": -37.8058124,
+    "lon": 144.8796547
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8070716,
+    "lon": 144.8772456
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7851691,
+    "lon": 144.8945203
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.7850989,
+    "lon": 144.8950377
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8053894,
+    "lon": 144.8797707
+  },
+  {
+    "name": "Footscray City College",
+    "type": "Bus Stop",
+    "lat": -37.7909758,
+    "lon": 144.8947606
+  },
+  {
+    "name": "Footscray City College/Farnsworth Avenue",
+    "type": "Bus Stop",
+    "lat": -37.7917039,
+    "lon": 144.8948008
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8078332,
+    "lon": 144.8845169
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8022725,
+    "lon": 144.8840857
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8023761,
+    "lon": 144.8834676
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8052013,
+    "lon": 144.8709097
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8043352,
+    "lon": 144.8709159
+  },
+  {
+    "name": "Unnamed",
+    "type": "Bus Stop",
+    "lat": -37.8029684,
+    "lon": 144.8843653
+  }
+]

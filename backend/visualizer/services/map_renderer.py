@@ -13,6 +13,7 @@ import folium
 import os
 import pandas as pd
 
+from backend.visualizer.services.pt.pt_locations import add_transport_icons
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES, LOCATION_CENTERS
 from backend.visualizer.utils.tooltip_box import generate_tooltip_html
 from backend.visualizer.utils.map_shapes import add_zone_circle
@@ -74,5 +75,8 @@ def render_heatmap_map(df, selected_type, label, time_filter):
     base_map.get_root().html.add_child(
         generate_description_box(label, time_filter or "All", selected_type, df["Location"].unique())
     )
+
+    # 🚌 Add public transport logos
+    add_transport_icons(base_map)  # ✅ NEW
 
     return base_map
