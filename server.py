@@ -65,14 +65,12 @@ def api_generate_heatmap():
         time_filter = data.get('time')
         traffic_type = data.get('traffic_type')
 
-        # 🔁 Generate heatmap (this already saves to DB)
         generate_heatmap(
             date_filter=date_filter,
             time_filter=time_filter,
             selected_type=traffic_type,
         )
 
-        # 🌐 Base URL handling (localhost or production)
         base_url = request.host_url.rstrip('/')
         if "localhost" in base_url or "127.0.0.1" in base_url:
             heatmap_url = f"{base_url}/heatmaps/heatmap_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
@@ -109,10 +107,41 @@ def api_summary_stats():
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# 🧩 Allow iframe embedding (for Flutter Web)
+# 📈 Return seasonal stats for 4 seasons (based on date/time/type)
+@app.route('/api/seasonal_stats', methods=['POST'])
+def api_seasonal_stats():
+    try:
+        from backend.analytics.season_stats.season_stats import get_seasonal_stats
+
+        data = request.get_json()
+        year = int(data.get("year"))
+        time = data.get("time")
+        traffic_type = data.get("traffic_type")
+
+        result = get_seasonal_stats(year, time, traffic_type)
+        return jsonify(result), 200
+
+    except Exception as e:
+        print("❌ Error in seasonal_stats API:")
+        traceback.print_exc()
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# ✅ Handle preflight OPTIONS for /api/seasonal_stats
+@app.route('/api/seasonal_stats', methods=['OPTIONS'])
+def handle_options_seasonal():
+    response = jsonify({'status': 'ok'})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+    response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+    return response
+
+# 🌍 Global CORS & iframe policy
 @app.after_request
-def allow_iframe(response):
+def apply_cors_headers(response):
     response.headers['X-Frame-Options'] = 'ALLOWALL'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     return response
 
 # ▶️ Start the server
