@@ -25,7 +25,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_ca60630c65b68399eb39dace44bee74f {
+                #map_2cfa7d0cd14d5b01c881433aabd75eaf {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -55,21 +55,21 @@
         ">
             <b style="color:#0275d8;">ℹ️ Heatmap Info</b><br>
             <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
-            <b>🌦️ Season:</b> N/A<br>
-            <b>🗓️ Date:</b> Default Map<br>
-            <b>🕒 Time:</b> All<br>
-            <b>📊 Type:</b> Pedestrian<br>
+            <b>🌦️ Season:</b> Autumn<br>
+            <b>🗓️ Date:</b> 2025-03-02<br>
+            <b>🕒 Time:</b> 07:00 - 08:00<br>
+            <b>📊 Type:</b> Vehicle<br>
         </div>
     
     
-            <div class="folium-map" id="map_ca60630c65b68399eb39dace44bee74f" ></div>
+            <div class="folium-map" id="map_2cfa7d0cd14d5b01c881433aabd75eaf" ></div>
         
 </body>
 <script>
     
     
-            var map_ca60630c65b68399eb39dace44bee74f = L.map(
-                "map_ca60630c65b68399eb39dace44bee74f",
+            var map_2cfa7d0cd14d5b01c881433aabd75eaf = L.map(
+                "map_2cfa7d0cd14d5b01c881433aabd75eaf",
                 {
                     center: [-37.7975, 144.8876],
                     crs: L.CRS.EPSG3857,
@@ -106,7 +106,7 @@
 
         
     
-            var tile_layer_1be8208ff7e917dc2fae8ee5efbe0688 = L.tileLayer(
+            var tile_layer_bbdad3be5712290f7ea8ee65bf45a2df = L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
                 {
   "minZoom": 15,
@@ -123,16 +123,16 @@
             );
         
     
-            tile_layer_1be8208ff7e917dc2fae8ee5efbe0688.addTo(map_ca60630c65b68399eb39dace44bee74f);
+            tile_layer_bbdad3be5712290f7ea8ee65bf45a2df.addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var circle_7cb87df22e0fa2d14b4d811872006a32 = L.circle(
+            var circle_371a85c6f1b4f1dd0efb430ce0268a2b = L.circle(
                 [-37.800791, 144.897828],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_7cb87df22e0fa2d14b4d811872006a32.bindTooltip(
+            circle_371a85c6f1b4f1dd0efb430ce0268a2b.bindTooltip(
                 `<div>
                      
     <div style="
@@ -153,8 +153,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -163,7 +163,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -176,11 +176,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -196,32 +196,32 @@
             );
         
     
-            var marker_8af602aa2eb8ba1513391e6cf2489f45 = L.marker(
+            var marker_7dbb93ebc0445f6281b22c750f9bb96b = L.marker(
                 [-37.800791, 144.897828],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_741e9a388d5766100c32fbe7bab7c726 = L.divIcon({
+            var div_icon_4a6db49199672d243423bcb18327670c = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_8af602aa2eb8ba1513391e6cf2489f45.setIcon(div_icon_741e9a388d5766100c32fbe7bab7c726);
+            marker_7dbb93ebc0445f6281b22c750f9bb96b.setIcon(div_icon_4a6db49199672d243423bcb18327670c);
         
     
-                marker_8af602aa2eb8ba1513391e6cf2489f45.setIcon(div_icon_741e9a388d5766100c32fbe7bab7c726);
+                marker_7dbb93ebc0445f6281b22c750f9bb96b.setIcon(div_icon_4a6db49199672d243423bcb18327670c);
             
     
-            var circle_b71d788c5f2cbe4b927fb9b2e91461ed = L.circle(
+            var circle_0e50baa8874ddb01c7d999db032227e2 = L.circle(
                 [-37.800195, 144.902611],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_b71d788c5f2cbe4b927fb9b2e91461ed.bindTooltip(
+            circle_0e50baa8874ddb01c7d999db032227e2.bindTooltip(
                 `<div>
                      
     <div style="
@@ -242,8 +242,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -252,7 +252,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -265,11 +265,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -285,32 +285,32 @@
             );
         
     
-            var marker_f030edab668128d9777c5283b6e7cfcc = L.marker(
+            var marker_f4137fb58afe60af16ee38b5e1ec39f4 = L.marker(
                 [-37.800195, 144.902611],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_fa4e6e4f7fb5924dce540973f23f55d3 = L.divIcon({
+            var div_icon_7c9a37a8af7300f44a637f7f56f600fb = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_f030edab668128d9777c5283b6e7cfcc.setIcon(div_icon_fa4e6e4f7fb5924dce540973f23f55d3);
+            marker_f4137fb58afe60af16ee38b5e1ec39f4.setIcon(div_icon_7c9a37a8af7300f44a637f7f56f600fb);
         
     
-                marker_f030edab668128d9777c5283b6e7cfcc.setIcon(div_icon_fa4e6e4f7fb5924dce540973f23f55d3);
+                marker_f4137fb58afe60af16ee38b5e1ec39f4.setIcon(div_icon_7c9a37a8af7300f44a637f7f56f600fb);
             
     
-            var circle_dc0deead7d886ad4682e8bdcbe68dc9c = L.circle(
+            var circle_c71e2c4058a16887899d1816e1e37f07 = L.circle(
                 [-37.800034, 144.901267],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_dc0deead7d886ad4682e8bdcbe68dc9c.bindTooltip(
+            circle_c71e2c4058a16887899d1816e1e37f07.bindTooltip(
                 `<div>
                      
     <div style="
@@ -331,8 +331,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -341,7 +341,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -354,11 +354,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -374,32 +374,32 @@
             );
         
     
-            var marker_233b53626e82e9a3c6e71507a124dce4 = L.marker(
+            var marker_abd7178413cdb84ac30fd6326e413d6f = L.marker(
                 [-37.800034, 144.901267],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_9127a4250f3a53e7924b8580262eeea7 = L.divIcon({
+            var div_icon_a1211a5df9c1dea9e2d2bfd4504929fa = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_233b53626e82e9a3c6e71507a124dce4.setIcon(div_icon_9127a4250f3a53e7924b8580262eeea7);
+            marker_abd7178413cdb84ac30fd6326e413d6f.setIcon(div_icon_a1211a5df9c1dea9e2d2bfd4504929fa);
         
     
-                marker_233b53626e82e9a3c6e71507a124dce4.setIcon(div_icon_9127a4250f3a53e7924b8580262eeea7);
+                marker_abd7178413cdb84ac30fd6326e413d6f.setIcon(div_icon_a1211a5df9c1dea9e2d2bfd4504929fa);
             
     
-            var circle_1d33158c41778abff0ce5f249d6b60fe = L.circle(
+            var circle_26eab2d4d6ed201533efc38120d56d7e = L.circle(
                 [-37.804216, 144.898786],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_1d33158c41778abff0ce5f249d6b60fe.bindTooltip(
+            circle_26eab2d4d6ed201533efc38120d56d7e.bindTooltip(
                 `<div>
                      
     <div style="
@@ -420,8 +420,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -430,7 +430,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -443,11 +443,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -463,32 +463,32 @@
             );
         
     
-            var marker_9650ddb9e67b3ad6ee5cbd77c45b6e8f = L.marker(
+            var marker_30b1804dbb677b614e17ea0cde5aae27 = L.marker(
                 [-37.804216, 144.898786],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_b74c560dfa64ee572bea186816907027 = L.divIcon({
+            var div_icon_b7485166552e713640a6b3584d634a0b = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_9650ddb9e67b3ad6ee5cbd77c45b6e8f.setIcon(div_icon_b74c560dfa64ee572bea186816907027);
+            marker_30b1804dbb677b614e17ea0cde5aae27.setIcon(div_icon_b7485166552e713640a6b3584d634a0b);
         
     
-                marker_9650ddb9e67b3ad6ee5cbd77c45b6e8f.setIcon(div_icon_b74c560dfa64ee572bea186816907027);
+                marker_30b1804dbb677b614e17ea0cde5aae27.setIcon(div_icon_b7485166552e713640a6b3584d634a0b);
             
     
-            var circle_6134e58bd3559581940f9081afc1deb7 = L.circle(
+            var circle_86f35fb12d920c50e15f8e5565e17d93 = L.circle(
                 [-37.79083, 144.902119],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_6134e58bd3559581940f9081afc1deb7.bindTooltip(
+            circle_86f35fb12d920c50e15f8e5565e17d93.bindTooltip(
                 `<div>
                      
     <div style="
@@ -509,8 +509,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -519,7 +519,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -532,11 +532,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -552,32 +552,32 @@
             );
         
     
-            var marker_33d7d4edb04513995cf095b65efc0ceb = L.marker(
+            var marker_192b814cecc82cff9dad10c44d965c6b = L.marker(
                 [-37.79083, 144.902119],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_5e71387cee742caf9acde56d88c79e68 = L.divIcon({
+            var div_icon_d508d1845c39528fc5b81c10829dd58b = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_33d7d4edb04513995cf095b65efc0ceb.setIcon(div_icon_5e71387cee742caf9acde56d88c79e68);
+            marker_192b814cecc82cff9dad10c44d965c6b.setIcon(div_icon_d508d1845c39528fc5b81c10829dd58b);
         
     
-                marker_33d7d4edb04513995cf095b65efc0ceb.setIcon(div_icon_5e71387cee742caf9acde56d88c79e68);
+                marker_192b814cecc82cff9dad10c44d965c6b.setIcon(div_icon_d508d1845c39528fc5b81c10829dd58b);
             
     
-            var circle_750b3e9aa2fb6e83dbff4c12bf6386f9 = L.circle(
+            var circle_6faacfcb9e31bfa80b22a42ee334c283 = L.circle(
                 [-37.793248, 144.905659],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_750b3e9aa2fb6e83dbff4c12bf6386f9.bindTooltip(
+            circle_6faacfcb9e31bfa80b22a42ee334c283.bindTooltip(
                 `<div>
                      
     <div style="
@@ -598,8 +598,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -608,7 +608,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -621,11 +621,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -641,32 +641,32 @@
             );
         
     
-            var marker_9c6f30cbb7129b22a0714aaa27217799 = L.marker(
+            var marker_1c49d37dbb091c996c0186ee005c6e52 = L.marker(
                 [-37.793248, 144.905659],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_587f95614bf72cfbf74b0c2db44c16c7 = L.divIcon({
+            var div_icon_5cbc1eac68527d691137e853fd537697 = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_9c6f30cbb7129b22a0714aaa27217799.setIcon(div_icon_587f95614bf72cfbf74b0c2db44c16c7);
+            marker_1c49d37dbb091c996c0186ee005c6e52.setIcon(div_icon_5cbc1eac68527d691137e853fd537697);
         
     
-                marker_9c6f30cbb7129b22a0714aaa27217799.setIcon(div_icon_587f95614bf72cfbf74b0c2db44c16c7);
+                marker_1c49d37dbb091c996c0186ee005c6e52.setIcon(div_icon_5cbc1eac68527d691137e853fd537697);
             
     
-            var circle_0dc09b575a4856cf2a671ff4b1b1ccaf = L.circle(
+            var circle_32f819cb87ef4f7740db5e12502cd354 = L.circle(
                 [-37.80118, 144.901592],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_0dc09b575a4856cf2a671ff4b1b1ccaf.bindTooltip(
+            circle_32f819cb87ef4f7740db5e12502cd354.bindTooltip(
                 `<div>
                      
     <div style="
@@ -687,8 +687,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -697,7 +697,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -710,11 +710,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -730,32 +730,32 @@
             );
         
     
-            var marker_9ba099695dff33dfe2ab7a3a1cc11baa = L.marker(
+            var marker_e93bd78215fe3c6897a1e447acbc18ab = L.marker(
                 [-37.80118, 144.901592],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_143cf86fc4a9628abdd155f5159006ff = L.divIcon({
+            var div_icon_fc502746f08498955be5ed164047ed64 = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_9ba099695dff33dfe2ab7a3a1cc11baa.setIcon(div_icon_143cf86fc4a9628abdd155f5159006ff);
+            marker_e93bd78215fe3c6897a1e447acbc18ab.setIcon(div_icon_fc502746f08498955be5ed164047ed64);
         
     
-                marker_9ba099695dff33dfe2ab7a3a1cc11baa.setIcon(div_icon_143cf86fc4a9628abdd155f5159006ff);
+                marker_e93bd78215fe3c6897a1e447acbc18ab.setIcon(div_icon_fc502746f08498955be5ed164047ed64);
             
     
-            var circle_0f9383b6d1d98212686b5af2362beb86 = L.circle(
+            var circle_e2c9504d26762be2e0e9a90584f761b8 = L.circle(
                 [-37.800925, 144.899215],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_0f9383b6d1d98212686b5af2362beb86.bindTooltip(
+            circle_e2c9504d26762be2e0e9a90584f761b8.bindTooltip(
                 `<div>
                      
     <div style="
@@ -776,8 +776,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -786,7 +786,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -799,11 +799,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -819,32 +819,32 @@
             );
         
     
-            var marker_b0e86697375d28ed5d23d170269febfb = L.marker(
+            var marker_e0af28f204f61389f0c20d783321ddf7 = L.marker(
                 [-37.800925, 144.899215],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_37b574e6cf8dbc9fffe7c55fa0406919 = L.divIcon({
+            var div_icon_c38d16d257e6e7d4d73b25666103c2e6 = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_b0e86697375d28ed5d23d170269febfb.setIcon(div_icon_37b574e6cf8dbc9fffe7c55fa0406919);
+            marker_e0af28f204f61389f0c20d783321ddf7.setIcon(div_icon_c38d16d257e6e7d4d73b25666103c2e6);
         
     
-                marker_b0e86697375d28ed5d23d170269febfb.setIcon(div_icon_37b574e6cf8dbc9fffe7c55fa0406919);
+                marker_e0af28f204f61389f0c20d783321ddf7.setIcon(div_icon_c38d16d257e6e7d4d73b25666103c2e6);
             
     
-            var circle_a79256508386448d78df507c3b2d9a8b = L.circle(
+            var circle_21e66aa99683533b263aa756927f560d = L.circle(
                 [-37.7975982, 144.8755734],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_a79256508386448d78df507c3b2d9a8b.bindTooltip(
+            circle_21e66aa99683533b263aa756927f560d.bindTooltip(
                 `<div>
                      
     <div style="
@@ -865,8 +865,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -875,7 +875,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -888,11 +888,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -908,32 +908,32 @@
             );
         
     
-            var marker_dc48590165923cdb93518416e7434d50 = L.marker(
+            var marker_38191fb68dcb426acf8e700b9090e469 = L.marker(
                 [-37.7975982, 144.8755734],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_134dd9fe12721f866ff15212a8c0fdb1 = L.divIcon({
+            var div_icon_4cad29cec6426f05d043007d9087e013 = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_dc48590165923cdb93518416e7434d50.setIcon(div_icon_134dd9fe12721f866ff15212a8c0fdb1);
+            marker_38191fb68dcb426acf8e700b9090e469.setIcon(div_icon_4cad29cec6426f05d043007d9087e013);
         
     
-                marker_dc48590165923cdb93518416e7434d50.setIcon(div_icon_134dd9fe12721f866ff15212a8c0fdb1);
+                marker_38191fb68dcb426acf8e700b9090e469.setIcon(div_icon_4cad29cec6426f05d043007d9087e013);
             
     
-            var circle_f8010beb502e86f96839886b3535ca8d = L.circle(
+            var circle_257e543f5eb6193c102094407e972e59 = L.circle(
                 [-37.799949, 144.899409],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_f8010beb502e86f96839886b3535ca8d.bindTooltip(
+            circle_257e543f5eb6193c102094407e972e59.bindTooltip(
                 `<div>
                      
     <div style="
@@ -954,8 +954,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -964,7 +964,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -977,11 +977,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -997,32 +997,32 @@
             );
         
     
-            var marker_e2d9960c10675c943b78b9f4513bded1 = L.marker(
+            var marker_0b56cc2a4c620a3fcf6c43a05e28e2bb = L.marker(
                 [-37.799949, 144.899409],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_2d11e9cb649ba64b57967d26ce84e592 = L.divIcon({
+            var div_icon_bdc17c4b92657b8b50ec82afd37c7333 = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_e2d9960c10675c943b78b9f4513bded1.setIcon(div_icon_2d11e9cb649ba64b57967d26ce84e592);
+            marker_0b56cc2a4c620a3fcf6c43a05e28e2bb.setIcon(div_icon_bdc17c4b92657b8b50ec82afd37c7333);
         
     
-                marker_e2d9960c10675c943b78b9f4513bded1.setIcon(div_icon_2d11e9cb649ba64b57967d26ce84e592);
+                marker_0b56cc2a4c620a3fcf6c43a05e28e2bb.setIcon(div_icon_bdc17c4b92657b8b50ec82afd37c7333);
             
     
-            var circle_7fa091eb53fef5aecd59e4c8ca3307d2 = L.circle(
+            var circle_fedb4105c094b6ade3de91d2632e77ea = L.circle(
                 [-37.795044, 144.900284],
                 {"bubblingMouseEvents": true, "color": "#444444", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#444444", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 70, "stroke": true, "weight": 3}
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            circle_7fa091eb53fef5aecd59e4c8ca3307d2.bindTooltip(
+            circle_fedb4105c094b6ade3de91d2632e77ea.bindTooltip(
                 `<div>
                      
     <div style="
@@ -1043,8 +1043,8 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <span><b>🚦 Type:</b></span>
             <span style="display:flex; align-items:center;">
-                <span style="display:inline-block; width:14px; height:14px; background-color:#3bffc1; border-radius:3px; margin-right:8px;"></span>
-                Pedestrian
+                <span style="display:inline-block; width:14px; height:14px; background-color:#8b4dff; border-radius:3px; margin-right:8px;"></span>
+                Vehicle
             </span>
         </div>
 
@@ -1053,7 +1053,7 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>📅 Date:</b></span> <span>N/A</span>
+            <span><b>📅 Date:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
@@ -1066,11 +1066,11 @@
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>☁️ Weather:</b></span> <span>N/A</span>
+            <span><b>☁️ Weather:</b></span> <span>Unknown</span>
         </div>
 
         <div style="display: flex; justify-content: space-between;">
-            <span><b>🌡️ Temperature:</b></span> <span>N/A°C</span>
+            <span><b>🌡️ Temperature:</b></span> <span>?°C</span>
         </div>
 
         <hr style="margin: 8px 0; border: none; height: 1px; background-color: #444;">
@@ -1086,26 +1086,26 @@
             );
         
     
-            var marker_6fe9832cea69124d66de92fe36e7868a = L.marker(
+            var marker_56e7878757d9376a094d0ceef3a5f4ab = L.marker(
                 [-37.795044, 144.900284],
                 {
 }
-            ).addTo(map_ca60630c65b68399eb39dace44bee74f);
+            ).addTo(map_2cfa7d0cd14d5b01c881433aabd75eaf);
         
     
-            var div_icon_b954a57b61d0bb96641b6bc086638e05 = L.divIcon({
+            var div_icon_2ede1cfc38c854101d7334787329e2f1 = L.divIcon({
   "html": "\n                \u003cdiv style=\"font-size: 14px; font-weight: 800; color: #FFFFFF; text-align: center;\"\u003e\n                    0\n                \u003c/div\u003e\n            ",
   "iconSize": [40, 20],
   "iconAnchor": [20, 10],
   "className": "empty",
 });
-            marker_6fe9832cea69124d66de92fe36e7868a.setIcon(div_icon_b954a57b61d0bb96641b6bc086638e05);
+            marker_56e7878757d9376a094d0ceef3a5f4ab.setIcon(div_icon_2ede1cfc38c854101d7334787329e2f1);
         
     
-                marker_6fe9832cea69124d66de92fe36e7868a.setIcon(div_icon_b954a57b61d0bb96641b6bc086638e05);
+                marker_56e7878757d9376a094d0ceef3a5f4ab.setIcon(div_icon_2ede1cfc38c854101d7334787329e2f1);
             
     
-            map_ca60630c65b68399eb39dace44bee74f.fitBounds(
+            map_2cfa7d0cd14d5b01c881433aabd75eaf.fitBounds(
                 [[-37.809, 144.87], [-37.781, 144.915]],
                 {}
             );

@@ -65,7 +65,7 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
     return folium.Element(f"""
         <div style="
             position: absolute;
-            top: 80px;
+            top: 10px;
             left: 10px;
             width: 240px;
             background-color: #fff;
