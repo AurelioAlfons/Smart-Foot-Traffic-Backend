@@ -6,26 +6,60 @@ This project is a backend system designed to clean, process, and store traffic d
 
 🗂️ Project Structure
 
-![image](https://github.com/user-attachments/assets/50fa94bc-c468-4147-8dc4-b29fecd783fe)
+![image](https://github.com/user-attachments/assets/cc342aa7-336f-461f-aab0-3a2ab3a24b8e)
+![image](https://github.com/user-attachments/assets/78ab8065-774c-47b5-ac7e-cb35f0426fe1)
 
+backend/
+├── analytics/                        🧠 Analytics logic (summary, charts)
+│   ├── bar_chart/
+│   │   └── generate_barchart.py     📊 Generates Plotly bar chart HTML
+│   └── seasonal_stats.py            📈 Generates summary stats for dashboard
+│
+├── db/
+│   ├── index_setup.py               🧩 Creates indexes for optimization
+│   └── init_db.py                   🗃️ Resets all MySQL tables
+│
+├── forecast/                        🌦️ Weather and season logic
+│   ├── init_weather_season.py       🌱 Resets weather + assigns season
+│   ├── season.py                    🍁 Maps month to season
+│   ├── temperature.py               🌡️ Fetches real temperature via API
+│   └── weather.py                   🌧️ Fetches real weather via API
+│
+├── pipeline/                        🛠️ Preprocessing engine
+│   ├── helpers/
+│   │   └── helpers.py               🧪 Location extractor, hour checker
+│   └── preprocess.py                🧼 Main logic for processing CSVs
+│
+├── utils/
+│   └── get_ip.py                    🌐 Prints local IP address for dev
+│
+├── visualizer/
+│   ├── generate_heatmap.py          🗺️ Generates heatmap HTML from DB
+│   ├── services/
+│   │   ├── data_fetcher.py          🧲 Queries traffic data for maps
+│   │   ├── db_logger.py             📝 Logs heatmap info to MySQL
+│   │   ├── heatmap_log.py           ⏱️ Logs timing info to console + file
+│   │   └── map_renderer.py          🖼️ Renders Folium map with all layers
+│   └── utils/
+│       ├── description_box.py       🧾 Sidebar with heatmap info
+│       ├── heatmap_colors.py        🎨 Color scale for traffic intensity
+│       ├── map_shapes.py            🔵 Adds zone circles to the map
+│       ├── marker_helpers.py        🏷️ Adds label markers to the map
+│       ├── sensor_locations.py      📍 Coordinates for each location
+│       └── tooltip_box.py           💬 Tooltip popup generator
+│
+config.py                            ⚙️ MySQL connection config
+main.py                              🚀 Optional main entry point
+server.py                            🌐 Flask server to serve heatmaps/charts
+start_server.bat                     🧮 Windows helper to run the server
+requirements.txt                     📦 List of required Python packages
+README.md                            📘 Project overview
+.env                                 🔐 Local environment variables
 
-SMART_FOOT_TRAFFIC/
-├── backend/
-│   ├── config.py                    ⚙️ (Database configuration settings)
-│   ├── preprocess.py                🧹 (Cleans and stores traffic data)
-│   ├── run_pipeline.py              🔁 (Runs full preprocessing + weather assignment)
-│   ├── forecast/                    🌦️ (Assign season and weather to records)
-│   ├── pipeline/                    🧪 (Helper scripts for ETL)
-│   ├── visualizer/
-│   │   ├── generate_heatmap.py      🌐 (Generates and logs HTML heatmaps)
-│   │   ├── services/                🧠 (data_fetcher, map_renderer, db_logger)
-│   │   └── utils/                   🔧 (tooltip, colors, shapes, markers)
-├── heatmaps/                        🗺️ (Generated heatmap HTML files)
-├── server.py                        🚀 (Flask server to serve heatmaps)
-├── data/                            📂 (Raw CSV files go here)
-├── requirements.txt                 📦 (List of required Python packages)
-├── .env                             🔒 (Environment variables)
-└── README.md                        📄 (This file)
+barchart/                            📊 Output bar chart HTML files
+heatmaps/                            🗺️ Output heatmap HTML files
+logs/                                📁 Log files for profiling
+data/                                🧾 Raw CSV files
 
 --------------------------------------------------
 
@@ -63,103 +97,3 @@ SMART_FOOT_TRAFFIC/
 - 📡 Use `http://localhost:5000/heatmaps/...`
 
 --------------------------------------------------
-
-🛠️ Setup & How to Run (Step-by-Step)
-
-1. 💻 Install VS Code  
-https://code.visualstudio.com
-
---------------------------------------------------
-
-2. 🐍 Install Python  
-https://python.org  
-✅ Check "Add Python to PATH" during install
-
---------------------------------------------------
-
-3. ⬇️ Clone the Repository
-
-```bash
-git clone https://github.com/AurelioAlfons/Smart-Foot-Traffic.git
-cd Smart-Foot-Traffic
-```
-
---------------------------------------------------
-
-4. 🧪 Create Virtual Environment
-
-```bash
-python -m venv venv
-```
-
---------------------------------------------------
-
-5. 🔄 Activate Virtual Environment
-
-```bash
-# Windows
-venv\Scripts\activate
-
-# Mac/Linux
-source venv/bin/activate
-```
-
---------------------------------------------------
-
-6. 📦 Install Required Packages
-
-```bash
-pip install -r requirements.txt
-```
-
---------------------------------------------------
-
-7. ⚙️ Create config.py inside `backend/`
-
-```python
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'your_user',
-    'password': 'your_password',
-    'database': 'your_db'
-}
-```
-
---------------------------------------------------
-
-8. ▶️ Run Preprocessing Script
-
-```bash
-python backend/preprocess.py
-```
-
---------------------------------------------------
-
-9. 🌦️ Run Weather/Season Assignment
-
-```bash
-python backend/forecast/init_weather_season.py
-```
-
---------------------------------------------------
-
-10. 🌐 Generate a Heatmap
-
-```bash
-python backend/visualizer/generate_heatmap.py
-```
-
---------------------------------------------------
-
-11. 🚀 Serve Heatmaps with Flask
-
-```bash
-python server.py
-```
-
-🖥️ Visit your browser:  
-[http://localhost:5000/heatmaps/heatmap_YYYY-MM-DD_HH-MM-SS_TrafficType.html](http://localhost:5000/heatmaps/...)
-
---------------------------------------------------
-
-✅ Done! Your traffic heatmaps are now stored, served, and ready for frontend integration!
