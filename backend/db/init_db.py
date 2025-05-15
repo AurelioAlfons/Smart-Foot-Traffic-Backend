@@ -1,10 +1,12 @@
-# =====================================================
-# 0. Initialize Database Tables
+# ================================================================
+# 🗃️ Database Setup for Smart Foot Traffic
+# ------------------------------------------------
 # This file is used to create the database table from scratch
 # So it checks if the database already has the tables or not
 # Helps automate the process of setting up the database
 # Instead of manually running SQL query in MySQL all the time when re run
-# =====================================================
+# ================================================================
+
 import mysql.connector  # Used to connect to MySQL database
 import sys, os  # Needed to fix import path for subprocess runs
 

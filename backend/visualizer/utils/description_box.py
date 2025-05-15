@@ -1,3 +1,12 @@
+# ===========================================================
+# Description Box Generator for Heatmap UI
+# -----------------------------------------------------------
+# - Creates an HTML info panel showing date, time, type, and season
+# - Auto-detects season from date if not provided
+# - Lists included and missing sensor locations
+# - Used as a sidebar overlay in the Folium heatmap
+# ===========================================================
+
 import folium
 from datetime import datetime
 from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES

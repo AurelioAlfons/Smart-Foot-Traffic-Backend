@@ -1,3 +1,11 @@
+# ===========================================================
+# Tooltip Generator for Smart Foot Traffic Heatmaps
+# -----------------------------------------------------------
+# - Builds rich HTML content for map markers
+# - Displays type, count, date, time, weather, and season
+# - Used by the heatmap renderer to show data in tooltips
+# ===========================================================
+
 import pandas as pd
 
 def generate_tooltip_html(location, traffic_type, count, datetime_string, 

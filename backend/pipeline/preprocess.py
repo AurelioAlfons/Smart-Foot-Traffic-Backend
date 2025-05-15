@@ -1,6 +1,12 @@
-# ========================================
-# 📦 IMPORT MODULES
-# ========================================
+# ============================================================
+# 🧼 Preprocess Traffic CSV Files for Smart Foot Traffic System
+# ------------------------------------------------------------
+# - Reads and cleans traffic data from CSV folders
+# - Converts timestamps, fills gaps, calculates hourly data
+# - Inserts processed results into MySQL tables
+# - Shows progress and logs any errors during import
+# ============================================================
+
 import os
 import time
 import pandas as pd

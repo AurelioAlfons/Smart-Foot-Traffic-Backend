@@ -1,3 +1,11 @@
+# ===========================================================
+# Heatmap Generation Profiler Logger
+# -----------------------------------------------------------
+# - Logs time taken for each step in the heatmap pipeline
+# - Includes: weather, temperature, fetch, render, save
+# - Prints to console and appends to logs/heatmap_profiling.log
+# ===========================================================
+
 import os
 from rich.console import Console
 

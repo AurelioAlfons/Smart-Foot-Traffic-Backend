@@ -1,3 +1,12 @@
+# ===========================================================
+# 🧰 Helper Functions for Smart Foot Traffic Preprocessing
+# -----------------------------------------------------------
+# - Defines traffic types and folder icons
+# - Extracts clean location names from filenames
+# - Checks for missing hourly data across all locations/types
+# - Used in preprocessing pipeline scripts
+# ===========================================================
+
 import logging
 from datetime import datetime
 from collections import defaultdict

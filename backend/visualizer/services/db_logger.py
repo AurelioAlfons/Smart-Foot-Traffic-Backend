@@ -1,6 +1,10 @@
-# =====================================================
-# 📦 Heatmap DB Logger: Inserts metadata into MySQL DB
-# =====================================================
+# ===========================================================
+# Heatmap Database Logger
+# -----------------------------------------------------------
+# - Inserts metadata about generated heatmaps into the database
+# - Stores generation time, type, filters, and URL
+# - Used to track and retrieve heatmap outputs via API or UI
+# ===========================================================
 
 import mysql.connector
 from datetime import datetime

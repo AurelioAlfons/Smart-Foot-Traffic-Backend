@@ -1,8 +1,9 @@
 # ======================================
-# 🔧 Smart Foot Traffic DB Index Setup
+# 🔧 Set Up Indexes for Smart Foot Traffic DB
 # ======================================
-# Ensures required indexes exist before queries run.
-# Run this once during app/server startup or in preprocessing.
+# - Makes sure useful indexes are added to speed things up
+# - Only runs if index doesn’t already exist
+# - Run this once when starting the app or preprocessing
 # ======================================
 
 import mysql.connector

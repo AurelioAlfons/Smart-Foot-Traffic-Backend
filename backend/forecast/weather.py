@@ -1,8 +1,11 @@
-# =====================================================
-# 🌦️ Fast + Accurate: Assign Real Weather per Hour
-# ✅ Fetches real data via Open-Meteo API
-# ✅ Updates all matching Data_IDs using batch UPDATEs
-# =====================================================
+# ===========================================================
+# 🌦️ Assign Real Weather per Hour (Step 3)
+# -----------------------------------------------------------
+# - Gets hourly weather from Open-Meteo API using weather codes
+# - Converts weather codes to readable labels (e.g. "Clear", "Rain")
+# - Updates the Weather column in weather_season_data
+# - Matches by date, time, and location for accuracy
+# ===========================================================
 
 import mysql.connector
 import logging

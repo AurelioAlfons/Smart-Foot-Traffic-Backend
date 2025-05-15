@@ -1,6 +1,13 @@
-# ==================================================
-# 🗺️ Heatmap Renderer: Builds the folium.Map object
-# ==================================================
+# ===========================================================
+# Heatmap Renderer for Smart Foot Traffic
+# -----------------------------------------------------------
+# - Builds and returns a Folium map with:
+#   - Colored circles by traffic count
+#   - Center markers with abbreviated counts
+#   - Tooltip with detailed info per location
+#   - Sidebar description box with context
+# - Used to generate the full heatmap HTML output
+# ===========================================================
 
 import folium
 import os

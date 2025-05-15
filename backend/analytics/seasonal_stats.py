@@ -1,3 +1,12 @@
+# ====================================================
+# 📊 Analytics Engine for Smart Foot Traffic (Summary)
+# ----------------------------------------------------
+# - Generates summary stats and per-hour traffic data
+# - Builds bar chart and updates its URL in the DB
+# - Calculates top location, peak hour, and season
+# - Called via /api/summary_stats for frontend analytics
+# ====================================================
+
 import os
 import mysql.connector
 from datetime import datetime

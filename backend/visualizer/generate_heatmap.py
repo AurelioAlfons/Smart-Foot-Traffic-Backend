@@ -1,6 +1,12 @@
-# =====================================================
-# 🍝 Updated Heatmap: Safe Rich Progress for Parallel Use
-# =====================================================
+# ===========================================================
+# Heatmap Generator Script for Smart Foot Traffic System
+# -----------------------------------------------------------
+# - Generates an HTML heatmap for selected date, time, and type
+# - Checks for existing files and DB entries before regenerating
+# - Ensures weather and temperature are assigned before plotting
+# - Saves the heatmap file and logs the URL to the database
+# - Displays real-time progress using rich
+# ===========================================================
 
 import os
 import sys

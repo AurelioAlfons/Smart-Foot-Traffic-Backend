@@ -1,6 +1,11 @@
-# ==========================================
-# 🚀 Flask Server to Serve Heatmaps + Charts + API
-# ==========================================
+# ================================================
+# 💻 Flask Backend API for Smart Foot Traffic System
+# --------------------------------
+# - Serves heatmap and bar chart HTML files
+# - Provides API to generate heatmaps and summary stats
+# - Stores and returns URLs to frontend
+# - Used by Flutter client for heatmap + analytics display
+# ================================================
 
 from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS

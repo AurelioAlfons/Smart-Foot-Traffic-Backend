@@ -1,11 +1,11 @@
-# =====================================================
-# 📦 MODULE: Init Weather & Season Values
-# Purpose: Reset all weather_season_data records to:
-# - Weather: 'Undefined'
-# - Temperature: NULL
-# - Season: based on actual month (e.g. Winter)
-# This is Step 2 in the Smart Foot Traffic data pipeline.
-# =====================================================
+# ===========================================================
+# 🌦️ Step 2: Set Default Weather & Season Values in Database
+# -----------------------------------------------------------
+# - Loops through all cleaned traffic data rows
+# - Resets weather to 'Undefined' and temperature to NULL
+# - Detects and assigns season based on the month
+# - Saves or updates each record in weather_season_data table
+# ===========================================================
 
 import mysql.connector         # 💾 MySQL DB connection
 import logging                 # 📋 For logging process & warnings

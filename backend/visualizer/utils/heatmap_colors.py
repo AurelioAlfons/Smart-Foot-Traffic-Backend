@@ -1,3 +1,11 @@
+# ===========================================================
+# Color Scale Function for Heatmap Counts
+# -----------------------------------------------------------
+# - Maps traffic count values to corresponding color codes
+# - Higher counts = deeper reds; lower = yellow or orange
+# - Used for coloring heatmap zones by intensity
+# ===========================================================
+
 def get_color_by_count(count):
     # 🔴 Red Zone (Warmest → Deepest)
     if count > 600:

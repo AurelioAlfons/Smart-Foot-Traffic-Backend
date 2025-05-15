@@ -1,6 +1,10 @@
-# ================================================
-# 🔍 Traffic Data Fetcher (Modular Version)
-# ================================================
+# ===========================================================
+# Traffic Data Fetcher for Heatmap Generation
+# -----------------------------------------------------------
+# - Queries MySQL to get traffic + weather data for each sensor
+# - Supports exact datetime filters or seasonal summaries
+# - Returns a cleaned DataFrame for use in heatmap rendering
+# ===========================================================
 
 import mysql.connector
 import pandas as pd

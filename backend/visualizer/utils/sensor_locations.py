@@ -1,4 +1,10 @@
-# sensor_locations.py
+# ===========================================================
+# Coordinates for All Sensor Locations
+# -----------------------------------------------------------
+# - Maps location names to their latitude and longitude
+# - Used for placing map markers, heatmap points, and tooltips
+# - LOCATION_CENTERS is an alias for compatibility
+# ===========================================================
 
 # 📍 SENSOR COORDINATES FOR EACH LOCATION (used for both markers and circles)
 LOCATION_COORDINATES = {

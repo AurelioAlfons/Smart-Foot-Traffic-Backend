@@ -1,3 +1,12 @@
+# ====================================================
+# 📊 Bar Chart Generator for Smart Foot Traffic System
+# ----------------------------------------------------
+# - Creates a Plotly bar chart by location and time
+# - Saves chart as HTML to local barchart/ folder
+# - Returns full path to use in database or API
+# - Called from seasonal_stats.py
+# ====================================================
+
 import os
 import plotly.express as px
 

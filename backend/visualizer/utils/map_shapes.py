@@ -1,3 +1,11 @@
+# ===========================================================
+# Circle Overlay Utility for Heatmap Zones
+# -----------------------------------------------------------
+# - Draws a colored circular zone for each sensor location
+# - Uses coordinates from LOCATION_CENTERS
+# - Attaches a custom HTML tooltip to each circle
+# ===========================================================
+
 import folium
 
 def add_zone_circle(map_obj, location, fill_color, tooltip_html, LOCATION_CENTERS):

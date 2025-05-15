@@ -1,8 +1,11 @@
-# =====================================================
-# 🌡️ Optimized Accurate Temperature Assignment
-# ✅ Fetches real hourly temperature from Open-Meteo
-# ✅ Uses batch UPDATEs for speed
-# =====================================================
+# ===========================================================
+# 🌡️ Assign Real Temperature from Open-Meteo (Step 3)
+# -----------------------------------------------------------
+# - Gets hourly temperature from Open-Meteo API
+# - Matches by date, time, and location
+# - Fills in the Temperature column in weather_season_data
+# - Uses batch updates for faster performance
+# ===========================================================
 
 import mysql.connector
 import logging

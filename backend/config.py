@@ -1,3 +1,11 @@
+# ================================================
+# 🔐 Database Configuration for Smart Foot Traffic
+# --------------------------------
+# - Supports local, Railway (cloud), or .env-based setup
+# - Used by all backend scripts to connect to MySQL
+# - Switch by commenting/uncommenting the desired block
+# ================================================
+
 import os
 from dotenv import load_dotenv
 

@@ -1,8 +1,10 @@
-# =====================================================
-# 🍁 MODULE: Assign Season
-# Purpose: Update the Season column in weather_season_data
-# based on the month from processed_data.Date
-# =====================================================
+# ===========================================================
+# 🍁 Assign Season to Each Data Row (Step 2 Alt)
+# -----------------------------------------------------------
+# - Reads the date from each traffic record
+# - Figures out the season (Summer, Autumn, etc.) from the month
+# - Updates the season in the weather_season_data table
+# ===========================================================
 
 import mysql.connector         # 💾 MySQL DB connection
 import logging                 # 📋 Log info and errors

@@ -1,3 +1,11 @@
+# ===========================================================
+# Marker Utilities for Heatmap Center Labels
+# -----------------------------------------------------------
+# - Adds count markers to the center of each location on the map
+# - Abbreviates large numbers (e.g., 47000 → 47K)
+# - Automatically adjusts text color for better contrast
+# ===========================================================
+
 import folium
 
 def abbreviate_count(count):
