@@ -77,6 +77,6 @@ def render_heatmap_map(df, selected_type, label, time_filter):
     )
 
     # 🚌 Add public transport logos
-    add_transport_icons(base_map)  # ✅ NEW
+    add_transport_icons(base_map)  
 
     return base_map
