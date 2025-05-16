@@ -10,6 +10,8 @@ import mysql.connector
 import pandas as pd
 from datetime import datetime, timedelta
 from backend.config import DB_CONFIG
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 def fetch_traffic_data(date_filter=None, time_filter=None, selected_type="Vehicle Count", season_filter=None, max_age_minutes=30):
     import pandas as pd

@@ -1,9 +1,9 @@
 # ================================================
 # Flask Backend API for Smart Foot Traffic System
-# --------------------------------
+# -----------------------------------------------
 # - Serves heatmap and bar chart HTML files
 # - Provides API to generate heatmaps and summary stats
-# - NEW: Serves real-time location data for sidebar
+# - NEW: Prioritized + background heatmap generation
 # ================================================
 
 from flask import Flask, send_from_directory, request, jsonify
@@ -13,16 +13,9 @@ import sys
 import traceback
 import mysql.connector
 
-from backend.visualizer.generate_default import generate_default_map
-from backend.config import DB_CONFIG
-from backend.analytics.statistics import get_summary_stats
-from backend.visualizer.generate_heatmap import generate_heatmap
-
 # 🔧 Initialize the Flask app
 app = Flask(__name__)
 CORS(app)
-
-default_map_generated = False
 
 # 📁 Define folders
 HEATMAP_FOLDER = os.path.join(os.getcwd(), 'heatmaps')
@@ -30,6 +23,14 @@ BARCHART_FOLDER = os.path.join(os.getcwd(), 'barchart')
 
 # 🔧 Allow importing from project root
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# ✅ Import custom modules
+from backend.visualizer.smart_generate import smart_generate
+from backend.visualizer.generate_default import generate_default_map
+from backend.config import DB_CONFIG
+from backend.analytics.statistics import get_summary_stats
+
+default_map_generated = False
 
 # ✅ Health check
 @app.route('/healthz')
@@ -60,7 +61,7 @@ def serve_heatmap(filename):
 def serve_barchart(filename):
     return send_from_directory(BARCHART_FOLDER, filename)
 
-# 🚀 Generate heatmap + bar chart
+# 🚀 Generate heatmap (instant + background)
 @app.route('/api/generate_heatmap', methods=['POST'])
 def api_generate_heatmap():
     try:
@@ -69,17 +70,22 @@ def api_generate_heatmap():
         time_filter = data.get('time')
         traffic_type = data.get('traffic_type')
 
-        generate_heatmap(date_filter, time_filter, traffic_type)
+        # ✅ Run prioritized + batch generation
+        smart_generate(date_filter, time_filter, traffic_type)
 
+        # Return URLs for immediate display
         base_url = request.host_url.rstrip('/')
-        heatmap_url = f"{base_url}/heatmaps/heatmap_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
-        barchart_url = f"{base_url}/barchart/barchart_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
+        heatmap_filename = f"heatmap_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
+        barchart_filename = f"barchart_{date_filter}_{(time_filter or 'all').replace(':', '-')}_{traffic_type.replace(' ', '_')}.html"
+
+        heatmap_url = f"{base_url}/heatmaps/{heatmap_filename}"
+        barchart_url = f"{base_url}/barchart/{barchart_filename}"
 
         return jsonify({
-            "status": "success",
+            "status": "generating",
             "heatmap_url": heatmap_url,
             "barchart_url": barchart_url
-        }), 200
+        }), 202
 
     except Exception as e:
         traceback.print_exc()
@@ -118,7 +124,7 @@ def api_seasonal_stats():
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# 🧠 Location sidebar data
+# 🧠 Sidebar location data
 @app.route('/api/location_data', methods=['GET'])
 def get_location_data():
     location = request.args.get('location')
@@ -158,16 +164,6 @@ def get_location_data():
     except mysql.connector.Error as e:
         return jsonify({"error": str(e)}), 500
 
-# 🧰 Global CORS and frame policy
-@app.after_request
-def apply_cors_headers(response):
-    response.headers['X-Frame-Options'] = 'ALLOWALL'
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    return response
-
-# 🌍 Preload default map
 # 🌍 Preload default map
 @app.before_request
 def ensure_default_map():
@@ -185,6 +181,14 @@ def ensure_default_map():
     else:
         print("✅ default_map.html already exists and is loaded.")
 
+# 🧰 CORS and security headers
+@app.after_request
+def apply_cors_headers(response):
+    response.headers['X-Frame-Options'] = 'ALLOWALL'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    return response
 
 # ▶️ Launch server
 if __name__ == '__main__':
