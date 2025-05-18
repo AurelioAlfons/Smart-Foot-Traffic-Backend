@@ -38,8 +38,13 @@ def render_heatmap_map(df, selected_type, label, time_filter):
         min_zoom=15,                   # Restrict zoom out
         max_zoom=20,                   # Allow zoom in
         max_bounds=True,              # Enable bounds locking
-        tiles='cartodbpositron'
+        tiles=None
     )
+
+    # 🎨 Add tile style options
+    folium.TileLayer('OpenStreetMap', name='Detail').add_to(base_map)
+    folium.TileLayer('CartoDB dark_matter', name='Dark').add_to(base_map)
+    folium.TileLayer('CartoDB positron', name='Light').add_to(base_map)
 
     # 🔘 Add traffic circles and markers per location
     for loc, coords in LOCATION_COORDINATES.items():
@@ -65,6 +70,20 @@ def render_heatmap_map(df, selected_type, label, time_filter):
 
         add_zone_circle(base_map, loc, fill_color, tooltip_html, LOCATION_CENTERS)
         add_center_marker(base_map, coords, cnt, fill_color)
+
+    # 🧭 Add a tile control to switch
+    folium.LayerControl(position='topright', collapsed=False).add_to(base_map)
+
+    # 💡 Inject style override for bigger layer box
+    base_map.get_root().html.add_child(folium.Element("""
+    <style>
+    .leaflet-control-layers-expanded {
+        width: 180px !important;
+        font-size: 18px !important;
+    }
+    
+    </style>
+    """))
 
     # 📌 Set initial viewport bounds
     base_map.fit_bounds(bounds)

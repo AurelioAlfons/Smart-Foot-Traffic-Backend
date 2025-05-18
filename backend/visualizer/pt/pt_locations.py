@@ -6,7 +6,7 @@ from folium.features import CustomIcon
 
 # 🔧 Config
 ICON_FOLDER = "backend/visualizer/icon"
-ICON_SIZE = (24, 24)
+ICON_SIZE = (16, 16)
 STOPS_FILE = "backend/visualizer/data/nearby_pt_stops.json"
 
 # 🗺️ Icon mapping by transport type
