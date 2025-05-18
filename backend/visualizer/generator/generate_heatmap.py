@@ -1,8 +1,8 @@
-import os
-import time
+from rich.console import Console
+from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
+import os, time
 from datetime import datetime
 import mysql.connector
-from rich.console import Console
 from rich.errors import LiveError
 
 from backend.visualizer.services.heatmap_log import log_heatmap_duration
@@ -45,13 +45,11 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
         f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
     )
 
-    # ✅ Skip immediately if file already exists
     if os.path.exists(filename):
         if not quiet:
             console.print(f"[green]✅ Skipping (already exists): {filename}[/green]")
         return
 
-    # 🔍 Only check DB if file doesn't exist
     existing_id = None
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
@@ -74,39 +72,61 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
         console.print(f"\n📌 Generating: [bold magenta]{selected_type}[/bold magenta] @ [cyan]{date_filter} {time_filter}[/cyan]")
 
     try:
-        weather_ok, temp_ok = check_weather_and_temp_exists(date_filter)
-        if not weather_ok:
-            assign_weather(date_filter)
-        if not quiet and weather_ok:
-            console.print(f"[green]✅ Weather already assigned for {date_filter}[/green]")
-        mark("weather")
+        if quiet:
+            weather_ok, temp_ok = check_weather_and_temp_exists(date_filter)
+            if not weather_ok:
+                assign_weather(date_filter)
+            if not temp_ok:
+                assign_temperature(date_filter)
+            df = fetch_traffic_data(date_filter, time_filter, selected_type)
+            base_map = render_heatmap_map(df, selected_type, label, time_filter)
+            os.makedirs("heatmaps", exist_ok=True)
+            with open(filename, "w", encoding="utf-8", errors="ignore") as f:
+                f.write(base_map.get_root().render())
+        else:
+            with Progress(
+                TextColumn("🔄 [bold cyan]{task.description}"),
+                BarColumn(),
+                "[progress.percentage]{task.percentage:>3.0f}%",
+                TimeElapsedColumn(),
+                console=console,
+                transient=True
+            ) as progress:
+                task_id = progress.add_task("Generating Heatmap", total=6)
 
-        if not temp_ok:
-            assign_temperature(date_filter)
-        if not quiet and temp_ok:
-            console.print(f"[green]✅ Temperature already assigned for {date_filter}[/green]")
-        mark("temperature")
+                weather_ok, temp_ok = check_weather_and_temp_exists(date_filter)
+                if not weather_ok:
+                    assign_weather(date_filter)
+                progress.advance(task_id)
+                mark("weather")
 
-        df = fetch_traffic_data(date_filter, time_filter, selected_type)
-        mark("fetch")
+                if not temp_ok:
+                    assign_temperature(date_filter)
+                progress.advance(task_id)
+                mark("temperature")
 
-        base_map = render_heatmap_map(df, selected_type, label, time_filter)
-        mark("render")
+                df = fetch_traffic_data(date_filter, time_filter, selected_type)
+                progress.advance(task_id)
+                mark("fetch")
 
-        os.makedirs("heatmaps", exist_ok=True)
-        with open(filename, "w", encoding="utf-8", errors="ignore") as f:
-            f.write(base_map.get_root().render())
-        mark("save")
+                base_map = render_heatmap_map(df, selected_type, label, time_filter)
+                progress.advance(task_id)
+                mark("render")
+
+                os.makedirs("heatmaps", exist_ok=True)
+                with open(filename, "w", encoding="utf-8", errors="ignore") as f:
+                    f.write(base_map.get_root().render())
+                progress.advance(task_id)
+                mark("save")
 
     except LiveError:
         if not quiet:
             print("⚠️ Rich LiveError: running in headless mode.")
 
-    # ✅ Save/update in DB
+    # ✅ DB insert/update — always runs
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-
         generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         heatmap_url = f"http://localhost:5000/{filename.replace(os.sep, '/')}"
 
@@ -136,15 +156,16 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
         conn.commit()
         cursor.close()
         conn.close()
+
+        if not quiet:
+            mark("db")
+            log_heatmap_duration(date_filter, time_filter, selected_type, None, timings, start)
+
     except mysql.connector.Error as e:
         if not quiet:
             console.print(f"[red]❌ DB insert/update failed:[/red] {e}")
         return
 
-    if not quiet:
-        log_heatmap_duration(date_filter, time_filter, selected_type, None, timings, start)
-
 # 🎯 Standalone test
 if __name__ == "__main__":
     generate_heatmap("2025-02-27", "01:00:00", "Vehicle Count")
-    generate_heatmap("2025-02-27", "01:00:00", "Pedestrian Count")

@@ -43,7 +43,7 @@ def render_heatmap_map(df, selected_type, label, time_filter):
 
     # 🎨 Add tile style options
     folium.TileLayer('OpenStreetMap', name='Detail').add_to(base_map)
-    folium.TileLayer('CartoDB dark_matter', name='Dark').add_to(base_map)
+    # folium.TileLayer('CartoDB dark_matter', name='Dark').add_to(base_map)
     folium.TileLayer('CartoDB positron', name='Light').add_to(base_map)
 
     # 🔘 Add traffic circles and markers per location

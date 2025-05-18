@@ -29,7 +29,7 @@ def smart_generate(date_filter, time_filter, traffic_type):
             "[progress.percentage]{task.percentage:>3.0f}%",
             TimeElapsedColumn(),
             console=console,
-            transient=True  # 🔧 hides first blank line
+            transient=True  
         ) as progress:
             task_id = progress.add_task("Batch Progress", total=len(tasks))
 
