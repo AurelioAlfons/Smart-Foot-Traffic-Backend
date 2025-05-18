@@ -9,7 +9,8 @@
 
 import folium
 from datetime import datetime
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
+
+from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
 
 
 def generate_description_box(date_filter, time_filter, selected_type, included_locations):

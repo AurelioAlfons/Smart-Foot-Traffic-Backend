@@ -13,6 +13,11 @@ import sys
 import traceback
 import mysql.connector
 
+from backend.analytics.statistics import get_summary_stats
+from backend.config import DB_CONFIG
+from backend.visualizer.generator import smart_generate
+from backend.visualizer.generator.generate_default import generate_default_map
+
 # 🔧 Initialize the Flask app
 app = Flask(__name__)
 CORS(app)
@@ -24,11 +29,7 @@ BARCHART_FOLDER = os.path.join(os.getcwd(), 'barchart')
 # 🔧 Allow importing from project root
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# ✅ Import custom modules
-from backend.visualizer.smart_generate import smart_generate
-from backend.visualizer.generate_default import generate_default_map
-from backend.config import DB_CONFIG
-from backend.analytics.statistics import get_summary_stats
+
 
 default_map_generated = False
 

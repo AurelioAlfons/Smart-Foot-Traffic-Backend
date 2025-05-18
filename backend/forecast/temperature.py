@@ -12,7 +12,7 @@ import logging
 import requests
 from datetime import datetime
 from backend.config import DB_CONFIG
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
+from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
 
 def assign_temperature(target_date):
     try:

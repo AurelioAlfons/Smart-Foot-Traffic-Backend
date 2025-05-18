@@ -15,7 +15,7 @@ from pprint import pprint
 
 from backend.analytics.bar_chart.generate_barchart import export_bar_chart_html
 from backend.config import DB_CONFIG
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
+from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
 
 
 def get_summary_stats(date, time_input, traffic_type):

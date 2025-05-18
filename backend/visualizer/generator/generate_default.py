@@ -2,8 +2,8 @@
 
 import pandas as pd
 import os
+from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
 from backend.visualizer.services.map_renderer import render_heatmap_map
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES
 
 def generate_default_map():
     df = pd.DataFrame({

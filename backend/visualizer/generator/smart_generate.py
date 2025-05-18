@@ -1,6 +1,6 @@
 from rich.console import Console
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
-from backend.visualizer.generate_heatmap import generate_heatmap
+from backend.visualizer.generator.generate_heatmap import generate_heatmap
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Thread

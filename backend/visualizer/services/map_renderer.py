@@ -13,13 +13,14 @@ import folium
 import os
 import pandas as pd
 
-from backend.visualizer.services.pt.pt_locations import add_transport_icons
-from backend.visualizer.utils.sensor_locations import LOCATION_COORDINATES, LOCATION_CENTERS
-from backend.visualizer.utils.tooltip_box import generate_tooltip_html
-from backend.visualizer.utils.map_shapes import add_zone_circle
-from backend.visualizer.utils.marker_helpers import add_center_marker
-from backend.visualizer.utils.heatmap_colors import get_color_by_count
-from backend.visualizer.utils.description_box import generate_description_box
+from backend.visualizer.map_components.description_box import generate_description_box
+from backend.visualizer.map_components.heatmap_colors import get_color_by_count
+from backend.visualizer.map_components.map_shapes import add_zone_circle
+from backend.visualizer.map_components.marker_helpers import add_center_marker
+from backend.visualizer.map_components.sensor_locations import LOCATION_CENTERS, LOCATION_COORDINATES
+from backend.visualizer.map_components.tooltip_box import generate_tooltip_html
+from backend.visualizer.pt.pt_locations import add_transport_icons
+
 
 def render_heatmap_map(df, selected_type, label, time_filter):
     """
