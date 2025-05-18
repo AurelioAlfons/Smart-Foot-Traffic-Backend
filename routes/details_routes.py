@@ -4,8 +4,11 @@ from backend.config import DB_CONFIG
 
 snapshot_bp = Blueprint('snapshot_bp', __name__)
 
-@snapshot_bp.route('/api/location_snapshot', methods=['POST'])
+@snapshot_bp.route('/api/location_snapshot', methods=['POST', 'OPTIONS'])
 def location_snapshot():
+    if request.method == 'OPTIONS':
+        return '', 200  # ✅ Handle preflight request for CORS
+
     try:
         data = request.get_json()
         date = data.get("date")
@@ -19,7 +22,7 @@ def location_snapshot():
             SELECT
                 pd.Location,
                 tc.Traffic_Type,
-                tc.Total_Count,
+                tc.Interval_Count,
                 pd.Date_Time,
                 wsd.Weather,
                 wsd.Season,
@@ -40,7 +43,7 @@ def location_snapshot():
             {
                 "location": row["Location"],
                 "traffic_type": row["Traffic_Type"],
-                "count": row["Total_Count"],
+                "count": row["Interval_Count"],
                 "date": str(row["Date_Time"]).split()[0],
                 "time": str(row["Date_Time"]).split()[1],
                 "weather": row.get("Weather", "Unknown"),

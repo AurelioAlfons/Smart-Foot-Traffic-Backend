@@ -9,10 +9,13 @@ CORS(app)
 # 🔁 Import Blueprints
 from routes.heatmap_routes import heatmap_bp
 from routes.statistics_routes import stats_bp
+from routes.details_routes import snapshot_bp
+
 
 # 🔗 Register Blueprints
 app.register_blueprint(heatmap_bp)
 app.register_blueprint(stats_bp)
+app.register_blueprint(snapshot_bp)
 
 # 📁 Folder Paths
 HEATMAP_FOLDER = os.path.join(os.getcwd(), 'heatmaps')
