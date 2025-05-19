@@ -1,43 +1,76 @@
-from rich.console import Console
-from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
-from backend.visualizer.generator.generate_heatmap import generate_heatmap
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from threading import Thread
-import logging
-logging.getLogger('werkzeug').setLevel(logging.ERROR)
+from threading import Thread, Lock
+from rich.console import Console
+
+from backend.visualizer.generator.generate_heatmap import generate_heatmap
+from backend.visualizer.services.data_fetcher import fetch_traffic_data
+from backend.forecast.weather import assign_weather
+from backend.forecast.temperature import assign_temperature
 
 console = Console()
+
+# 🔄 Global control variables
+current_batch_id = 0
+cached_data = {}              # {(date, time, type): DataFrame}
+preprocessed_times = set()    # { "08:00:00", ... }
+cache_lock = Lock()
 
 def get_all_hourly_times():
     return [f"{h:02}:00:00" for h in range(24)]
 
+def preprocess_heatmap_data(date_filter, time_filter, traffic_type):
+    assign_weather(date_filter)
+    assign_temperature(date_filter)
+
+    df = fetch_traffic_data(date_filter, time_filter, traffic_type)
+
+    if df is not None and not df.empty:
+        with cache_lock:
+            cached_data[(date_filter, time_filter, traffic_type)] = df
+            preprocessed_times.add(time_filter)
+            console.print(f"[blue]🧠 Preprocessed:[/blue] {time_filter} for {traffic_type}")
+    else:
+        console.print(f"[red]⚠️ No data to cache for {time_filter}[/red]")
+
 def smart_generate(date_filter, time_filter, traffic_type):
-    # Step 1: Generate selected heatmap visibly
-    generate_heatmap(date_filter, time_filter, traffic_type, quiet=False)
+    global current_batch_id
+    current_batch_id += 1
+    batch_id = current_batch_id
 
-    # Step 2: Batch others in background with progress
-    def batch_remaining():
-        start = time.time()
-        tasks = [(hour, traffic_type) for hour in get_all_hourly_times() if hour != time_filter]
+    cache_key = (date_filter, time_filter, traffic_type)
+    with cache_lock:
+        df = cached_data.get(cache_key)
 
-        console.print(f"[yellow]⏳ Preloading {len(tasks)} heatmaps for {traffic_type} on {date_filter}...[/yellow]")
+    if df is not None and not df.empty:
+        console.print(f"[green]⚡ Using cached data for {time_filter}[/green]")
+    else:
+        console.print(f"[yellow]🔄 No valid cache for {time_filter}, refetching...[/yellow]")
+        df = fetch_traffic_data(date_filter, time_filter, traffic_type)  # 🧠 This was missing!
 
-        with Progress(
-            TextColumn("🔄 [bold cyan]{task.description}"),
-            BarColumn(),
-            "[progress.percentage]{task.percentage:>3.0f}%",
-            TimeElapsedColumn(),
-            console=console,
-            transient=True  
-        ) as progress:
-            task_id = progress.add_task("Batch Progress", total=len(tasks))
+    generate_heatmap(date_filter, time_filter, traffic_type, quiet=False, df=df)
 
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                futures = [executor.submit(generate_heatmap, date_filter, hour, traffic_type, True) for hour, _ in tasks]
-                for _ in as_completed(futures):
-                    progress.advance(task_id)
+    # Background preprocess
+    def background_preprocessing():
+        time.sleep(1.5)
 
-        console.print(f"[green]✅ All remaining {len(tasks)} heatmaps done in {int(time.time() - start)}s[/green]")
+        for hour in get_all_hourly_times():
+            if hour == time_filter:
+                continue
 
-    Thread(target=batch_remaining, daemon=True).start()
+            if batch_id != current_batch_id:
+                console.print("[red]🚫 Preprocessing cancelled (new request).[/red]")
+                return
+
+            key = (date_filter, hour, traffic_type)
+            with cache_lock:
+                if key in cached_data:
+                    continue
+
+            try:
+                preprocess_heatmap_data(date_filter, hour, traffic_type)
+            except Exception as e:
+                console.print(f"[red]❌ Failed to preprocess {hour}:[/red] {e}")
+
+        console.print("[green]✅ All times preprocessed and cached.[/green]")
+
+    Thread(target=background_preprocessing, daemon=True).start()

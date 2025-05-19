@@ -32,7 +32,7 @@ def check_weather_and_temp_exists(date_filter):
     except mysql.connector.Error:
         return False, False
 
-def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestrian Count", quiet=False):
+def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count", quiet=False, df=None):
     start = time.time()
     label = date_filter
     timings = {}
@@ -45,11 +45,13 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
         f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
     )
 
+    # ✅ Skip if already exists
     if os.path.exists(filename):
         if not quiet:
             console.print(f"[green]✅ Skipping (already exists): {filename}[/green]")
         return
 
+    # 🔎 DB check for existing record
     existing_id = None
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
@@ -78,11 +80,15 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
                 assign_weather(date_filter)
             if not temp_ok:
                 assign_temperature(date_filter)
-            df = fetch_traffic_data(date_filter, time_filter, selected_type)
+
+            if df is None or getattr(df, "empty", True):
+                df = fetch_traffic_data(date_filter, time_filter, selected_type)
+
             base_map = render_heatmap_map(df, selected_type, label, time_filter)
             os.makedirs("heatmaps", exist_ok=True)
             with open(filename, "w", encoding="utf-8", errors="ignore") as f:
                 f.write(base_map.get_root().render())
+
         else:
             with Progress(
                 TextColumn("🔄 [bold cyan]{task.description}"),
@@ -105,7 +111,8 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
                 progress.advance(task_id)
                 mark("temperature")
 
-                df = fetch_traffic_data(date_filter, time_filter, selected_type)
+                if df is None or getattr(df, "empty", True):
+                    df = fetch_traffic_data(date_filter, time_filter, selected_type)
                 progress.advance(task_id)
                 mark("fetch")
 
@@ -123,7 +130,7 @@ def generate_heatmap(date_filter=None, time_filter=None, selected_type="Pedestri
         if not quiet:
             print("⚠️ Rich LiveError: running in headless mode.")
 
-    # ✅ DB insert/update — always runs
+    # ✅ Save/update to DB
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
