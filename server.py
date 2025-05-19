@@ -1,6 +1,7 @@
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 import os
+import logging  # ✅ Correct logging import
 
 # 🔧 App Setup
 app = Flask(__name__)
@@ -11,6 +12,8 @@ from routes.heatmap_routes import heatmap_bp
 from routes.statistics_routes import stats_bp
 from routes.details_routes import snapshot_bp
 
+# ✅ Suppress Werkzeug's default logs
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 # 🔗 Register Blueprints
 app.register_blueprint(heatmap_bp)
