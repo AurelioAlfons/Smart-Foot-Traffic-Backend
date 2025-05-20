@@ -35,10 +35,7 @@ def export_bar_chart_html(
     output_path = os.path.join("barchart", filename)
 
     # Log raw values for debugging
-    print("\n📊 Bar Chart Values:")
     print("🟦 Selected Hour Data:", selected_data)
-    print("🟧 Total Data:", total_data)
-    print("🟨 Average Data:", average_data)
 
     # Prepare location axis
     locations = sorted(set(selected_data.keys()) | set(total_data.keys()) | set(average_data.keys()))

@@ -45,13 +45,13 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
         f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
     )
 
-    # ✅ Skip if already exists
+    # Skip if already exists
     if os.path.exists(filename):
         if not quiet:
             console.print(f"[green]✅ Skipping (already exists): {filename}[/green]")
         return
 
-    # 🔎 DB check for existing record
+    # DB check for existing record
     existing_id = None
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
@@ -130,12 +130,22 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
         if not quiet:
             print("⚠️ Rich LiveError: running in headless mode.")
 
-    # ✅ Save/update to DB
+    # Save/update to DB
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
         generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        heatmap_url = f"http://localhost:5000/{filename.replace(os.sep, '/')}"
+
+        # Get base URLs from env (local or online)
+        # If running on localhost, use base_url
+        # If running on Render or Railway, use prod_url
+        base_url = os.getenv("BASE_URL", "http://localhost:5000")
+        prod_url = os.getenv("PROD_URL", "https://smart-foot-traffic-backend.onrender.com")
+
+        if "localhost" in base_url or "127.0.0.1" in base_url:
+            heatmap_url = f"{base_url}/heatmaps/{filename}"
+        else:
+            heatmap_url = f"{prod_url}/heatmaps/{filename}"
 
         if existing_id:
             cursor.execute("""
@@ -173,6 +183,6 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
             console.print(f"[red]❌ DB insert/update failed:[/red] {e}")
         return
 
-# 🎯 Standalone test
+# Standalone test
 if __name__ == "__main__":
     generate_heatmap("2025-02-27", "01:00:00", "Vehicle Count")

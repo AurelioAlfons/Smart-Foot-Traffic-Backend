@@ -31,7 +31,7 @@ app.register_blueprint(snapshot_bp)
 
 # Folder Paths
 HEATMAP_FOLDER = os.path.join(os.getcwd(), 'heatmaps')
-BARCHART_FOLDER = r"C:\Capstone\Smart_Foot_Traffic\barchart"
+BARCHART_FOLDER = os.path.join(os.getcwd(), 'barchart')
 default_map_generated = False
 
 # Serve Heatmap HTML

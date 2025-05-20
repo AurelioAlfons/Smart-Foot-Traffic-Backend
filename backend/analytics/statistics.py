@@ -120,7 +120,13 @@ def get_summary_stats(date, time_input, traffic_type):
 
         barchart_url = None
         if barchart_path:
-            barchart_url = f"http://localhost:5000/{barchart_path.replace(os.sep, '/')}"
+            base_url = os.getenv("BASE_URL", "http://localhost:5000")
+            prod_url = os.getenv("PROD_URL", "https://smart-foot-traffic-backend.onrender.com")
+
+            if "localhost" in base_url or "127.0.0.1" in base_url:
+                barchart_url = f"{base_url}/{barchart_path.replace(os.sep, '/')}"
+            else:
+                barchart_url = f"{prod_url}/{barchart_path.replace(os.sep, '/')}"
 
         # Update BarChart_URL in heatmaps table
         if barchart_url:

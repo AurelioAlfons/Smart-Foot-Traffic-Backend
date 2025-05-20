@@ -1,5 +1,6 @@
 # backend/generate_default_map.py
 
+import math as m
 import pandas as pd
 import os
 from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
@@ -14,7 +15,10 @@ def generate_default_map():
         "Temperature": ["N/A"] * len(LOCATION_COORDINATES)
     })
 
-    m = render_heatmap_map(df, "Pedestrian Count", "Default Map", None)
-    os.makedirs("heatmaps", exist_ok=True)
-    m.save("heatmaps/default_map.html")
+    output_path = os.path.join("heatmaps", "default_map.html")
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    map_obj = render_heatmap_map(df, "Pedestrian Count", "Default Map", None)
+    map_obj.save(output_path)
+
     print("✅ default_map.html generated.")
