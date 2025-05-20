@@ -102,9 +102,17 @@ def get_summary_stats(date, time_input, traffic_type):
         summary['weather'] = "Sunny"
         summary['temperature'] = "18°C"
 
-        # 🔁 Generate and get path to bar chart
+        selected_data = summary['selected_hour']['per_location']
+        total_data = bar_chart
+        average_data = {
+            loc: round(total_data.get(loc, 0) / 24, 2)
+            for loc in LOCATION_COORDINATES
+        }
+
         barchart_path = export_bar_chart_html(
-            summary['selected_hour']['per_location'],
+            selected_data,
+            total_data,
+            average_data,
             date=date,
             time=time_input,
             traffic_type=traffic_type
