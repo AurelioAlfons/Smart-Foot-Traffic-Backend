@@ -1,9 +1,18 @@
+# ====================================================
+# Main Server for Smart Foot Traffic System
+# ----------------------------------------------------
+# - Hosts Flask app and registers all API routes
+# - Serves heatmap and bar chart HTML files
+# - Auto-generates default map on first request
+# - Adds CORS and basic security headers
+# ====================================================
+
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 import os
-import logging  # ✅ Correct logging import
+import logging  
 
-# 🔧 App Setup
+# App Setup
 app = Flask(__name__)
 CORS(app)
 
@@ -12,35 +21,35 @@ from routes.heatmap_routes import heatmap_bp
 from routes.statistics_routes import stats_bp
 from routes.details_routes import snapshot_bp
 
-# ✅ Suppress Werkzeug's default logs
+# Suppress Werkzeug's default logs
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
-# 🔗 Register Blueprints
+# Register Blueprints
 app.register_blueprint(heatmap_bp)
 app.register_blueprint(stats_bp)
 app.register_blueprint(snapshot_bp)
 
-# 📁 Folder Paths
+# Folder Paths
 HEATMAP_FOLDER = os.path.join(os.getcwd(), 'heatmaps')
 BARCHART_FOLDER = r"C:\Capstone\Smart_Foot_Traffic\barchart"
 default_map_generated = False
 
-# 🗺️ Serve Heatmap HTML
+# Serve Heatmap HTML
 @app.route('/heatmaps/<path:filename>')
 def serve_heatmap(filename):
     return send_from_directory(HEATMAP_FOLDER, filename)
 
-# 📊 Serve Bar Chart HTML
+# Serve Bar Chart HTML
 @app.route('/barchart/<path:filename>')
 def serve_barchart(filename):
     return send_from_directory(BARCHART_FOLDER, filename)
 
-# ✅ Health Check
+# Health Check
 @app.route('/healthz')
 def health_check():
     return "OK", 200
 
-# 🌍 Default Heatmap Preload
+# Default Heatmap Preload
 @app.before_request
 def ensure_default_map():
     global default_map_generated
@@ -50,7 +59,7 @@ def ensure_default_map():
         generate_default_map()
         default_map_generated = True
 
-# 🧰 CORS & Security Headers
+# CORS & Security Headers
 @app.after_request
 def apply_cors_headers(response):
     response.headers['X-Frame-Options'] = 'ALLOWALL'
@@ -59,7 +68,7 @@ def apply_cors_headers(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     return response
 
-# ▶️ Run the Server
+# Run the Server
 if __name__ == '__main__':
     print("✅ Starting Smart Foot Traffic server on http://localhost:5000\n")
     app.run(host='0.0.0.0', port=5000)

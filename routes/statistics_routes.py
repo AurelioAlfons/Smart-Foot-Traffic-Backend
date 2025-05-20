@@ -1,3 +1,12 @@
+# ====================================================
+# Statistics API Routes for Smart Foot Traffic
+# ----------------------------------------------------
+# - Handles summary and seasonal stats endpoints
+# - Calls analytics engine for traffic data and trends
+# - Returns JSON for frontend charts and dashboard
+# - Used by /api/summary_stats and /api/seasonal_stats
+# ====================================================
+
 from flask import Blueprint, request, jsonify
 from backend.analytics.statistics import get_summary_stats
 from backend.analytics.season_stats.season_stats import get_seasonal_stats

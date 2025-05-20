@@ -9,11 +9,11 @@
 import os
 from dotenv import load_dotenv
 
-# 📥 Load environment variables from .env file (optional but useful)
+# Load environment variables from .env file (optional but useful)
 load_dotenv()
 
 # ==========================================
-# 🌐 DEFAULT: Connect to Railway MySQL (Cloud)
+# DEFAULT: Connect to Railway MySQL (Cloud)
 # ==========================================
 # DB_CONFIG = {
 #     "host": "metro.proxy.rlwy.net",
@@ -24,8 +24,8 @@ load_dotenv()
 # }
 
 # ==========================================
-# 🛠️ ALTERNATIVE: Use Localhost MySQL for Dev
-# 👉 To use this, comment the Railway block above and uncomment this one
+# ALTERNATIVE: Use Localhost MySQL for Dev
+# To use this, comment the Railway block above and uncomment this one
 # ==========================================
 DB_CONFIG = {
     'host': 'localhost',
@@ -36,8 +36,8 @@ DB_CONFIG = {
 }
 
 # ==========================================
-# 📦 OPTIONAL: Use environment variables (.env) for local or Render
-# 👉 Only use this if you've set up DB_HOST, DB_USER, etc. in .env or Render dashboard
+# OPTIONAL: Use environment variables (.env) for local or Render
+# Only use this if you've set up DB_HOST, DB_USER, etc. in .env or Render dashboard
 # ==========================================
 # DB_CONFIG = {
 #     'host': os.getenv('DB_HOST'),

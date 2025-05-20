@@ -11,19 +11,19 @@ from backend.config import DB_CONFIG
 
 def create_indexes_if_missing():
     index_queries = [
-        # ✅ Index for processed_data (Date, Time, Location)
+        # Index for processed_data (Date, Time, Location)
         ("idx_processed_date_time_location", """
             CREATE INDEX idx_processed_date_time_location
             ON processed_data (Date, Time, Location)
         """),
 
-        # ✅ Index for traffic_counts (Traffic_Type, Data_ID)
+        # Index for traffic_counts (Traffic_Type, Data_ID)
         ("idx_traffic_counts_type_dataid", """
             CREATE INDEX idx_traffic_counts_type_dataid
             ON traffic_counts (Traffic_Type, Data_ID)
         """),
 
-        # ✅ Index for weather_season_data (Data_ID)
+        # Index for weather_season_data (Data_ID)
         ("idx_weather_dataid", """
             CREATE INDEX idx_weather_dataid
             ON weather_season_data (Data_ID)

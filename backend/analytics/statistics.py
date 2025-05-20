@@ -98,7 +98,7 @@ def get_summary_stats(date, time_input, traffic_type):
                 "count": hourly_totals[peak_hr]
             }
 
-        # 🔹 Static placeholders
+        # Static placeholders
         summary['weather'] = "Sunny"
         summary['temperature'] = "18°C"
 
@@ -122,7 +122,7 @@ def get_summary_stats(date, time_input, traffic_type):
         if barchart_path:
             barchart_url = f"http://localhost:5000/{barchart_path.replace(os.sep, '/')}"
 
-        # 🔁 Update BarChart_URL in heatmaps table
+        # Update BarChart_URL in heatmaps table
         if barchart_url:
             cursor.close()
             connection.close()
@@ -148,7 +148,7 @@ def get_summary_stats(date, time_input, traffic_type):
 
             connection.commit()
 
-        # ✅ Build location availability map
+        # Build location availability map
         included_locations = summary['selected_hour']['per_location'].keys()
         location_availability = {
             loc: loc in included_locations
@@ -185,7 +185,7 @@ def get_season_from_month(month):
     return "Unknown"
 
 
-# 🎯 Standalone test
+# Standalone test
 if __name__ == "__main__":
     result = get_summary_stats("2024-05-05", "14:00:00", "Vehicle Count")
     pprint(result)
