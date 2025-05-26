@@ -89,8 +89,10 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
 
             base_map = render_heatmap_map(df, selected_type, label, time_filter)
             os.makedirs("heatmaps", exist_ok=True)
+            html = base_map.get_root().render()
+            minified = ''.join(line.strip() for line in html.splitlines())
             with open(filename, "w", encoding="utf-8", errors="ignore") as f:
-                f.write(base_map.get_root().render())
+                f.write(minified)
 
         else:
             with Progress(
@@ -127,8 +129,10 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
                 mark("render")
 
                 os.makedirs("heatmaps", exist_ok=True)
+                html = base_map.get_root().render()
+                minified = ''.join(line.strip() for line in html.splitlines())
                 with open(filename, "w", encoding="utf-8", errors="ignore") as f:
-                    f.write(base_map.get_root().render())
+                    f.write(minified)
                 progress.advance(task_id)
                 mark("save")
 
