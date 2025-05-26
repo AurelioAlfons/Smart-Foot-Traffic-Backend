@@ -7,6 +7,7 @@
 # - Adds CORS and basic security headers
 # ====================================================
 
+import time
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 import os
@@ -42,15 +43,27 @@ default_map_generated = False
 @app.route('/heatmaps/<path:filename>')
 def serve_heatmap(filename):
     console.print("\n[bold magenta]========== Serving Heatmap ==========[/bold magenta]")
-    console.print(f"Serving heatmap file: [green]{filename}[/green]")
-    return send_from_directory(HEATMAP_FOLDER, filename)
+    start = time.time()
+    
+    console.print(f"Requested heatmap file: [green]{filename}[/green]")
+    response = send_from_directory(HEATMAP_FOLDER, filename)
+    
+    duration = time.time() - start
+    console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
+    return response
 
 # Serve Bar Chart HTML
 @app.route('/barchart/<path:filename>')
 def serve_barchart(filename):
     console.print("\n[bold magenta]========== Serving Bar Chart ==========[/bold magenta]")
-    console.print(f"Serving bar chart file: [green]{filename}[/green]")
-    return send_from_directory(BARCHART_FOLDER, filename)
+    start = time.time()
+    
+    console.print(f"Requested bar chart file: [green]{filename}[/green]")
+    response = send_from_directory(BARCHART_FOLDER, filename)
+    
+    duration = time.time() - start
+    console.print(f"[cyan]⏱️ Time taken: {duration:.2f} seconds[/cyan]")
+    return response
 
 # Health Check
 @app.route('/healthz')
