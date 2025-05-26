@@ -141,6 +141,7 @@ def export_bar_chart_html(
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(scrollable_html)
 
+    console.print("[bold magenta]" + "=" * 50 + "[/bold magenta]")
     console.print(f"Bar chart saved to: [green]{output_path}[/green]")
 
     # Update BarChart_URL in DB
@@ -162,7 +163,6 @@ def export_bar_chart_html(
         conn.commit()
         cursor.close()
         conn.close()
-        console.print(f"[green]Bar chart URL updated in DB[/green]")
 
     except mysql.connector.Error as e:
         console.print(f"[red]Failed to update BarChart_URL in DB:[/red] {e}")

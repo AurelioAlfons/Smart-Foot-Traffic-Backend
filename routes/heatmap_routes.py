@@ -28,6 +28,7 @@ def api_generate_heatmap():
         console.print("[yellow]Calling smart_generate...[/yellow]")
         smart_generate(date_filter, time_filter, traffic_type)
         console.print("[green]smart_generate completed successfully.[/green]")
+        console.print("[bold magenta]" + "=" * 50 + "[/bold magenta]\n")
 
         # Build URLs
         base_url = request.host_url.rstrip('/')

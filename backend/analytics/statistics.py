@@ -24,7 +24,8 @@ def get_season_from_month(month):
     return "Unknown"
 
 def get_summary_stats(date, time_input, traffic_type):
-    start_time = time.time()
+    start_main = time.time()
+    timings = {}
 
     console.print("\n[bold magenta]========== SUMMARY GENERATION ==========[/bold magenta]")
     console.print(f"Date: [green]{date}[/green] | Time: [green]{time_input}[/green] | Type: [green]{traffic_type}[/green]")
@@ -32,7 +33,6 @@ def get_summary_stats(date, time_input, traffic_type):
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = connection.cursor(dictionary=True)
 
-    # Check cache
     cursor.execute("""
         SELECT Summary_JSON FROM summary_cache
         WHERE Date_Filter = %s AND Time_Filter = %s AND Traffic_Type = %s
@@ -41,7 +41,6 @@ def get_summary_stats(date, time_input, traffic_type):
     cached = cursor.fetchone()
     if cached:
         summary_data = json.loads(cached['Summary_JSON'])
-
         filename = f"{date}_{time_input[:2]}-{traffic_type}.html"
         barchart_path = os.path.join("barchart", filename)
 
@@ -56,49 +55,6 @@ def get_summary_stats(date, time_input, traffic_type):
                     for loc in LOCATION_COORDINATES
                 }
             }
-        else:
-            console.print(f"[yellow]⚠️ Cached summary found, but missing local bar chart: {barchart_path}[/yellow]")
-            selected_data = summary_data['selected_hour']['per_location']
-            total_data = {loc: 0 for loc in LOCATION_COORDINATES}
-
-            # Optional: aggregate from hourly_data if stored in summary
-            for hour in range(24):
-                hour_label = f"{hour:02}:00"
-                for loc, count in summary_data.get("hourly_data", {}).get(hour_label, {}).items():
-                    total_data[loc] += count
-
-            average_data = {
-                loc: round(total_data.get(loc, 0) / 24, 2)
-                for loc in LOCATION_COORDINATES
-            }
-
-            barchart_path = export_bar_chart_html(
-                selected_data,
-                total_data,
-                average_data,
-                date=date,
-                time=time_input,
-                traffic_type=traffic_type
-            )
-
-            if barchart_path:
-                console.print(f"[green]✅ Re-generated missing bar chart: {barchart_path}[/green]")
-            else:
-                console.print("[red]❌ Failed to regenerate missing bar chart[/red]")
-
-            return {
-                "summary": summary_data,
-                "bar_chart": selected_data,
-                "line_chart": {},
-                "location_availability": {
-                    loc: loc in selected_data
-                    for loc in LOCATION_COORDINATES
-                }
-            }
-
-    # ======================
-    # FULL GENERATION BELOW
-    # ======================
 
     summary = {
         "date": date,
@@ -120,7 +76,9 @@ def get_summary_stats(date, time_input, traffic_type):
 
     bar_chart = {}
     line_chart = {}
+
     try:
+        t0 = time.time()
         console.print("Querying hourly and location-based traffic data...")
 
         cursor.execute("""
@@ -135,6 +93,7 @@ def get_summary_stats(date, time_input, traffic_type):
         """, (date, traffic_type))
 
         rows = cursor.fetchall()
+        timings["data_query"] = round(time.time() - t0, 2)
         console.print(f"Fetched {len(rows)} rows of data.")
 
         location_totals = {}
@@ -182,6 +141,7 @@ def get_summary_stats(date, time_input, traffic_type):
             for loc in LOCATION_COORDINATES
         }
 
+        t1 = time.time()
         console.print("[cyan]Generating bar chart...[/cyan]")
         barchart_path = export_bar_chart_html(
             selected_data,
@@ -191,15 +151,15 @@ def get_summary_stats(date, time_input, traffic_type):
             time=time_input,
             traffic_type=traffic_type
         )
+        timings["chart_render"] = round(time.time() - t1, 2)
 
         barchart_url = None
+        t2 = time.time()
         if barchart_path:
-            console.print(f"[green]Bar chart saved to:[/] {barchart_path}")
             base_url = os.getenv("BASE_URL", "http://localhost:5000")
             prod_url = os.getenv("PROD_URL", "https://smart-foot-traffic-backend.onrender.com")
             barchart_url = f"{prod_url}/{barchart_path.replace(os.sep, '/')}" if "localhost" not in base_url else f"{base_url}/{barchart_path.replace(os.sep, '/')}"
 
-            # Update BarChart_URL in heatmaps table
             cursor.close()
             connection.close()
             connection = mysql.connector.connect(**DB_CONFIG)
@@ -218,15 +178,10 @@ def get_summary_stats(date, time_input, traffic_type):
                     WHERE Heatmap_ID = %s
                 """, (barchart_url, heatmap_id))
                 console.print(f"[green]Bar chart URL updated in heatmaps for ID {heatmap_id}[/green]")
-            else:
-                console.print("[yellow]No matching heatmap found. Bar chart URL not inserted.[/yellow]")
-
             connection.commit()
             cursor = connection.cursor(dictionary=True)
-        else:
-            console.print("[red]❌ Bar chart generation failed (returned None)[/red]")
+        timings["db_update"] = round(time.time() - t2, 2)
 
-        # Cache summary
         cursor.execute("""
             INSERT INTO summary_cache (Date_Filter, Time_Filter, Traffic_Type, Summary_JSON)
             VALUES (%s, %s, %s, %s)
@@ -252,8 +207,17 @@ def get_summary_stats(date, time_input, traffic_type):
         if cursor: cursor.close()
         if connection: connection.close()
 
-    duration = round(time.time() - start_time, 2)
-    console.print(f"[green]Summary generation complete in {duration}s[/green]\n")
+    total_duration = round(time.time() - start_main, 2)
+
+    console.print("[bold magenta]" + "-" * 50 + "[/bold magenta]")
+    console.print(f"[bold]📅 Date:[/]    {date}    [bold]🕒 Time:[/] {time_input}")
+    console.print(f"[bold]🚦 Type:[/]    {traffic_type}")
+    console.print("[bold magenta]" + "-" * 50 + "[/bold magenta]")
+    console.print(f"[bold]📊 Data Query           [/bold]{timings.get('data_query', 0):>6.2f}s")
+    console.print(f"[bold]📈 Bar Chart Render     [/bold]{timings.get('chart_render', 0):>6.2f}s")
+    console.print(f"[bold]💾 Save + DB Update     [/bold]{timings.get('db_update', 0):>6.2f}s")
+    console.print(f"[bold]⏱️ Total Duration        [/bold]{total_duration:>6.2f}s")
+    console.print("[bold magenta]" + "=" * 50 + "[/bold magenta]")
 
     return {
         "summary": summary,
@@ -262,7 +226,6 @@ def get_summary_stats(date, time_input, traffic_type):
         "location_availability": location_availability
     }
 
-# Standalone test
 if __name__ == "__main__":
     result = get_summary_stats("2024-05-05", "14:00:00", "Vehicle Count")
     pprint(result)

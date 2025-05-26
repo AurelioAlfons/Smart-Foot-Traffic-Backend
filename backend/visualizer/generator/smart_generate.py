@@ -1,6 +1,7 @@
 import time
 from threading import Thread, Lock
 from rich.console import Console
+from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 
 from backend.visualizer.generator.generate_heatmap import generate_heatmap
 from backend.visualizer.services.data_fetcher import fetch_traffic_data
@@ -11,26 +12,23 @@ console = Console()
 
 # Global control variables
 current_batch_id = 0
-cached_data = {}
-preprocessed_times = set()
+cached_data = {}              # {(date, time, type): DataFrame}
+preprocessed_times = set()    # { "08:00:00", ... }
 cache_lock = Lock()
 
 def get_all_hourly_times():
     return [f"{h:02}:00:00" for h in range(24)]
 
+# Caches traffic data (no weather/temp here)
 def preprocess_heatmap_data(date_filter, time_filter, traffic_type):
-    assign_weather(date_filter)
-    assign_temperature(date_filter)
-
     df = fetch_traffic_data(date_filter, time_filter, traffic_type)
 
     if df is not None and not df.empty:
         with cache_lock:
             cached_data[(date_filter, time_filter, traffic_type)] = df
             preprocessed_times.add(time_filter)
-    else:
-        console.print(f"[bold red]No data to cache for {time_filter}[/bold red]")
 
+# Entry point for generating + background work
 def smart_generate(date_filter, time_filter, traffic_type):
     global current_batch_id
     current_batch_id += 1
@@ -39,6 +37,7 @@ def smart_generate(date_filter, time_filter, traffic_type):
     console.print("\n[bold magenta]========== HEATMAP GENERATION ==========[/bold magenta]")
     console.print(f"Date: [green]{date_filter}[/green]  Time: [green]{time_filter}[/green]  Type: [green]{traffic_type}[/green]")
 
+    # Try to use cached data first
     cache_key = (date_filter, time_filter, traffic_type)
     with cache_lock:
         df = cached_data.get(cache_key)
@@ -46,43 +45,79 @@ def smart_generate(date_filter, time_filter, traffic_type):
     if df is not None and not df.empty:
         console.print(f"[green]Using cached data for {time_filter}[/green]")
     else:
-        console.print(f"[yellow]No valid cache for {time_filter}, refetching...[/yellow]")
+        console.print(f"[yellow]No valid cache for {time_filter}, fetching...[/yellow]")
         df = fetch_traffic_data(date_filter, time_filter, traffic_type)
 
+    # Generate the heatmap immediately
     generate_heatmap(date_filter, time_filter, traffic_type, quiet=False, df=df)
-
     console.print("[green]Heatmap generation completed.[/green]")
 
+    # Background preprocessing thread
     def background_preprocessing():
         time.sleep(1.5)
         console.print("\n[bold magenta]=== Starting Background Preprocessing ===[/bold magenta]")
+
+        try:
+            with Progress(
+                TextColumn("[bold cyan]Assigning Weather/Temp"),
+                BarColumn(bar_width=None),
+                "[progress.percentage]{task.percentage:>3.0f}%",
+                TimeElapsedColumn(),
+                console=console,
+                transient=True
+            ) as progress:
+                task_id = progress.add_task("Assigning Weather/Temp", total=2)
+
+                assign_weather(date_filter)
+                progress.advance(task_id)
+
+                assign_temperature(date_filter)
+                progress.advance(task_id)
+
+            console.print(f"[green]Weather/temp assignment done for {date_filter}[/green]")
+
+        except Exception as e:
+            console.print(f"[red]Failed assigning weather/temp: {e}[/red]")
+            return
+
         preprocessed_hours = []
+        hours_to_process = [h for h in get_all_hourly_times() if h != time_filter]
 
-        for hour in get_all_hourly_times():
-            if hour == time_filter:
-                continue
-            if batch_id != current_batch_id:
-                console.print("[bold red]Preprocessing cancelled due to newer request.[/bold red]")
-                return
+        with Progress(
+            TextColumn("[bold cyan]Caching traffic data"),
+            BarColumn(),
+            "[progress.percentage]{task.percentage:>3.0f}%",
+            TimeElapsedColumn(),
+            console=console,
+            transient=True
+        ) as progress:
+            task_id = progress.add_task("Caching traffic data", total=len(hours_to_process))
 
-            key = (date_filter, hour, traffic_type)
-            with cache_lock:
-                if key in cached_data:
-                    continue
+            for hour in hours_to_process:
+                if batch_id != current_batch_id:
+                    console.print("[bold red]Preprocessing cancelled due to newer request.[/bold red]")
+                    return
 
-            try:
-                preprocess_heatmap_data(date_filter, hour, traffic_type)
-                hour_int = int(hour.split(":")[0])
-                preprocessed_hours.append(hour_int)
-            except Exception as e:
-                console.print(f"[bold red]Failed to preprocess {hour}:[/bold red] {e}")
+                key = (date_filter, hour, traffic_type)
+                with cache_lock:
+                    if key in cached_data:
+                        progress.advance(task_id)
+                        continue
+
+                try:
+                    df = fetch_traffic_data(date_filter, hour, traffic_type)
+                    if df is not None and not df.empty:
+                        with cache_lock:
+                            cached_data[(date_filter, hour, traffic_type)] = df
+                            preprocessed_times.add(hour)
+                            preprocessed_hours.append(int(hour.split(":")[0]))
+                except Exception:
+                    pass  # skip logging errors to avoid clutter
+
+                progress.advance(task_id)
 
         if preprocessed_hours:
-            console.print(f"\nPreprocessed [green]{traffic_type}[/green] hours: [green]{preprocessed_hours}[/green]")
-        if 0 not in preprocessed_hours:
-            console.print("[yellow]Skipped hour: 00[/yellow]")
-
-        console.print("[green]All times preprocessed and cached.[/green]")
-        console.print("[bold magenta]=========================================[/bold magenta]\n")
+            short_list = sorted(preprocessed_hours)
+            console.print(f"[green]Preprocessed [bold]{traffic_type}[/bold] hours: {short_list}[/green]")
 
     Thread(target=background_preprocessing, daemon=True).start()

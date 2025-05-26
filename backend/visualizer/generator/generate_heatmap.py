@@ -3,6 +3,7 @@ from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 import os, time
 from datetime import datetime
 import mysql.connector
+from threading import Thread
 from rich.errors import LiveError
 
 from backend.visualizer.services.heatmap_log import log_heatmap_duration
@@ -45,13 +46,11 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
         f"heatmap_{label}_{(time_filter or 'all').replace(':', '-')}_{selected_type.replace(' ', '_')}.html"
     )
 
-    # Skip if already exists
     if os.path.exists(filename):
         if not quiet:
             console.print(f"[green]Skipping (already exists): {filename}[/green]")
         return
 
-    # DB check for existing record
     existing_id = None
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
@@ -76,13 +75,17 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
     try:
         if quiet:
             weather_ok, temp_ok = check_weather_and_temp_exists(date_filter)
-            if not weather_ok:
-                assign_weather(date_filter)
-            if not temp_ok:
-                assign_temperature(date_filter)
-
             if df is None or getattr(df, "empty", True):
                 df = fetch_traffic_data(date_filter, time_filter, selected_type)
+
+            if not (weather_ok and temp_ok):
+                def background_weather_temp():
+                    if not weather_ok:
+                        assign_weather(date_filter)
+                    if not temp_ok:
+                        assign_temperature(date_filter)
+                    console.print(f"[green]\u2705 Weather/temp background assignment finished for {date_filter}[/green]")
+                Thread(target=background_weather_temp, daemon=True).start()
 
             base_map = render_heatmap_map(df, selected_type, label, time_filter)
             os.makedirs("heatmaps", exist_ok=True)
@@ -101,14 +104,17 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
                 task_id = progress.add_task("Generating Heatmap", total=6)
 
                 weather_ok, temp_ok = check_weather_and_temp_exists(date_filter)
-                if not weather_ok:
-                    assign_weather(date_filter)
-                progress.advance(task_id)
-                mark("weather")
 
-                if not temp_ok:
-                    assign_temperature(date_filter)
-                progress.advance(task_id)
+                if not (weather_ok and temp_ok):
+                    def background_weather_temp():
+                        if not weather_ok:
+                            assign_weather(date_filter)
+                        if not temp_ok:
+                            assign_temperature(date_filter)
+                    Thread(target=background_weather_temp, daemon=True).start()
+
+                progress.advance(task_id, 2)
+                mark("weather")
                 mark("temperature")
 
                 if df is None or getattr(df, "empty", True):
@@ -130,15 +136,11 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
         if not quiet:
             print("Rich LiveError: running in headless mode.")
 
-    # Save/update to DB
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
         generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Get base URLs from env (local or online)
-        # If running on localhost, use base_url
-        # If running on Render or Railway, use prod_url
         base_url = os.getenv("BASE_URL", "http://localhost:5000")
         prod_url = os.getenv("PROD_URL", "https://smart-foot-traffic-backend.onrender.com")
 
@@ -181,8 +183,6 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
     except mysql.connector.Error as e:
         if not quiet:
             console.print(f"[red]DB insert/update failed:[/red] {e}")
-        return
 
-# Standalone test
 if __name__ == "__main__":
     generate_heatmap("2025-02-27", "01:00:00", "Vehicle Count")

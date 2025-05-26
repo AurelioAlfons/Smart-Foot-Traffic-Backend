@@ -1,11 +1,3 @@
-# ===========================================================
-# Heatmap Generation Profiler Logger
-# -----------------------------------------------------------
-# - Logs time taken for each step in the heatmap pipeline
-# - Includes: weather, temperature, fetch, render, save
-# - Prints to console and appends to logs/heatmap_profiling.log
-# ===========================================================
-
 import os
 from rich.console import Console
 
@@ -22,17 +14,21 @@ def log_heatmap_duration(date_filter, time_filter, selected_type, season_filter,
         "⏱️ Total Duration":       total
     }
 
-    log_msg = (
-        f"\n{'=' * 50}\n"
-        f"📅 Date:    {date_filter}    🕒 Time: {time_filter or 'All'}\n"
-        f"🚦 Type:    {selected_type}"
-        f"\n{'-' * 50}\n"
-        + "\n".join(f"{label:<22} {seconds:>6.2f}s" for label, seconds in durations.items()) +
-        f"\n{'=' * 50}\n"
-    )
+    console.print("\n[bold magenta]" + "=" * 50 + "[/bold magenta]")
+    console.print(f"📅 Date:    {date_filter}    🕒 Time: {time_filter or 'All'}")
+    console.print(f"🚦 Type:    {selected_type}")
+    console.print("[bold magenta]" + "-" * 50 + "[/bold magenta]")
+    for label, seconds in durations.items():
+        console.print(f"{label:<22} {seconds:>6.2f}s")
+    console.print("[bold magenta]" + "-" * 50 + "[/bold magenta]")
 
-    console.print(log_msg)
     os.makedirs("logs", exist_ok=True)
     with open("logs/heatmap_profiling.log", "a", encoding="utf-8") as f:
-        f.write(log_msg)
-
+        f.write(
+            f"\n{'=' * 50}\n"
+            f"📅 Date:    {date_filter}    🕒 Time: {time_filter or 'All'}\n"
+            f"🚦 Type:    {selected_type}\n"
+            f"{'-' * 50}\n"
+            + "\n".join(f"{label:<22} {seconds:>6.2f}s" for label, seconds in durations.items()) +
+            f"\n{'=' * 50}"
+        )
