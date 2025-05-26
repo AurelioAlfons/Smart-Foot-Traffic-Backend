@@ -1,26 +1,35 @@
 from flask import Blueprint, request, jsonify
 from backend.visualizer.generator.smart_generate import smart_generate
+from rich.console import Console
 
+# Blueprint setup
 heatmap_bp = Blueprint('heatmap_bp', __name__)
+console = Console()
 
 @heatmap_bp.route('/api/generate_heatmap', methods=['POST'])
 def api_generate_heatmap():
-    print("🚀 /api/generate_heatmap hit")
+    console.print("\n[bold magenta]========== /api/generate_heatmap ==========[/bold magenta]")
+
     try:
+        # Extract request data
         data = request.get_json(force=True)
-        print("📥 Data received:", data)
+        console.print(f"Data received: [green]{data}[/green]")
 
         date_filter = data.get('date')
         time_filter = data.get('time')
         traffic_type = data.get('traffic_type')
 
+        # Validate required fields
         if not date_filter or not time_filter or not traffic_type:
-            print("❌ Missing required fields.")
+            console.print("[bold red]Missing required fields: date, time, or traffic_type[/bold red]")
             return jsonify({"status": "error", "message": "Missing date, time, or traffic_type"}), 400
 
+        # Call backend generator
+        console.print("[yellow]Calling smart_generate...[/yellow]")
         smart_generate(date_filter, time_filter, traffic_type)
-        print("✅ smart_generate completed.")
+        console.print("[green]smart_generate completed successfully.[/green]")
 
+        # Build URLs
         base_url = request.host_url.rstrip('/')
         time_str = (time_filter or 'all').replace(':', '-')
         type_str = traffic_type.replace(' ', '_')
@@ -28,9 +37,9 @@ def api_generate_heatmap():
         return jsonify({
             "status": "generating",
             "heatmap_url": f"{base_url}/heatmaps/heatmap_{date_filter}_{time_str}_{type_str}.html",
-            "barchart_url": f"{base_url}/barchart/barchart_{date_filter}_{time_str}_{type_str}.html"
+            "barchart_url": f"{base_url}/barchart/bar_{date_filter}_{time_str}_{type_str}.html"
         }), 202
 
     except Exception as e:
-        print("🔥 ERROR in /api/generate_heatmap:", e)
+        console.print(f"[bold red]ERROR in /api/generate_heatmap:[/bold red] {e}")
         return jsonify({"status": "error", "message": str(e)}), 500

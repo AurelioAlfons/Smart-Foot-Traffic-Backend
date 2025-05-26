@@ -20,5 +20,3 @@ def generate_default_map():
 
     map_obj = render_heatmap_map(df, "Pedestrian Count", "Default Map", None)
     map_obj.save(output_path)
-
-    print("[1] Default_map.html generated.")

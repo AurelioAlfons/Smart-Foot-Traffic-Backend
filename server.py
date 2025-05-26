@@ -10,13 +10,17 @@
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 import os
-import logging  
+import logging
+from rich.console import Console
+
+# Console setup
+console = Console()
 
 # App Setup
 app = Flask(__name__)
 CORS(app)
 
-# 🔁 Import Blueprints
+# Import Blueprints
 from routes.heatmap_routes import heatmap_bp
 from routes.statistics_routes import stats_bp
 from routes.details_routes import snapshot_bp
@@ -37,16 +41,21 @@ default_map_generated = False
 # Serve Heatmap HTML
 @app.route('/heatmaps/<path:filename>')
 def serve_heatmap(filename):
+    console.print("\n[bold magenta]========== Serving Heatmap ==========[/bold magenta]")
+    console.print(f"Serving heatmap file: [green]{filename}[/green]")
     return send_from_directory(HEATMAP_FOLDER, filename)
 
 # Serve Bar Chart HTML
 @app.route('/barchart/<path:filename>')
 def serve_barchart(filename):
+    console.print("\n[bold magenta]========== Serving Bar Chart ==========[/bold magenta]")
+    console.print(f"Serving bar chart file: [green]{filename}[/green]")
     return send_from_directory(BARCHART_FOLDER, filename)
 
 # Health Check
 @app.route('/healthz')
 def health_check():
+    console.print("[green]Health check OK[/green]")
     return "OK", 200
 
 # Default Heatmap Preload
@@ -56,8 +65,11 @@ def ensure_default_map():
     path = os.path.join(HEATMAP_FOLDER, 'default_map.html')
     if not os.path.exists(path) or not default_map_generated:
         from backend.visualizer.generator.generate_default import generate_default_map
-        generate_default_map()
-        default_map_generated = True
+        try:
+            generate_default_map()
+            default_map_generated = True
+        except Exception as e:
+            console.print(f"[bold red]Failed to generate default map:[/bold red] {e}")
 
 # CORS & Security Headers
 @app.after_request
@@ -70,6 +82,6 @@ def apply_cors_headers(response):
 
 # Run the Server
 if __name__ == '__main__':
-    print("Starting Smart Foot Traffic server on http://localhost:5000")
-    print("===============================================================\n")
+    console.print("[bold magenta]=== Starting Smart Foot Traffic Server ===[/bold magenta]")
+    console.print("[cyan]Listening on http://localhost:5000[/cyan]\n")
     app.run(host='0.0.0.0', port=5000)

@@ -11,6 +11,9 @@
 
 import os
 import plotly.graph_objects as go
+from rich.console import Console
+
+console = Console()
 
 def export_bar_chart_html(
     selected_data: dict,
@@ -20,8 +23,10 @@ def export_bar_chart_html(
     time=None,
     traffic_type=None
 ):
+    console.print("\n[bold magenta]========== Generating Bar Chart ==========[/bold magenta]")
+
     if not selected_data and not total_data and not average_data:
-        print("⚠️ No bar chart data to export.")
+        console.print("[bold red]No bar chart data to export.[/bold red]")
         return None
 
     os.makedirs("barchart", exist_ok=True)
@@ -40,7 +45,6 @@ def export_bar_chart_html(
     # Create the figure
     fig = go.Figure()
 
-    # Trace 1: Selected Hour
     fig.add_trace(go.Bar(
         x=locations,
         y=[selected_data.get(loc, 0) for loc in locations],
@@ -50,7 +54,6 @@ def export_bar_chart_html(
         visible=True
     ))
 
-    # Trace 2: Total Count
     fig.add_trace(go.Bar(
         x=locations,
         y=[total_data.get(loc, 0) for loc in locations],
@@ -60,7 +63,6 @@ def export_bar_chart_html(
         visible=False
     ))
 
-    # Trace 3: Daily Average
     fig.add_trace(go.Bar(
         x=locations,
         y=[average_data.get(loc, 0) for loc in locations],
@@ -94,6 +96,7 @@ def export_bar_chart_html(
             "showactive": True
         }]
     )
+
     html_code = fig.to_html(full_html=False, include_plotlyjs='cdn')
 
     scrollable_html = f"""
@@ -101,8 +104,8 @@ def export_bar_chart_html(
     <head>
         <style>
         .scroll-container {{
-            height: 700px;        
-            overflow-y: scroll;   
+            height: 700px;
+            overflow-y: scroll;
             padding: 10px;
             border-top: 2px solid #eee;
         }}
@@ -123,6 +126,5 @@ def export_bar_chart_html(
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(scrollable_html)
 
-    print(f"✅ Combined bar chart saved to {output_path}\n")
-
+    console.print(f"Bar chart saved to: [green]{output_path}[/green]\n")
     return output_path

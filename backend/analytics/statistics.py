@@ -12,16 +12,19 @@ import mysql.connector
 from datetime import datetime
 import time
 from pprint import pprint
+from rich.console import Console
 
 from backend.analytics.bar_chart.generate_barchart import export_bar_chart_html
 from backend.config import DB_CONFIG
 from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
 
+console = Console()
 
 def get_summary_stats(date, time_input, traffic_type):
     start_time = time.time()
-    print("\n🚦 Starting summary generation...")
-    print(f"📅 Date: {date} | 🕒 Time: {time_input} | 🚸 Type: {traffic_type}\n")
+
+    console.print("\n[bold magenta]========== SUMMARY GENERATION ==========[/bold magenta]")
+    console.print(f"Date: [green]{date}[/green] | Time: [green]{time_input}[/green] | Type: [green]{traffic_type}[/green]")
 
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = connection.cursor(dictionary=True)
@@ -52,7 +55,8 @@ def get_summary_stats(date, time_input, traffic_type):
         month = int(date.split("-")[1])
         summary["season"] = get_season_from_month(month)
 
-        print("📊 Querying hourly and location-based traffic data...")
+        console.print("Querying hourly and location-based traffic data...")
+
         cursor.execute("""
             SELECT 
                 HOUR(pd.Date_Time) AS hour,
@@ -65,7 +69,7 @@ def get_summary_stats(date, time_input, traffic_type):
         """, (date, traffic_type))
 
         rows = cursor.fetchall()
-        print(f"✅ Fetched {len(rows)} rows of data.")
+        console.print(f"Fetched {len(rows)} rows of data.")
 
         location_totals = {}
         hourly_totals = [0] * 24
@@ -148,9 +152,9 @@ def get_summary_stats(date, time_input, traffic_type):
                     SET BarChart_URL = %s
                     WHERE Heatmap_ID = %s
                 """, (barchart_url, heatmap_id))
-                print(f"🟩 Bar chart URL updated in heatmaps for ID {heatmap_id}")
+                console.print(f"[green]Bar chart URL updated in heatmaps for ID {heatmap_id}[/green]")
             else:
-                print("⚠️ No matching heatmap found. Bar chart URL not inserted.")
+                console.print("[yellow]No matching heatmap found. Bar chart URL not inserted.[/yellow]")
 
             connection.commit()
 
@@ -162,14 +166,14 @@ def get_summary_stats(date, time_input, traffic_type):
         }
 
     except Exception as e:
-        print("❌ Error in seasonal_stats:", e)
+        console.print(f"[bold red]Error in seasonal_stats:[/bold red] {e}")
 
     finally:
         if cursor: cursor.close()
         if connection: connection.close()
 
     duration = round(time.time() - start_time, 2)
-    print(f"\n✅ Summary generation complete in {duration}s\n")
+    console.print(f"[green]Summary generation complete in {duration}s[/green]\n")
 
     return {
         "summary": summary,
