@@ -1,138 +1,120 @@
 # ================================================================
 # Database Setup for Smart Foot Traffic
 # ------------------------------------------------
-# This file is used to create the database table from scratch
-# So it checks if the database already has the tables or not
-# Helps automate the process of setting up the database
-# Instead of manually running SQL query in MySQL all the time when re run
+# - Drops and recreates all required tables
+# - Includes new summary_cache table to cache summary stats
 # ================================================================
 
-import mysql.connector  # Used to connect to MySQL database
-import sys, os  # Needed to fix import path for subprocess runs
+import mysql.connector
+import sys, os
 
-# 🛠️ Makes sure we can import stuff from the main project folder wherever we are in the directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
-# 🔌 Database login details
 from backend.config import DB_CONFIG
 
-# 🗑️ Step 1: List of SQL commands to delete old tables (clean reset)
-# ⚠️ Order matters because some tables depend on others
+# Step 1: Drop old tables (drop summary_cache too)
 DROP_QUERIES = [
-    "DROP TABLE IF EXISTS weather_season_data;",  # Delete weather table
-    "DROP TABLE IF EXISTS traffic_counts;",       # Delete traffic table
-    "DROP TABLE IF EXISTS processed_data;",       # Delete main data table
+    "DROP TABLE IF EXISTS summary_cache;",
+    "DROP TABLE IF EXISTS weather_season_data;",
+    "DROP TABLE IF EXISTS traffic_counts;",
+    "DROP TABLE IF EXISTS processed_data;"
 ]
 
-# 🧱 Step 2: SQL commands to create tables from scratch
+# Step 2: Create all required tables
 CREATE_QUERIES = [
-    # Table to store cleaned data from CSV
+    # Processed Data Table
     """
     CREATE TABLE IF NOT EXISTS processed_data (
-        Data_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
-        Date_Time DATETIME,                      -- Full timestamp
-        Date DATE,                               -- Date only
-        Time TIME,                               -- Time only
-        Duration VaRCHAR(50),                    -- Duration Time (01:00:-02:00)
-        Location VARCHAR(255)                    -- Sensor location
+        Data_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Date_Time DATETIME,
+        Date DATE,
+        Time TIME,
+        Duration VARCHAR(50),
+        Location VARCHAR(255)
     );
     """,
 
-    # Table for traffic counts linked to processed_data
+    # Traffic Counts
     """
     CREATE TABLE IF NOT EXISTS traffic_counts (
-        Traffic_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
-        Data_ID INT,                                -- Link to processed_data
-        Traffic_Type VARCHAR(50),                   -- Pedestrian, Vehicle, etc.
-        Interval_Count INT,                         -- Count in specific time window
-        Total_Count INT,                            -- Cumulative count
+        Traffic_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Data_ID INT,
+        Traffic_Type VARCHAR(50),
+        Interval_Count INT,
+        Total_Count INT,
         FOREIGN KEY (Data_ID) REFERENCES processed_data(Data_ID)
     );
     """,
 
-    # Table to store weather and season info
+    # Weather & Season
     """
     CREATE TABLE IF NOT EXISTS weather_season_data (
-            Weather_ID INT AUTO_INCREMENT PRIMARY KEY,
-            Data_ID INT NOT NULL,
-            Weather VARCHAR(50) NOT NULL,
-            Temperature FLOAT,
-            Season VARCHAR(50) NOT NULL,
-            FOREIGN KEY (Data_ID) REFERENCES processed_data(Data_ID),
-            INDEX idx_season (Season),
-            INDEX idx_weather (Weather)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-        """,
-    # Table to store saved heatmaps
+        Weather_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Data_ID INT NOT NULL,
+        Weather VARCHAR(50) NOT NULL,
+        Temperature FLOAT,
+        Season VARCHAR(50) NOT NULL,
+        FOREIGN KEY (Data_ID) REFERENCES processed_data(Data_ID),
+        INDEX idx_season (Season),
+        INDEX idx_weather (Weather)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    """,
 
+    # Heatmap Table
     """
     CREATE TABLE IF NOT EXISTS heatmaps (
-        Heatmap_ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique ID
-        Generated_At DATETIME NOT NULL,             -- When the map was made
-        Traffic_Type VARCHAR(50),                   -- Type of traffic shown
-        Date_Filter DATE,                           -- Filter used for date
-        Time_Filter TIME,                           -- Filter used for time
-        Status VARCHAR(20) DEFAULT 'Generated',     -- Status info (optional)
-        Heatmap_URL VARCHAR(255),                   -- Where the map is saved
-        BarChart_URL VARCHAR(255)                   -- Where the bar chart is saved
+        Heatmap_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Generated_At DATETIME NOT NULL,
+        Traffic_Type VARCHAR(50),
+        Date_Filter DATE,
+        Time_Filter TIME,
+        Status VARCHAR(20) DEFAULT 'Generated',
+        Heatmap_URL VARCHAR(255),
+        BarChart_URL VARCHAR(255)
+    );
+    """,
+
+    # Summary Cache Table
+    """
+    CREATE TABLE IF NOT EXISTS summary_cache (
+        Summary_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Date_Filter DATE,
+        Time_Filter TIME,
+        Traffic_Type VARCHAR(50),
+        Summary_JSON TEXT,
+        Generated_At DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_summary (Date_Filter, Time_Filter, Traffic_Type)
     );
     """
 ]
 
-# 🔁 This function connects to the database and runs the queries
 def initialize_database():
     try:
-        # Connect to the MySQL server
         conn = mysql.connector.connect(**DB_CONFIG)
-        # This acts as a cursor to execute SQL commands
-        # It allows us to run SQL queries and fetch results
-        # Cursor is like a pointer to the current position in the database
         cursor = conn.cursor()
 
-        # =====================================================
-        # 🗑️ Step A: Drop old tables if they exist
-        # =====================================================
         print("\n========================================")
-        print("🗑️ Dropping old tables (if any)...")
+        print("Dropping old tables (if any)...")
         print("========================================")
-        # Loop through each query in the DROP_QUERIES list
-        # Remember it has the drop (4) tables 
         for query in DROP_QUERIES:
-            # Execute using the cursor, query == DROP_QUERIES contents
             cursor.execute(query)
 
-        # =====================================================
-        # 🛠️ Step B: Create new tables fresh
-        # =====================================================
         print("\n========================================")
-        print("🛠️ Creating new tables...")
+        print("Creating new tables...")
         print("========================================")
-        # Loop through each query in the CREATE_QUERIES list - same like DROP_QUERIES
-        # This time it will create (4) tables
         for query in CREATE_QUERIES:
-            # Execute using the cursor, query == CREATE_QUERIES contents
             cursor.execute(query)
 
-        # Save all changes to the database
-        # This is important because without it, nothing will be saved
         conn.commit()
-        # Log success message
-        print("\n✅ Tables have been dropped and recreated successfully.")
-    
-    # Error handling so it won't crash if something goes wrong
-    # This will catch any MySQL errors that occur during the process
-    # It will print the error message to the console
+        print("\nTables have been dropped and recreated successfully.")
+
     except mysql.connector.Error as err:
-        print(f"\n❌ MySQL Error: {err}")
-    
-    # This runs wherever, it program succeeds or fail (both)
+        print(f"\nMySQL Error: {err}")
+
     finally:
-        # Always close connection
         if cursor:
             cursor.close()
         if conn:
             conn.close()
 
-# 🏁 Only run this if the file is executed directly
 if __name__ == "__main__":
     initialize_database()

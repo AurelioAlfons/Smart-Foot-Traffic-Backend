@@ -1,13 +1,5 @@
-# ====================================================
-# Analytics Engine for Smart Foot Traffic (Summary)
-# ----------------------------------------------------
-# - Generates summary stats and per-hour traffic data
-# - Builds bar chart and updates its URL in the DB
-# - Calculates top location, peak hour, and season
-# - Called via /api/summary_stats for frontend analytics
-# ====================================================
-
 import os
+import json
 import mysql.connector
 from datetime import datetime
 import time
@@ -20,6 +12,17 @@ from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINA
 
 console = Console()
 
+def get_season_from_month(month):
+    if month in [12, 1, 2]:
+        return "Summer"
+    elif month in [3, 4, 5]:
+        return "Autumn"
+    elif month in [6, 7, 8]:
+        return "Winter"
+    elif month in [9, 10, 11]:
+        return "Spring"
+    return "Unknown"
+
 def get_summary_stats(date, time_input, traffic_type):
     start_time = time.time()
 
@@ -29,13 +32,34 @@ def get_summary_stats(date, time_input, traffic_type):
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = connection.cursor(dictionary=True)
 
+    cursor.execute("""
+        SELECT Summary_JSON FROM summary_cache
+        WHERE Date_Filter = %s AND Time_Filter = %s AND Traffic_Type = %s
+    """, (date, time_input, traffic_type))
+
+    cached = cursor.fetchone()
+    if cached:
+        summary_data = json.loads(cached['Summary_JSON'])
+        console.print("[cyan]✅ Summary loaded from cache[/cyan]")
+        cursor.close()
+        connection.close()
+        return {
+            "summary": summary_data,
+            "bar_chart": summary_data['selected_hour']['per_location'],
+            "line_chart": {},
+            "location_availability": {
+                loc: loc in summary_data['selected_hour']['per_location']
+                for loc in LOCATION_COORDINATES
+            }
+        }
+
     summary = {
         "date": date,
         "traffic_type": traffic_type,
         "time": time_input,
-        "season": None,
-        "weather": None,
-        "temperature": None,
+        "season": get_season_from_month(int(date.split("-")[1])),
+        "weather": "Sunny",
+        "temperature": "18°C",
         "total_daily_count": 0,
         "average_hourly_count": 0,
         "top_location": {},
@@ -51,10 +75,6 @@ def get_summary_stats(date, time_input, traffic_type):
     line_chart = {}
 
     try:
-        # Determine season
-        month = int(date.split("-")[1])
-        summary["season"] = get_season_from_month(month)
-
         console.print("Querying hourly and location-based traffic data...")
 
         cursor.execute("""
@@ -102,10 +122,6 @@ def get_summary_stats(date, time_input, traffic_type):
                 "count": hourly_totals[peak_hr]
             }
 
-        # Static placeholders
-        summary['weather'] = "Sunny"
-        summary['temperature'] = "18°C"
-
         selected_data = summary['selected_hour']['per_location']
         total_data = bar_chart
         average_data = {
@@ -132,13 +148,11 @@ def get_summary_stats(date, time_input, traffic_type):
             else:
                 barchart_url = f"{prod_url}/{barchart_path.replace(os.sep, '/')}"
 
-        # Update BarChart_URL in heatmaps table
         if barchart_url:
             cursor.close()
             connection.close()
             connection = mysql.connector.connect(**DB_CONFIG)
             cursor = connection.cursor()
-
             cursor.execute("""
                 SELECT Heatmap_ID FROM heatmaps
                 WHERE Traffic_Type = %s AND Date_Filter = %s AND Time_Filter = %s
@@ -157,8 +171,19 @@ def get_summary_stats(date, time_input, traffic_type):
                 console.print("[yellow]No matching heatmap found. Bar chart URL not inserted.[/yellow]")
 
             connection.commit()
+            cursor = connection.cursor(dictionary=True)
 
-        # Build location availability map
+        cursor.execute("""
+            INSERT INTO summary_cache (Date_Filter, Time_Filter, Traffic_Type, Summary_JSON)
+            VALUES (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE Summary_JSON = VALUES(Summary_JSON), Generated_At = CURRENT_TIMESTAMP
+        """, (
+            date, time_input, traffic_type,
+            json.dumps(summary)
+        ))
+        connection.commit()
+        console.print("[green]Summary cached to database[/green]")
+
         included_locations = summary['selected_hour']['per_location'].keys()
         location_availability = {
             loc: loc in included_locations
@@ -167,6 +192,7 @@ def get_summary_stats(date, time_input, traffic_type):
 
     except Exception as e:
         console.print(f"[bold red]Error in seasonal_stats:[/bold red] {e}")
+        location_availability = {}
 
     finally:
         if cursor: cursor.close()
@@ -182,20 +208,6 @@ def get_summary_stats(date, time_input, traffic_type):
         "location_availability": location_availability
     }
 
-
-def get_season_from_month(month):
-    if month in [12, 1, 2]:
-        return "Summer"
-    elif month in [3, 4, 5]:
-        return "Autumn"
-    elif month in [6, 7, 8]:
-        return "Winter"
-    elif month in [9, 10, 11]:
-        return "Spring"
-    return "Unknown"
-
-
-# Standalone test
 if __name__ == "__main__":
     result = get_summary_stats("2024-05-05", "14:00:00", "Vehicle Count")
     pprint(result)

@@ -26,7 +26,7 @@ def log_heatmap_duration(date_filter, time_filter, selected_type, season_filter,
         f"\n{'=' * 50}\n"
         f"📅 Date:    {date_filter}    🕒 Time: {time_filter or 'All'}\n"
         f"🚦 Type:    {selected_type}"
-        f"{'-' * 50}\n"
+        f"\n{'-' * 50}\n"
         + "\n".join(f"{label:<22} {seconds:>6.2f}s" for label, seconds in durations.items()) +
         f"\n{'=' * 50}\n"
     )

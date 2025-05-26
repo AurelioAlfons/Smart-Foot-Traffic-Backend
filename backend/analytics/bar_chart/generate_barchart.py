@@ -1,17 +1,16 @@
 # ====================================================
 # Bar Chart Generator for Smart Foot Traffic System
 # ----------------------------------------------------
-# - Creates a Plotly bar chart by location and time
-# - Includes 3 chart modes: Selected Hour, Total Day, Daily Average
-# - Dropdown menu toggles chart visibility
-# - Saves chart as HTML to local barchart/ folder
-# - Returns full path to use in database or API
-# - Called from statistics.py
+# - Checks if chart exists and is linked in DB
+# - If not, generates Plotly bar chart HTML and saves it
+# - Updates heatmaps table with chart URL
 # ====================================================
 
 import os
+import mysql.connector
 import plotly.graph_objects as go
 from rich.console import Console
+from backend.config import DB_CONFIG
 
 console = Console()
 
@@ -39,10 +38,27 @@ def export_bar_chart_html(
 
     output_path = os.path.join("barchart", filename)
 
-    # Prepare location axis
-    locations = sorted(set(selected_data.keys()) | set(total_data.keys()) | set(average_data.keys()))
+    # Check if file exists and it's already linked in DB
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT BarChart_URL FROM heatmaps
+            WHERE Traffic_Type = %s AND Date_Filter = %s AND Time_Filter = %s
+        """, (traffic_type, date, time))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
 
-    # Create the figure
+        if result and result["BarChart_URL"] and os.path.exists(output_path):
+            console.print(f"[green]Bar chart already exists and is linked in DB.[/green]")
+            return result["BarChart_URL"]
+
+    except mysql.connector.Error as e:
+        console.print(f"[red]DB check failed:[/red] {e}")
+
+    # 🔧 Generate bar chart
+    locations = sorted(set(selected_data.keys()) | set(total_data.keys()) | set(average_data.keys()))
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
@@ -72,7 +88,6 @@ def export_bar_chart_html(
         visible=False
     ))
 
-    # Add dropdown menu
     fig.update_layout(
         title=f"{traffic_type} Bar Chart for {date} at {time}",
         title_x=0.5,
@@ -126,5 +141,30 @@ def export_bar_chart_html(
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(scrollable_html)
 
-    console.print(f"Bar chart saved to: [green]{output_path}[/green]\n")
-    return output_path
+    console.print(f"Bar chart saved to: [green]{output_path}[/green]")
+
+    # Update BarChart_URL in DB
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        # Use localhost or prod URL
+        base_url = os.getenv("BASE_URL", "http://localhost:5000")
+        prod_url = os.getenv("PROD_URL", "https://smart-foot-traffic-backend.onrender.com")
+
+        chart_url = f"{prod_url}/barchart/{filename}" if "localhost" not in base_url else f"{base_url}/barchart/{filename}"
+
+        cursor.execute("""
+            UPDATE heatmaps
+            SET BarChart_URL = %s
+            WHERE Traffic_Type = %s AND Date_Filter = %s AND Time_Filter = %s
+        """, (chart_url, traffic_type, date, time))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        console.print(f"[green]Bar chart URL updated in DB[/green]")
+
+    except mysql.connector.Error as e:
+        console.print(f"[red]Failed to update BarChart_URL in DB:[/red] {e}")
+
+    return chart_url
