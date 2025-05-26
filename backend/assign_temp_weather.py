@@ -1,3 +1,11 @@
+# =====================================================
+# Weather & Temperature Filler for Smart Foot Traffic
+# -----------------------------------------------------
+# - Finds dates with missing weather or temp
+# - Calls weather and temperature functions for each
+# - Shows progress bar and logs status
+# =====================================================
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

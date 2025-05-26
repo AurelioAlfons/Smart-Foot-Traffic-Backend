@@ -1,3 +1,11 @@
+# ====================================================
+# Snapshot API Route for Smart Foot Traffic
+# ----------------------------------------------------
+# - Gets detailed traffic + weather data for one hour
+# - Returns info for each sensor location
+# - Used by /api/location_snapshot endpoint
+# ====================================================
+
 from flask import Blueprint, request, jsonify
 import mysql.connector
 from backend.config import DB_CONFIG

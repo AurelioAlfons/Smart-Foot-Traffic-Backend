@@ -1,3 +1,12 @@
+# ====================================================
+# Heatmap API Route for Smart Foot Traffic
+# ----------------------------------------------------
+# - Accepts date, time, and type from frontend
+# - Calls smart_generate to build heatmap + bar chart
+# - Returns URLs to generated HTML files
+# - Used by /api/generate_heatmap endpoint
+# ====================================================
+
 from flask import Blueprint, request, jsonify
 from backend.visualizer.generator.smart_generate import smart_generate
 from rich.console import Console

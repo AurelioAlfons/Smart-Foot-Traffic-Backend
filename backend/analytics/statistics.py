@@ -1,3 +1,12 @@
+# ====================================================
+# Summary Generator for Smart Foot Traffic
+# ----------------------------------------------------
+# - Gets traffic data and makes summary report
+# - Makes bar chart and saves URL to database
+# - Uses cache if summary already exists
+# - Called by /api/summary_stats in the backend
+# ====================================================
+
 import os
 import json
 import mysql.connector
@@ -5,7 +14,7 @@ import time
 from pprint import pprint
 from rich.console import Console
 
-from backend.analytics.bar_chart.generate_barchart import export_bar_chart_html
+from backend.analytics.generate_barchart import export_bar_chart_html
 from backend.config import DB_CONFIG
 from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
 

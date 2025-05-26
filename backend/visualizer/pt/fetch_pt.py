@@ -1,16 +1,23 @@
-# 📄 scripts/fetch_pt_stops.py
+# ====================================================
+# Fetch Public Transport Stops Around Footscray
+# ----------------------------------------------------
+# - Sends query to Overpass API for nearby PT stops
+# - Gets bus stops, tram stops, and train stations
+# - Saves data into a JSON file
+# ====================================================
+
 import requests
 import json
 import os
 
-# 🚀 Increased search radius (in meters)
-SEARCH_RADIUS = 3000  # 3km radius around Footscray
+# Search radius in meters
+SEARCH_RADIUS = 3000  # 3km radius
 
-# 🧭 Center of Footscray
+# Center of Footscray
 CENTER_LAT = -37.799
 CENTER_LON = 144.899
 
-# 📦 Output file path
+# Output file path
 output_path = "backend/visualizer/data/nearby_pt_stops.json"
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
@@ -29,7 +36,7 @@ try:
     res.raise_for_status()
     data = res.json()
 
-    # 🧹 Simplify extracted data
+    # Clean and format data
     stops = []
     for el in data["elements"]:
         stop_type = (
@@ -47,7 +54,7 @@ try:
     with open(output_path, "w") as f:
         json.dump(stops, f, indent=2)
 
-    print(f"✅ PT stops saved to {os.path.abspath(output_path)}")
+    print(f"PT stops saved to {os.path.abspath(output_path)}")
 
 except Exception as e:
-    print("❌ Error fetching PT stops:", e)
+    print("Error fetching PT stops:", e)
