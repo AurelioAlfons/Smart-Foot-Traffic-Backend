@@ -48,7 +48,7 @@ def get_summary_stats(date, time_input, traffic_type):
     line_chart = {}
 
     try:
-        # 🔹 Determine season
+        # Determine season
         month = int(date.split("-")[1])
         summary["season"] = get_season_from_month(month)
 
