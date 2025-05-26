@@ -32,6 +32,7 @@ def get_summary_stats(date, time_input, traffic_type):
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = connection.cursor(dictionary=True)
 
+    # Check cache
     cursor.execute("""
         SELECT Summary_JSON FROM summary_cache
         WHERE Date_Filter = %s AND Time_Filter = %s AND Traffic_Type = %s
@@ -40,18 +41,64 @@ def get_summary_stats(date, time_input, traffic_type):
     cached = cursor.fetchone()
     if cached:
         summary_data = json.loads(cached['Summary_JSON'])
-        console.print("[cyan]✅ Summary loaded from cache[/cyan]")
-        cursor.close()
-        connection.close()
-        return {
-            "summary": summary_data,
-            "bar_chart": summary_data['selected_hour']['per_location'],
-            "line_chart": {},
-            "location_availability": {
-                loc: loc in summary_data['selected_hour']['per_location']
+
+        filename = f"{date}_{time_input[:2]}-{traffic_type}.html"
+        barchart_path = os.path.join("barchart", filename)
+
+        if os.path.exists(barchart_path):
+            console.print("[cyan]Summary loaded from cache[/cyan]")
+            return {
+                "summary": summary_data,
+                "bar_chart": summary_data['selected_hour']['per_location'],
+                "line_chart": {},
+                "location_availability": {
+                    loc: loc in summary_data['selected_hour']['per_location']
+                    for loc in LOCATION_COORDINATES
+                }
+            }
+        else:
+            console.print(f"[yellow]⚠️ Cached summary found, but missing local bar chart: {barchart_path}[/yellow]")
+            selected_data = summary_data['selected_hour']['per_location']
+            total_data = {loc: 0 for loc in LOCATION_COORDINATES}
+
+            # Optional: aggregate from hourly_data if stored in summary
+            for hour in range(24):
+                hour_label = f"{hour:02}:00"
+                for loc, count in summary_data.get("hourly_data", {}).get(hour_label, {}).items():
+                    total_data[loc] += count
+
+            average_data = {
+                loc: round(total_data.get(loc, 0) / 24, 2)
                 for loc in LOCATION_COORDINATES
             }
-        }
+
+            barchart_path = export_bar_chart_html(
+                selected_data,
+                total_data,
+                average_data,
+                date=date,
+                time=time_input,
+                traffic_type=traffic_type
+            )
+
+            if barchart_path:
+                console.print(f"[green]✅ Re-generated missing bar chart: {barchart_path}[/green]")
+            else:
+                console.print("[red]❌ Failed to regenerate missing bar chart[/red]")
+
+            return {
+                "summary": summary_data,
+                "bar_chart": selected_data,
+                "line_chart": {},
+                "location_availability": {
+                    loc: loc in selected_data
+                    for loc in LOCATION_COORDINATES
+                }
+            }
+
+    # ======================
+    # FULL GENERATION BELOW
+    # ======================
 
     summary = {
         "date": date,
@@ -73,7 +120,6 @@ def get_summary_stats(date, time_input, traffic_type):
 
     bar_chart = {}
     line_chart = {}
-
     try:
         console.print("Querying hourly and location-based traffic data...")
 
@@ -93,6 +139,7 @@ def get_summary_stats(date, time_input, traffic_type):
 
         location_totals = {}
         hourly_totals = [0] * 24
+        hourly_data = {}
 
         for row in rows:
             hr = int(row['hour'])
@@ -102,8 +149,12 @@ def get_summary_stats(date, time_input, traffic_type):
             hourly_totals[hr] += cnt
             location_totals[loc] = location_totals.get(loc, 0) + cnt
             bar_chart[loc] = bar_chart.get(loc, 0) + cnt
-            time_label = f"{hr:02d}:00"
+            time_label = f"{hr:02}:00"
             line_chart[time_label] = line_chart.get(time_label, 0) + cnt
+
+            if time_label not in hourly_data:
+                hourly_data[time_label] = {}
+            hourly_data[time_label][loc] = hourly_data[time_label].get(loc, 0) + cnt
 
             if time_input and hr == int(time_input[:2]):
                 summary['selected_hour']['total_count'] += cnt
@@ -122,6 +173,8 @@ def get_summary_stats(date, time_input, traffic_type):
                 "count": hourly_totals[peak_hr]
             }
 
+        summary["hourly_data"] = hourly_data
+
         selected_data = summary['selected_hour']['per_location']
         total_data = bar_chart
         average_data = {
@@ -129,6 +182,7 @@ def get_summary_stats(date, time_input, traffic_type):
             for loc in LOCATION_COORDINATES
         }
 
+        console.print("[cyan]Generating bar chart...[/cyan]")
         barchart_path = export_bar_chart_html(
             selected_data,
             total_data,
@@ -140,15 +194,12 @@ def get_summary_stats(date, time_input, traffic_type):
 
         barchart_url = None
         if barchart_path:
+            console.print(f"[green]Bar chart saved to:[/] {barchart_path}")
             base_url = os.getenv("BASE_URL", "http://localhost:5000")
             prod_url = os.getenv("PROD_URL", "https://smart-foot-traffic-backend.onrender.com")
+            barchart_url = f"{prod_url}/{barchart_path.replace(os.sep, '/')}" if "localhost" not in base_url else f"{base_url}/{barchart_path.replace(os.sep, '/')}"
 
-            if "localhost" in base_url or "127.0.0.1" in base_url:
-                barchart_url = f"{base_url}/{barchart_path.replace(os.sep, '/')}"
-            else:
-                barchart_url = f"{prod_url}/{barchart_path.replace(os.sep, '/')}"
-
-        if barchart_url:
+            # Update BarChart_URL in heatmaps table
             cursor.close()
             connection.close()
             connection = mysql.connector.connect(**DB_CONFIG)
@@ -172,7 +223,10 @@ def get_summary_stats(date, time_input, traffic_type):
 
             connection.commit()
             cursor = connection.cursor(dictionary=True)
+        else:
+            console.print("[red]❌ Bar chart generation failed (returned None)[/red]")
 
+        # Cache summary
         cursor.execute("""
             INSERT INTO summary_cache (Date_Filter, Time_Filter, Traffic_Type, Summary_JSON)
             VALUES (%s, %s, %s, %s)
@@ -187,7 +241,7 @@ def get_summary_stats(date, time_input, traffic_type):
         included_locations = summary['selected_hour']['per_location'].keys()
         location_availability = {
             loc: loc in included_locations
-            for loc in LOCATION_COORDINATES.keys()
+            for loc in LOCATION_COORDINATES
         }
 
     except Exception as e:
@@ -208,6 +262,7 @@ def get_summary_stats(date, time_input, traffic_type):
         "location_availability": location_availability
     }
 
+# Standalone test
 if __name__ == "__main__":
     result = get_summary_stats("2024-05-05", "14:00:00", "Vehicle Count")
     pprint(result)
