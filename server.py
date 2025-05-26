@@ -70,5 +70,6 @@ def apply_cors_headers(response):
 
 # Run the Server
 if __name__ == '__main__':
-    print("✅ Starting Smart Foot Traffic server on http://localhost:5000\n")
+    print("Starting Smart Foot Traffic server on http://localhost:5000")
+    print("===============================================================\n")
     app.run(host='0.0.0.0', port=5000)

@@ -48,7 +48,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
     # Skip if already exists
     if os.path.exists(filename):
         if not quiet:
-            console.print(f"[green]✅ Skipping (already exists): {filename}[/green]")
+            console.print(f"[green]Skipping (already exists): {filename}[/green]")
         return
 
     # DB check for existing record
@@ -67,11 +67,11 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
         conn.close()
     except mysql.connector.Error as e:
         if not quiet:
-            console.print(f"[red]❌ DB check failed:[/red] {e}")
+            console.print(f"[red]DB check failed:[/red] {e}")
         return
 
     if not quiet:
-        console.print(f"\n📌 Generating: [bold magenta]{selected_type}[/bold magenta] @ [cyan]{date_filter} {time_filter}[/cyan]")
+        console.print(f"\nGenerating: [bold magenta]{selected_type}[/bold magenta] @ [cyan]{date_filter} {time_filter}[/cyan]")
 
     try:
         if quiet:
@@ -91,7 +91,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
 
         else:
             with Progress(
-                TextColumn("🔄 [bold cyan]{task.description}"),
+                TextColumn("[bold cyan]{task.description}"),
                 BarColumn(),
                 "[progress.percentage]{task.percentage:>3.0f}%",
                 TimeElapsedColumn(),
@@ -128,7 +128,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
 
     except LiveError:
         if not quiet:
-            print("⚠️ Rich LiveError: running in headless mode.")
+            print("Rich LiveError: running in headless mode.")
 
     # Save/update to DB
     try:
@@ -154,7 +154,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
                 WHERE Heatmap_ID = %s
             """, (generated_at, heatmap_url, existing_id))
             if not quiet:
-                console.print(f"[green]♻️ Updated heatmap ID {existing_id}[/green]")
+                console.print(f"[green]Updated heatmap ID {existing_id}[/green]")
         else:
             cursor.execute("""
                 INSERT INTO heatmaps (Generated_At, Traffic_Type, Date_Filter, Time_Filter, Status, Heatmap_URL)
@@ -168,7 +168,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
                 heatmap_url
             ))
             if not quiet:
-                console.print(f"[green]✅ Inserted new heatmap record[/green]")
+                console.print(f"[green]Inserted new heatmap record[/green]")
 
         conn.commit()
         cursor.close()
@@ -180,7 +180,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
 
     except mysql.connector.Error as e:
         if not quiet:
-            console.print(f"[red]❌ DB insert/update failed:[/red] {e}")
+            console.print(f"[red]DB insert/update failed:[/red] {e}")
         return
 
 # Standalone test

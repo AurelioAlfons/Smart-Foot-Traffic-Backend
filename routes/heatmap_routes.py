@@ -18,7 +18,6 @@ def api_generate_heatmap():
             print("❌ Missing required fields.")
             return jsonify({"status": "error", "message": "Missing date, time, or traffic_type"}), 400
 
-        print("🧠 Calling smart_generate...")
         smart_generate(date_filter, time_filter, traffic_type)
         print("✅ smart_generate completed.")
 
