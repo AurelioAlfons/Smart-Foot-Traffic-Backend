@@ -1,7 +1,6 @@
 import os
 import json
 import mysql.connector
-from datetime import datetime
 import time
 from pprint import pprint
 from rich.console import Console

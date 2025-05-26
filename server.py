@@ -62,7 +62,7 @@ def serve_barchart(filename):
     response = send_from_directory(BARCHART_FOLDER, filename)
     
     duration = time.time() - start
-    console.print(f"[cyan]⏱️ Time taken: {duration:.2f} seconds[/cyan]")
+    console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
     return response
 
 # Health Check
