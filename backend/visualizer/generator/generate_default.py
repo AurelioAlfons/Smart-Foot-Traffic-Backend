@@ -1,4 +1,10 @@
-# backend/generate_default_map.py
+# ====================================================
+# Default Heatmap Generator for Smart Foot Traffic
+# ----------------------------------------------------
+# - Creates a heatmap with zero data for all locations
+# - Used when no filters are applied on first load
+# - Saves default map to heatmaps/default_map.html
+# ====================================================
 
 import math as m
 import pandas as pd

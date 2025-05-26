@@ -1,3 +1,12 @@
+# ====================================================
+# Heatmap Generator for Smart Foot Traffic
+# ----------------------------------------------------
+# - Builds HTML heatmap based on traffic data
+# - Assigns weather/temp and renders map
+# - Saves map file and updates DB with metadata
+# - Used by smart_generate and CLI runs
+# ====================================================
+
 from rich.console import Console
 from rich.progress import Progress, BarColumn, TimeElapsedColumn, TextColumn
 import os, time

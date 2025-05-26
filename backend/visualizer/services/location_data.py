@@ -1,4 +1,10 @@
-# backend/routes/location_data.py
+# ====================================================
+# Location Data API Route for Smart Foot Traffic
+# ----------------------------------------------------
+# - Returns latest weather, season, and totals per type
+# - Filters by location passed in query params
+# - Used by /api/location_data endpoint
+# ====================================================
 
 from flask import Blueprint, request, jsonify
 import mysql.connector

@@ -1,3 +1,12 @@
+# ====================================================
+# Smart Heatmap Generator for Smart Foot Traffic
+# ----------------------------------------------------
+# - Generates heatmap immediately with cache if exists
+# - Starts background job to assign weather/temp
+# - Preloads traffic data for all other hours
+# - Used by /api/generate_heatmap backend route
+# ====================================================
+
 import time
 from threading import Thread, Lock
 from rich.console import Console
@@ -12,8 +21,8 @@ console = Console()
 
 # Global control variables
 current_batch_id = 0
-cached_data = {}              # {(date, time, type): DataFrame}
-preprocessed_times = set()    # { "08:00:00", ... }
+cached_data = {}              
+preprocessed_times = set()    
 cache_lock = Lock()
 
 def get_all_hourly_times():

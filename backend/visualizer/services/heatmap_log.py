@@ -1,3 +1,11 @@
+# ====================================================
+# Heatmap Duration Logger for Smart Foot Traffic
+# ----------------------------------------------------
+# - Logs how long each step takes (weather, fetch, render, save)
+# - Prints results to console and saves to log file
+# - Used for profiling heatmap generation
+# ====================================================
+
 import os
 from rich.console import Console
 
