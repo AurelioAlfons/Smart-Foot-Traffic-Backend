@@ -72,7 +72,7 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
             background-color: #fff;
             border: 1px solid #444;
             z-index: 9999;
-            font-size: 12px;
+            font-size: 16px;
             padding: 12px;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
