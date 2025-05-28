@@ -67,7 +67,8 @@ def export_bar_chart_html(
         name="Selected Hour",
         text=[selected_data.get(loc, 0) for loc in locations],
         textposition="outside",
-        visible=True
+        visible=True,
+        marker=dict(color='gold') 
     ))
 
     fig.add_trace(go.Bar(
@@ -76,7 +77,8 @@ def export_bar_chart_html(
         name="Total Count",
         text=[total_data.get(loc, 0) for loc in locations],
         textposition="outside",
-        visible=False
+        visible=False,
+        marker=dict(color='gold') 
     ))
 
     fig.add_trace(go.Bar(
@@ -85,11 +87,11 @@ def export_bar_chart_html(
         name="Daily Average",
         text=[average_data.get(loc, 0) for loc in locations],
         textposition="outside",
-        visible=False
+        visible=False,
+        marker=dict(color='gold') 
     ))
 
     fig.update_layout(
-        title=f"{traffic_type} Bar Chart for {date} at {time}",
         title_x=0.5,
         xaxis_title="Location",
         yaxis_title="Traffic Count",
@@ -106,7 +108,7 @@ def export_bar_chart_html(
             "direction": "down",
             "x": -0.35,
             "xanchor": "left",
-            "y": 1.35,
+            "y": 1.15,
             "yanchor": "top",
             "showactive": True
         }]
@@ -131,6 +133,7 @@ def export_bar_chart_html(
         </style>
     </head>
     <body>
+    <h2 style="text-align:center; margin-top:20px;">{traffic_type} — {date} at {time}</h2>
         <div class="scroll-container">
             {html_code}
         </div>

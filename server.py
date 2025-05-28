@@ -65,6 +65,20 @@ def serve_barchart(filename):
     console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
     return response
 
+# Serve Line Chart HTML
+@app.route('/linecharts/<path:filename>')
+def serve_linechart(filename):
+    console.print("\n[bold magenta]========== Serving Line Chart ==========[/bold magenta]")
+    start = time.time()
+
+    linechart_folder = os.path.join(os.getcwd(), 'linecharts')
+    console.print(f"Requested line chart file: [green]{filename}[/green]")
+    response = send_from_directory(linechart_folder, filename)
+
+    duration = time.time() - start
+    console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
+    return response
+
 # Health Check
 @app.route('/healthz')
 def health_check():
