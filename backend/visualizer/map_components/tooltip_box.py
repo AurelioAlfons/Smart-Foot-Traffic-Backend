@@ -10,7 +10,7 @@ import pandas as pd
 
 def generate_tooltip_html(location, traffic_type, count, datetime_string, 
                           season="Unknown", weather="Unknown", temperature="?"):
-    # 🎨 Color for each traffic type
+    # Color for each traffic type
     type_color_map = {
         "Pedestrian": "#3bffc1",
         "Cyclist": "#ffe53b",
@@ -19,7 +19,7 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string,
 
     color = type_color_map.get(traffic_type, "#ccc")
 
-    # 🗓️ Season to month range
+    # Season to month range
     season_ranges = {
         "Summer": "December – February",
         "Autumn": "March – May",
@@ -29,10 +29,10 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string,
 
     is_season_mode = season in season_ranges
 
-    # ✅ Ensure datetime string format
+    # Ensure datetime string format
     safe_datetime_str = str(datetime_string) if pd.notna(datetime_string) else "N/A"
 
-    # ✅ Extract date and time
+    # Extract date and time
     if isinstance(safe_datetime_str, str) and " " in safe_datetime_str:
         parts = safe_datetime_str.split(" ")
         date_part = parts[0]
@@ -41,7 +41,7 @@ def generate_tooltip_html(location, traffic_type, count, datetime_string,
         date_part = safe_datetime_str
         time_part = "N/A"
 
-    # 🍂 Auto-infer season if not provided
+    # Auto-infer season if not provided
     if season == "Unknown" and pd.notna(date_part) and "-" in date_part:
         try:
             month = int(date_part.split("-")[1])
