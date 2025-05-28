@@ -116,13 +116,12 @@ def generate_combined_pie_dashboard(date: str) -> str:
             showlegend=True,
             uniformtext_minsize=10,
             uniformtext_mode='hide',
-            title=f"Traffic Distribution — {valid_locations[0]} ({date})",
             updatemenus=[{
                 "buttons": buttons,
                 "direction": "down",
                 "x": 0.5,
                 "xanchor": "center",
-                "y": 1.15,
+                "y": 1.35,
                 "yanchor": "top",
                 "showactive": True
             }],

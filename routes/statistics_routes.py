@@ -9,6 +9,7 @@
 
 from flask import Blueprint, request, jsonify
 from backend.analytics.daily_linechart import generate_line_charts_combined
+from backend.analytics.distribution_pie import generate_combined_pie_dashboard
 from backend.analytics.statistics import get_summary_stats
 
 stats_bp = Blueprint('stats_bp', __name__)
@@ -21,6 +22,7 @@ def api_summary_stats():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
 @stats_bp.route("/api/generate_linechart", methods=["POST"])
 def api_generate_linechart():
     try:
@@ -29,18 +31,49 @@ def api_generate_linechart():
         traffic_type = data["traffic_type"]
         safe_type = traffic_type.replace(" ", "")
         filename = f"line_{date}_{safe_type}.html"
+
         output_path = generate_line_charts_combined(date, traffic_type)
 
         if output_path:
             return jsonify({
                 "status": "success",
                 "filename": filename,
-                "url": f"http://localhost:5000/linecharts/{filename}"
+                "url": f"/linecharts/{filename}"
             }), 200
         else:
             return jsonify({
                 "status": "error",
                 "message": "No data found to generate chart."
+            }), 404
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
+@stats_bp.route("/api/generate_piechart", methods=["POST"])
+def api_generate_piechart():
+    try:
+        data = request.get_json()
+        date = data.get("date")
+        if not date:
+            return jsonify({"status": "error", "message": "Missing date parameter."}), 400
+
+        filename = f"pie_dashboard_{date}.html"
+        output_path = generate_combined_pie_dashboard(date)
+
+        if output_path:
+            return jsonify({
+                "status": "success",
+                "filename": filename,
+                "url": f"/piecharts/{filename}"
+            }), 200
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "No data found to generate pie chart."
             }), 404
 
     except Exception as e:
