@@ -2,6 +2,7 @@ import os
 import mysql.connector
 import plotly.graph_objects as go
 from rich.console import Console
+from backend.analytics.chart_template import wrap_plotly_chart
 from backend.config import DB_CONFIG
 
 console = Console()
@@ -79,7 +80,7 @@ def generate_line_charts_combined(date: str, traffic_type: str) -> str:
             updatemenus=[{
                 "buttons": buttons,
                 "direction": "down",
-                "x": -0.35,
+                "x": -0.05,
                 "xanchor": "left",
                 "y": 1.15,
                 "yanchor": "top",
@@ -93,38 +94,7 @@ def generate_line_charts_combined(date: str, traffic_type: str) -> str:
 
         fig_html = fig.to_html(full_html=False, include_plotlyjs='cdn')
 
-        full_html = f"""
-        <html>
-        <head>
-            <style>
-                .scroll-container {{
-                    height: 700px;
-                    overflow-y: scroll;
-                    padding: 10px;
-                    border-top: 2px solid #eee;
-                }}
-                body {{
-                    margin: 0;
-                    padding: 0;
-                }}
-                .plot-container,
-                .js-plotly-plot .plotly,
-                .plotly-graph-div {{
-                    border-radius: 0 !important;
-                    box-shadow: none !important;
-                    border: none !important;
-                    outline: none !important;
-                }}
-            </style>
-        </head>
-        <body>
-            <h2 style="text-align:center; margin-top:20px;">{date} — {traffic_type}</h2>
-            <div class="scroll-container">
-                {fig_html}
-            </div>
-        </body>
-        </html>
-        """
+        full_html = wrap_plotly_chart(fig_html, f"{traffic_type} — {date}")
 
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(full_html)

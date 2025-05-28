@@ -10,6 +10,7 @@ import os
 import mysql.connector
 import plotly.graph_objects as go
 from rich.console import Console
+from backend.analytics.chart_template import wrap_plotly_chart
 from backend.config import DB_CONFIG
 
 console = Console()
@@ -116,30 +117,7 @@ def export_bar_chart_html(
 
     html_code = fig.to_html(full_html=False, include_plotlyjs='cdn')
 
-    scrollable_html = f"""
-    <html>
-    <head>
-        <style>
-        .scroll-container {{
-            height: 700px;
-            overflow-y: scroll;
-            padding: 10px;
-            border-top: 2px solid #eee;
-        }}
-        body {{
-            margin: 0;
-            padding: 0;
-        }}
-        </style>
-    </head>
-    <body>
-    <h2 style="text-align:center; margin-top:20px;">{traffic_type} — {date} at {time}</h2>
-        <div class="scroll-container">
-            {html_code}
-        </div>
-    </body>
-    </html>
-    """
+    scrollable_html = wrap_plotly_chart(html_code, f"{traffic_type} — {date} at {time}")
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(scrollable_html)
