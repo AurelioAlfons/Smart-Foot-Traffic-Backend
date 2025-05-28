@@ -95,7 +95,6 @@ def serve_piechart(filename):
     console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
     return response
 
-
 # Health Check
 @app.route('/healthz')
 def health_check():
