@@ -28,10 +28,10 @@ def render_heatmap_map(df, selected_type, label, time_filter):
     Returns a folium.Map object.
     """
 
-    # 🧭 Define the strict visible boundary (based on screenshot view)
+    # Define the strict visible boundary (based on screenshot view)
     bounds = [[-37.809, 144.870], [-37.781, 144.915]] # top-left to bottom-right
 
-    # 🗺️ Initialize map with locked view settings
+    # Initialize map with locked view settings
     base_map = folium.Map(
         location=[-37.7975, 144.8876],  # Center of Footscray
         zoom_start=15.5,               # Initial zoom
@@ -41,12 +41,12 @@ def render_heatmap_map(df, selected_type, label, time_filter):
         tiles=None
     )
 
-    # 🎨 Add tile style options
+    # Add tile style options
     folium.TileLayer('OpenStreetMap', name='Detail').add_to(base_map)
     # folium.TileLayer('CartoDB dark_matter', name='Dark').add_to(base_map)
     folium.TileLayer('CartoDB positron', name='Light').add_to(base_map)
 
-    # 🔘 Add traffic circles and markers per location
+    # Add traffic circles and markers per location
     for loc, coords in LOCATION_COORDINATES.items():
         row_data = df[df["Location"] == loc]
 
@@ -71,10 +71,10 @@ def render_heatmap_map(df, selected_type, label, time_filter):
         add_zone_circle(base_map, loc, fill_color, tooltip_html, LOCATION_CENTERS)
         add_center_marker(base_map, coords, cnt, fill_color)
 
-    # 🧭 Add a tile control to switch
+    # Add a tile control to switch
     folium.LayerControl(position='topright', collapsed=False).add_to(base_map)
 
-    # 💡 Inject style override for bigger layer box
+    # Inject style override for bigger layer box
     base_map.get_root().html.add_child(folium.Element("""
     <style>
     .leaflet-control-layers-expanded {
@@ -85,18 +85,18 @@ def render_heatmap_map(df, selected_type, label, time_filter):
     </style>
     """))
 
-    # 📌 Set initial viewport bounds
+    # Set initial viewport bounds
     base_map.fit_bounds(bounds)
 
-    # 🔒 Enforce locked bounds
+    # Enforce locked bounds
     base_map.options['maxBounds'] = bounds
 
-    # 📋 Add dynamic description box
+    # Add dynamic description box
     base_map.get_root().html.add_child(
         generate_description_box(label, time_filter or "All", selected_type, df["Location"].unique())
     )
 
-    # 🚌 Add public transport logos
+    # Add public transport logos
     add_transport_icons(base_map)  
 
     return base_map

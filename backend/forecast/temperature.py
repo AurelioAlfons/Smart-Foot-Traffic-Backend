@@ -19,9 +19,9 @@ def assign_temperature(target_date):
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
 
-        logging.info(f"🌡️ Assigning accurate temperature for {target_date}...")
+        logging.info(f"Assigning accurate temperature for {target_date}...")
 
-        # 🔎 Get all distinct locations with NULL temperature
+        # Get all distinct locations with NULL temperature
         cursor.execute("""
             SELECT DISTINCT pd.Location
             FROM processed_data pd
@@ -36,7 +36,7 @@ def assign_temperature(target_date):
             lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
             date_str = target_date
 
-            # 🌐 Fetch hourly temperature for this location/date
+            # Fetch hourly temperature for this location/date
             url = (
                 f"https://archive-api.open-meteo.com/v1/archive?"
                 f"latitude={lat}&longitude={lon}&start_date={date_str}&end_date={date_str}"
@@ -46,7 +46,7 @@ def assign_temperature(target_date):
             data = response.json()
 
             if "hourly" not in data or "temperature_2m" not in data["hourly"]:
-                logging.warning(f"⚠️ No temperature data for {location} on {date_str}")
+                logging.warning(f"No temperature data for {location} on {date_str}")
                 continue
 
             time_map = dict(zip(data["hourly"]["time"], data["hourly"]["temperature_2m"]))
@@ -57,7 +57,7 @@ def assign_temperature(target_date):
 
                 hour = hour_ts.split("T")[1] + ":00"
 
-                # ⚡ Bulk update all matching rows at once
+                # Bulk update all matching rows at once
                 cursor.execute("""
                     UPDATE weather_season_data wsd
                     JOIN processed_data pd ON pd.Data_ID = wsd.Data_ID
@@ -71,7 +71,7 @@ def assign_temperature(target_date):
         cursor.close()
         conn.close()
 
-        logging.info(f"✅ Assigned temperature to {total_updated} rows on {target_date}.")
+        logging.info(f"Assigned temperature to {total_updated} rows on {target_date}.")
 
     except Exception as e:
-        logging.error(f"❌ Temperature assignment failed: {e}")
+        logging.error(f"Temperature assignment failed: {e}")

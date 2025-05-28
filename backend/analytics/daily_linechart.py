@@ -58,8 +58,8 @@ def generate_line_charts_combined(date: str, traffic_type: str) -> str:
                 y=data["count"],
                 mode='lines+markers',
                 name=loc,
-                line=dict(color='gold'),
-                marker=dict(color='gold'),
+                line=dict(color='#FBC02D'),
+                marker=dict(color='#FBC02D'),
                 visible=(i == 0)
             ))
 

@@ -7,7 +7,7 @@
 # ===========================================================
 
 def get_color_by_count(count):
-    # 🔴 Red Zone (Warmest → Deepest)
+    # Red Zone (Warmest → Deepest)
     if count > 600:
         return "#800000"  # 🟥 Deepest Dark Red
     elif count > 550:
@@ -33,7 +33,7 @@ def get_color_by_count(count):
     elif count > 180:
         return "#FF3333"  # 🔴 Soft Red
 
-    # 🌸 Pink Zone (Red-Pink Blend)
+    # Pink Zone (Red-Pink Blend)
     elif count > 170:
         return "#ff174b"  # 🌺 Vivid Red-Pink
     elif count > 160:
@@ -47,7 +47,7 @@ def get_color_by_count(count):
     elif count > 120:
         return "#FF7F7A"  # 🌸 Light Coral Pink
 
-    # 🟧 Orange Zone (Bright & Bold)
+    # Orange Zone (Bright & Bold)
     elif count > 110:
         return "#FF6600"  # 🟧 Dark Orange
     elif count > 100:
@@ -59,7 +59,7 @@ def get_color_by_count(count):
     elif count > 80:
         return "#FFB101"  # 🟧 Soft Golden Orange
 
-    # 🟨 Yellow Zone (Warm → Pale)
+    # Yellow Zone (Warm → Pale)
     elif count > 65:
         return "#FFCC00"  # 🟨 Strong Yellow
     elif count > 55:
@@ -78,4 +78,4 @@ def get_color_by_count(count):
         return "#FFEA00"  # 🟨 Faint Yellow
 
     else:
-        return "#FFEA00"  # ⚪ No Data (Neutral Gray)
+        return "#FFEA00"  # ⚪ 

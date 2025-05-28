@@ -21,6 +21,6 @@ def get_local_ip():
 
 if __name__ == "__main__":
     ip = get_local_ip()
-    print(f"📡 Your local Wi-Fi IP address is: {ip}")
+    print(f"Your local Wi-Fi IP address is: {ip}")
 
 # To run => python get_ip.py

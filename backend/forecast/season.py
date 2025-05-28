@@ -6,13 +6,13 @@
 # - Updates the season in the weather_season_data table
 # ===========================================================
 
-import mysql.connector         # 💾 MySQL DB connection
-import logging                 # 📋 Log info and errors
-from datetime import datetime  # 🗓️ Handle date conversion
-from backend.config import DB_CONFIG  # 🔐 DB credentials
+import mysql.connector         # MySQL DB connection
+import logging                 # Log info and errors
+from datetime import datetime  # Handle date conversion
+from backend.config import DB_CONFIG  # DB credentials
 
 # =====================================================
-# 🍂 FUNCTION: Convert numeric month into season name
+# FUNCTION: Convert numeric month into season name
 # =====================================================
 def get_season(month):
     if month in [12, 1, 2]:
@@ -25,31 +25,31 @@ def get_season(month):
         return "Spring"
 
 # =====================================================
-# 🍁 FUNCTION: Assign season for each record in processed_data
+# FUNCTION: Assign season for each record in processed_data
 # and update weather_season_data.Season
 # =====================================================
 def assign_season():
     try:
-        # 🔌 Connect to MySQL
+        # Connect to MySQL
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        logging.info("🔌 Connected to MySQL")
+        logging.info("Connected to MySQL")
 
-        # 📥 Fetch all relevant data points
+        # Fetch all relevant data points
         cursor.execute("SELECT Data_ID, Date FROM processed_data")
         rows = cursor.fetchall()
         updated = 0
 
-        # 🔁 Loop through each row
+        # Loop through each row
         for data_id, date in rows:
-            # 🧾 Convert string to datetime if needed
+            # Convert string to datetime if needed
             if isinstance(date, str):
                 date = datetime.strptime(date, "%Y-%m-%d")
 
-            # 🍂 Determine season from the month
+            # Determine season from the month
             season = get_season(date.month)
 
-            # ✏️ Update Season column in DB
+            # Update Season column in DB
             cursor.execute("""
                 UPDATE weather_season_data
                 SET Season = %s
@@ -58,11 +58,11 @@ def assign_season():
 
             updated += 1
 
-        # 💾 Commit changes
+        # Commit changes
         conn.commit()
         cursor.close()
         conn.close()
-        logging.info(f"🍁 Assigned seasons to {updated} entries.")
+        logging.info(f"Assigned seasons to {updated} entries.")
 
     except Exception as e:
-        logging.error(f"❌ Error assigning seasons: {e}")
+        logging.error(f"Error assigning seasons: {e}")

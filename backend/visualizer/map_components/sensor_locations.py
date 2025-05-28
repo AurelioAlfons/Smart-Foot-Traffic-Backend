@@ -6,7 +6,7 @@
 # - LOCATION_CENTERS is an alias for compatibility
 # ===========================================================
 
-# 📍 SENSOR COORDINATES FOR EACH LOCATION (used for both markers and circles)
+# SENSOR COORDINATES FOR EACH LOCATION (used for both markers and circles)
 LOCATION_COORDINATES = {
     "Footscray Library Car Park": (-37.800791, 144.897828),
     "Footscray Market Hopkins And Irving": (-37.800195, 144.902611),
@@ -21,6 +21,6 @@ LOCATION_COORDINATES = {
     "Salt Water Child Care Centre": (-37.795044, 144.900284)
 }
 
-# ✅ For backward compatibility, you can also define:
+# For backward compatibility, you can also define:
 # LOCATION_CENTERS = LOCATION_COORDINATES
 LOCATION_CENTERS = LOCATION_COORDINATES

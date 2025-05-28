@@ -28,4 +28,4 @@ default_map = render_heatmap_map(df, default_type, default_label, default_time)
 
 # Save as default_map.html
 default_map.save("heatmaps/default_map.html")
-print("✅ Default map generated at heatmaps/default_map.html")
+print("Default map generated at heatmaps/default_map.html")

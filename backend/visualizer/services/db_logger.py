@@ -44,5 +44,5 @@ def log_heatmap_to_db(filename, selected_type, date_filter, time_filter):
         return True
 
     except mysql.connector.Error as e:
-        print(f"❌ DB INSERT FAILED: {e}")
+        print(f"DB INSERT FAILED: {e}")
         return False

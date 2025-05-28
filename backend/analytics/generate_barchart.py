@@ -79,7 +79,7 @@ def export_bar_chart_html(
         text=[total_data.get(loc, 0) for loc in locations],
         textposition="outside",
         visible=False,
-        marker=dict(color='gold') 
+        marker=dict(color='#FBC02D') 
     ))
 
     fig.add_trace(go.Bar(
@@ -89,7 +89,7 @@ def export_bar_chart_html(
         text=[average_data.get(loc, 0) for loc in locations],
         textposition="outside",
         visible=False,
-        marker=dict(color='gold') 
+        marker=dict(color='#FBC02D') 
     ))
 
     fig.update_layout(

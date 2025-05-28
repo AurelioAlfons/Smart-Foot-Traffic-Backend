@@ -24,7 +24,7 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
         "Spring": "September – November"
     }
 
-    # 🕒 Convert time_filter (e.g. "00:00:00") to Duration format (e.g. "00:00 - 01:00")
+    # Convert time_filter (e.g. "00:00:00") to Duration format (e.g. "00:00 - 01:00")
     def convert_time_to_duration(time_str):
         try:
             dt = datetime.strptime(time_str, "%H:%M:%S")
@@ -37,7 +37,7 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
 
     duration_str = convert_time_to_duration(time_filter)
 
-    # 📅 Auto-assign season if date_filter is a date string
+    # Auto-assign season if date_filter is a date string
     def get_season_from_date(date_str):
         try:
             month = int(datetime.strptime(date_str, "%Y-%m-%d").month)
@@ -55,7 +55,7 @@ def generate_description_box(date_filter, time_filter, selected_type, included_l
     current_season = date_filter if date_filter in season_ranges else get_season_from_date(date_filter)
     season_range = season_ranges.get(current_season, "")
 
-    # ⛳ Build HTML for each location
+    # Build HTML for each location
     loc_list_html = ''
     for loc in all_locations:
         if loc in included_locations:
