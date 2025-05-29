@@ -18,10 +18,10 @@ load_dotenv()
 # DEFAULT: Connect to Railway MySQL (Cloud)
 # ==========================================
 DB_CONFIG = {
-    "host": "maglev.proxy.rlwy.net",
-    "port": 29151,
+    "host": "switchyard.proxy.rlwy.net",
+    "port": 18113,
     "user": "root",
-    "password": "lZDehyraWxDbfStuWHkmQAHwldbyqHJe",
+    "password": "bZzPMfpUhzjMdnPviWRtAVJXWDLaodlo",
     "database": "railway"
 }
 
