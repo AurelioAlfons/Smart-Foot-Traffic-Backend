@@ -95,7 +95,7 @@ def get_summary_stats(date, time_input, traffic_type):
                 pd.Location,
                 SUM(tc.Interval_Count) AS count
             FROM processed_data pd
-            JOIN Traffic_Counts tc ON pd.Data_ID = tc.Data_ID
+            JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
             WHERE DATE(pd.Date_Time) = %s AND tc.Traffic_Type = %s
             GROUP BY hour, pd.Location
         """, (date, traffic_type))

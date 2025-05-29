@@ -20,7 +20,7 @@ def generate_line_charts_combined(date: str, traffic_type: str) -> str:
                 DATE_FORMAT(pd.Date_Time, '%H:%i') AS time_label,
                 tc.Interval_Count
             FROM processed_data pd
-            JOIN Traffic_Counts tc ON pd.Data_ID = tc.Data_ID
+            JOIN traffic_counts tc ON pd.Data_ID = tc.Data_ID
             WHERE DATE(pd.Date_Time) = %s AND tc.Traffic_Type = %s
             ORDER BY pd.Location, pd.Date_Time
         """, (date, traffic_type))
