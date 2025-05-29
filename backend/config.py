@@ -17,25 +17,25 @@ load_dotenv()
 # ==========================================
 # DEFAULT: Connect to Railway MySQL (Cloud)
 # ==========================================
-DB_CONFIG = {
-    "host": "switchyard.proxy.rlwy.net",
-    "port": 18113,
-    "user": "root",
-    "password": "bZzPMfpUhzjMdnPviWRtAVJXWDLaodlo",
-    "database": "railway"
-}
+# DB_CONFIG = {
+#     "host": "switchyard.proxy.rlwy.net",
+#     "port": 18113,
+#     "user": "root",
+#     "password": "bZzPMfpUhzjMdnPviWRtAVJXWDLaodlo",
+#     "database": "railway"
+# }
 
 # ==========================================
 # ALTERNATIVE: Use Localhost MySQL for Dev
 # To use this, comment the Railway block above and uncomment this one
 # ==========================================
-# DB_CONFIG = {
-#     'host': 'localhost',
-#     'port': 3306,
-#     'user': 'root',
-#     'password': '',
-#     'database': 'smart_foot_traffic'
-# }
+DB_CONFIG = {
+    'host': 'localhost',
+    'port': 3306,
+    'user': 'root',
+    'password': '',
+    'database': 'smart_foot_traffic'
+}
 
 # ==========================================
 # OPTIONAL: Use environment variables (.env) for local or Render
