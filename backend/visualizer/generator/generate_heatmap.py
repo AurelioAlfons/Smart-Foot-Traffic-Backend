@@ -158,9 +158,9 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
         prod_url = os.getenv("PROD_URL", "https://smart-foot-traffic-backend.onrender.com")
 
         if "localhost" in base_url or "127.0.0.1" in base_url:
-            heatmap_url = f"{base_url}/heatmaps/{filename}"
+            heatmap_url = f"{base_url}/{filename.replace(os.sep, '/')}"
         else:
-            heatmap_url = f"{prod_url}/heatmaps/{filename}"
+            heatmap_url = f"{prod_url}/{filename.replace(os.sep, '/')}"
 
         if existing_id:
             cursor.execute("""
