@@ -23,7 +23,8 @@ def log_heatmap_to_db(filename, selected_type, date_filter, time_filter):
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
 
-        heatmap_url = f"http://localhost:5000/{filename.replace(os.sep, '/')}"
+        # heatmap_url = f"http://localhost:5000/{filename.replace(os.sep, '/')}"
+        heatmap_url = f"https://smart-foot-traffic-backend.onrender.com/{filename.replace(os.sep, '/')}"
         generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         cursor.execute("""
