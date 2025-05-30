@@ -1,25 +1,33 @@
 # ===========================================================
-# Assign Real Temperature from Open-Meteo (Step 3)
+# Assign Real Temperature from Open-Meteo (Optimized)
 # -----------------------------------------------------------
 # - Gets hourly temperature from Open-Meteo API
 # - Matches by date, time, and location
-# - Fills in the Temperature column in weather_season_data
-# - Uses batch updates for faster performance
+# - Batch updates with lock retry logic (for stability)
 # ===========================================================
 
 import mysql.connector
-import logging
 import requests
-from datetime import datetime
+import time
 from backend.config import DB_CONFIG
 from backend.visualizer.map_components.sensor_locations import LOCATION_COORDINATES
+
+def safe_execute_with_retry(cursor, query, params, retries=2, delay=2):
+    for attempt in range(retries + 1):
+        try:
+            cursor.execute(query, params)
+            return True
+        except mysql.connector.Error as e:
+            if e.errno == 1205:  # Lock wait timeout
+                time.sleep(delay)
+            else:
+                raise
+    return False
 
 def assign_temperature(target_date):
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-
-        logging.info(f"Assigning accurate temperature for {target_date}...")
 
         # Get all distinct locations with NULL temperature
         cursor.execute("""
@@ -30,48 +38,48 @@ def assign_temperature(target_date):
         """, (target_date,))
         locations = [row[0] for row in cursor.fetchall()]
 
+        if not locations:
+            return
+
         total_updated = 0
 
         for location in locations:
             lat, lon = LOCATION_COORDINATES.get(location, (-37.798, 144.888))
-            date_str = target_date
-
-            # Fetch hourly temperature for this location/date
             url = (
                 f"https://archive-api.open-meteo.com/v1/archive?"
-                f"latitude={lat}&longitude={lon}&start_date={date_str}&end_date={date_str}"
+                f"latitude={lat}&longitude={lon}&start_date={target_date}&end_date={target_date}"
                 f"&hourly=temperature_2m&timezone=Australia/Melbourne"
             )
-            response = requests.get(url)
-            data = response.json()
+            try:
+                response = requests.get(url, timeout=10)
+                data = response.json()
 
-            if "hourly" not in data or "temperature_2m" not in data["hourly"]:
-                logging.warning(f"No temperature data for {location} on {date_str}")
-                continue
-
-            time_map = dict(zip(data["hourly"]["time"], data["hourly"]["temperature_2m"]))
-
-            for hour_ts, temp in time_map.items():
-                if temp is None:
+                if "hourly" not in data or "temperature_2m" not in data["hourly"]:
                     continue
 
-                hour = hour_ts.split("T")[1] + ":00"
+                time_map = dict(zip(data["hourly"]["time"], data["hourly"]["temperature_2m"]))
 
-                # Bulk update all matching rows at once
-                cursor.execute("""
-                    UPDATE weather_season_data wsd
-                    JOIN processed_data pd ON pd.Data_ID = wsd.Data_ID
-                    SET wsd.Temperature = %s
-                    WHERE pd.Date = %s AND pd.Time = %s AND pd.Location = %s AND wsd.Temperature IS NULL
-                """, (temp, target_date, hour, location))
+                for hour_ts, temp in time_map.items():
+                    if temp is None:
+                        continue
 
-                total_updated += cursor.rowcount
+                    hour = hour_ts.split("T")[1] + ":00"
+
+                    safe_execute_with_retry(cursor, """
+                        UPDATE weather_season_data wsd
+                        JOIN processed_data pd ON pd.Data_ID = wsd.Data_ID
+                        SET wsd.Temperature = %s
+                        WHERE pd.Date = %s AND pd.Time = %s AND pd.Location = %s AND wsd.Temperature IS NULL
+                    """, (temp, target_date, hour, location))
+
+                    total_updated += cursor.rowcount
+
+            except Exception:
+                continue
 
         conn.commit()
         cursor.close()
         conn.close()
 
-        logging.info(f"Assigned temperature to {total_updated} rows on {target_date}.")
-
-    except Exception as e:
-        logging.error(f"Temperature assignment failed: {e}")
+    except Exception:
+        pass  # Silent fail for background use
