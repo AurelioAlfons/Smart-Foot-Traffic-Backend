@@ -103,10 +103,10 @@ def assign_weather(target_date):
                 progress.update(task, advance=1)
 
         conn.commit()
-        console.print(f"[bold green]✅ Weather updated for {total_updates} rows on {target_date}.[/bold green]")
+        console.print(f"[bold green]Weather updated for {total_updates} rows on {target_date}.[/bold green]")
 
     except Exception as e:
-        console.print(f"[bold red]❌ Error:[/bold red] {e}")
+        console.print(f"[bold red]Error:[/bold red] {e}")
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
