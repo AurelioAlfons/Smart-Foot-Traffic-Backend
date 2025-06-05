@@ -121,10 +121,10 @@ def generate_forecast_chart(traffic_type: str):
             forecast = create_prophet_forecast(df)
             linreg_y = create_linear_regression(df, forecast['ds'])
 
-            visibility = [False] * (3 * len(locations))
-            visibility[i * 3 + 0] = True  # Observed
-            visibility[i * 3 + 1] = True  # Prophet
-            visibility[i * 3 + 2] = True  # Linear
+            visibility = [False] * (2 * len(locations))
+            visibility[i * 2 + 0] = True  # Observed
+            # visibility[i * 3 + 1] = True  # Prophet
+            visibility[i * 2 + 1] = True  # Linear
 
             buttons.append({
                 "label": location,
@@ -135,14 +135,14 @@ def generate_forecast_chart(traffic_type: str):
             fig.add_trace(go.Scatter(
                 x=df['ds'], y=df['y'], mode='lines+markers',
                 name=f"Observed",
-                visible=(i == 0), line=dict(color='green')
+                visible=(i == 0), line=dict(color='yellow')
             ))
 
-            fig.add_trace(go.Scatter(
-                x=forecast['ds'], y=forecast['yhat'], mode='lines',
-                name=f"Prophet Forecast",
-                visible=(i == 0), line=dict(color='blue')
-            ))
+            # fig.add_trace(go.Scatter(
+            #     x=forecast['ds'], y=forecast['yhat'], mode='lines',
+            #     name=f"Prophet Forecast",
+            #     visible=(i == 0), line=dict(color='blue')
+            # ))
 
             fig.add_trace(go.Scatter(
                 x=forecast['ds'], y=linreg_y, mode='lines',
