@@ -8,7 +8,8 @@ from backend.config import DB_CONFIG
 console = Console()
 
 def generate_line_charts_combined(date: str, traffic_type: str) -> str:
-    console.print(f"\n[bold magenta]Generating combined line chart for {traffic_type} on {date}[/bold magenta]")
+    console.print(f"\n[bold magenta]========== Generating Combined Line Chart ==========[/bold magenta]")
+    console.print(f"Traffic Type: {traffic_type} | Date: {date}")
 
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
@@ -26,10 +27,10 @@ def generate_line_charts_combined(date: str, traffic_type: str) -> str:
         """, (date, traffic_type))
 
         rows = cursor.fetchall()
-        console.print(f"[cyan]Fetched {len(rows)} rows from database.[/cyan]")
+        console.print(f"Fetched {len(rows)} rows from database.")
 
         if not rows:
-            console.print("[yellow]No data found for the given date and type.[/yellow]")
+            console.print("No data found for the given date and type.")
             return ""
 
         location_data = {}
@@ -93,17 +94,16 @@ def generate_line_charts_combined(date: str, traffic_type: str) -> str:
         output_path = os.path.join("linecharts", filename)
 
         fig_html = fig.to_html(full_html=False, include_plotlyjs='cdn')
-
         full_html = wrap_plotly_chart(fig_html, f"{traffic_type} — {date}")
 
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(full_html)
 
-        console.print(f"[green]Chart saved to: {output_path}[/green]")
+        console.print(f"Chart saved to: {output_path}")
         return output_path
 
     except Exception as e:
-        console.print(f"[bold red]Error generating line chart:[/bold red] {e}")
+        console.print(f"Error generating line chart: {e}")
         return ""
 
     finally:

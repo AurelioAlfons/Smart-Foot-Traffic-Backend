@@ -75,7 +75,8 @@ def create_linear_regression(df, future_dates):
     return y_pred
 
 def generate_forecast_chart(traffic_type: str):
-    console.print(f"\n[bold cyan]Generating forecasts for: {traffic_type}[/bold cyan]")
+    console.print("\n[bold magenta]========== Forecast Chart Generation ==========[/bold magenta]")
+    console.print(f"Traffic Type: [green]{traffic_type}[/green]")
 
     if traffic_type == "Vehicle Count":
         locations = [loc for loc in ALL_LOCATIONS if loc not in VEHICLE_EXCLUDE]
@@ -86,14 +87,14 @@ def generate_forecast_chart(traffic_type: str):
     output_path = RESULTS_DIR / f"forecast_chart_{safe_name}.html"
 
     if output_path.exists():
-        console.print(f"[green]Chart already exists: {output_path}[/green]")
+        console.print(f"[green]Chart already exists:[/] {output_path}")
         return
 
     fig = go.Figure()
     buttons = []
 
     for i, location in enumerate(locations):
-        console.print(f"[yellow]Forecasting: {location}[/yellow]")
+        console.print(f"\n[yellow]📍 Forecasting: {location}[/yellow]")
         try:
             df = fetch_data(location, traffic_type)
             future_dates = pd.date_range(start=df['ds'].max() + pd.Timedelta(days=1), end=FORECAST_END_DATE, freq='D')
@@ -122,7 +123,7 @@ def generate_forecast_chart(traffic_type: str):
             ))
 
         except Exception as e:
-            console.print(f"[red]Failed for {location}: {e}[/red]")
+            console.print(f"[red]❌ Failed for {location}: {e}[/red]")
 
     fig.update_layout(
         xaxis_title="Date",
@@ -145,13 +146,13 @@ def generate_forecast_chart(traffic_type: str):
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(final_html)
 
-    console.print(f"\n[green]Forecast chart saved to:[/green] {output_path}")
+    console.print(f"\n[green]Forecast chart saved to:[/] {output_path}")
 
 if __name__ == "__main__":
     with engine.connect() as conn:
         traffic_types = [row[0] for row in conn.execute(text("SELECT DISTINCT Traffic_Type FROM traffic_counts"))]
 
-    console.print("\nAvailable Traffic Types:")
+    console.print("\n[bold magenta]========== Available Traffic Types ==========[/bold magenta]")
     for i, t in enumerate(traffic_types, 1):
         console.print(f"[{i}] {t}")
 
