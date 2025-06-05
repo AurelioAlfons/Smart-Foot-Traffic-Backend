@@ -70,13 +70,19 @@ def fetch_data(location, traffic_type):
 
 
 def create_prophet_forecast(df):
-    df = df.set_index('ds').asfreq('D').ffill().reset_index()
+    # Aggregate to daily totals
+    df = df.set_index('ds').resample('D').sum().dropna().reset_index()
+
+    # Create and fit the Prophet model
     model = Prophet(daily_seasonality=True, weekly_seasonality=True, yearly_seasonality=True)
     model.fit(df)
-    future = model.make_future_dataframe(periods=(FORECAST_END_DATE - df['ds'].max().date()).days)
-    forecast = model.predict(future)
-    return forecast[['ds', 'yhat']]
 
+    # Forecast into the future
+    forecast_days = (FORECAST_END_DATE - df['ds'].max().date()).days
+    future = model.make_future_dataframe(periods=forecast_days)
+    forecast = model.predict(future)
+
+    return forecast[['ds', 'yhat']]
 
 def create_linear_regression(df, future_dates):
     df = df.copy()
@@ -129,7 +135,7 @@ def generate_forecast_chart(traffic_type: str):
             fig.add_trace(go.Scatter(
                 x=df['ds'], y=df['y'], mode='lines+markers',
                 name=f"Observed",
-                visible=(i == 0), line=dict(color='black')
+                visible=(i == 0), line=dict(color='green')
             ))
 
             fig.add_trace(go.Scatter(
@@ -141,7 +147,7 @@ def generate_forecast_chart(traffic_type: str):
             fig.add_trace(go.Scatter(
                 x=forecast['ds'], y=linreg_y, mode='lines',
                 name=f"Linear Regression",
-                visible=(i == 0), line=dict(color='green', dash='dash')
+                visible=(i == 0), line=dict(color='black', dash='dash')
             ))
 
         except Exception as e:
