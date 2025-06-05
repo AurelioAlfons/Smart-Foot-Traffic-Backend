@@ -11,6 +11,25 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from backend.config import DB_CONFIG
 
+# Create database if it doesn't exist
+def create_database_if_not_exists():
+    db_name = 'smart_foot_traffic'
+    config = DB_CONFIG.copy()
+    if 'database' in config:
+        del config['database']  
+
+    try:
+        conn = mysql.connector.connect(**config)
+        cursor = conn.cursor()
+        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;")
+    except mysql.connector.Error as err:
+        print(f"Error creating database: {err}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 # Step 1: Drop old tables (drop summary_cache too)
 DROP_QUERIES = [
     "DROP TABLE IF EXISTS summary_cache;",
@@ -88,8 +107,15 @@ CREATE_QUERIES = [
 ]
 
 def initialize_database():
+    # Create the database first if it doesn't exist
+    create_database_if_not_exists()
+
+    # Use the created database for all further actions
+    config_with_db = DB_CONFIG.copy()
+    config_with_db['database'] = 'smart_foot_traffic'
+
     try:
-        conn = mysql.connector.connect(**DB_CONFIG)
+        conn = mysql.connector.connect(**config_with_db)
         cursor = conn.cursor()
 
         print("\n========================================")
