@@ -11,8 +11,8 @@ import os
 from flask import Blueprint, request, jsonify
 from backend.analytics.daily_linechart import generate_line_charts_combined
 from backend.analytics.distribution_pie import generate_combined_pie_dashboard
+from backend.analytics.model import generate_forecast_chart
 from backend.analytics.statistics import get_summary_stats
-from backend.analytics.weather_distribution import generate_interactive_weather_chart
 
 stats_bp = Blueprint('stats_bp', __name__)
 
@@ -82,40 +82,23 @@ def api_generate_piechart():
             "message": str(e)
         }), 500
 
-@stats_bp.route("/api/generate_weather_chart", methods=["POST"])
-def api_generate_weather_chart():
+@stats_bp.route("/api/generate_forecast", methods=["POST"])
+def api_generate_forecast():
     try:
         data = request.get_json()
         traffic_type = data.get("traffic_type")
-        weather_filter = data.get("weather_filter")  # optional list of codes
 
         if not traffic_type:
-            return jsonify({"status": "error", "message": "Missing traffic_type."}), 400
+            return jsonify({"status": "error", "message": "Missing traffic_type parameter."}), 400
 
-        # Generate safe filename based on traffic type
-        safe_type = traffic_type.replace(" ", "")
-        filename = f"weather_bar_{safe_type}.html"
-        output_path = f"weather_chart/{filename}"
-
-        # If chart already exists, return it directly
-        if os.path.exists(output_path):
-            return jsonify({
-                "status": "exists",
-                "filename": filename,
-                "url": f"/weather_chart/{filename}"
-            }), 200
-
-        # Otherwise, generate new chart
-        generate_interactive_weather_chart(
-            traffic_type=traffic_type,
-            weather_filter=weather_filter,
-            output_path=output_path
-        )
+        safe_type = traffic_type.replace(" ", "_").lower()
+        filename = f"forecast_chart_{safe_type}.html"
+        generate_forecast_chart(traffic_type)
 
         return jsonify({
-            "status": "generated",
+            "status": "success",
             "filename": filename,
-            "url": f"/weather_chart/{filename}"
+            "url": f"/forecast/{filename}"
         }), 200
 
     except Exception as e:

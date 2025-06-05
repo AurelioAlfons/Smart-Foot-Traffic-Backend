@@ -2,8 +2,7 @@
 # Smart Heatmap Generator for Smart Foot Traffic
 # ----------------------------------------------------
 # - Generates heatmap immediately with cache if exists
-# - Starts background job to assign weather/temp
-# - Preloads traffic data for all other hours
+# - Starts background job to assign weather/temp + cache other hours
 # - Used by /api/generate_heatmap backend route
 # ====================================================
 
@@ -57,6 +56,8 @@ def smart_generate(date_filter, time_filter, traffic_type):
         console.print(f"[yellow]No valid cache for {time_filter}, fetching...[/yellow]")
         df = fetch_traffic_data(date_filter, time_filter, traffic_type)
 
+    console.print("[cyan]Skipping immediate weather/temp assignment (moved to background).[/cyan]")
+
     # Generate the heatmap immediately
     generate_heatmap(date_filter, time_filter, traffic_type, quiet=False, df=df)
     console.print("[green]Heatmap generation completed.[/green]")
@@ -66,6 +67,7 @@ def smart_generate(date_filter, time_filter, traffic_type):
         time.sleep(1.5)
         console.print("\n[bold magenta]=== Starting Background Preprocessing ===[/bold magenta]")
 
+        # Assign weather/temp in background
         try:
             with Progress(
                 TextColumn("[bold cyan]Assigning Weather/Temp"),
@@ -87,7 +89,6 @@ def smart_generate(date_filter, time_filter, traffic_type):
 
         except Exception as e:
             console.print(f"[red]Failed assigning weather/temp: {e}[/red]")
-            return
 
         preprocessed_hours = []
         hours_to_process = [h for h in get_all_hourly_times() if h != time_filter]
@@ -119,7 +120,7 @@ def smart_generate(date_filter, time_filter, traffic_type):
                         with cache_lock:
                             cached_data[(date_filter, hour, traffic_type)] = df
                             preprocessed_times.add(hour)
-                            preprocessed_hours.append(int(hour.split(":")[0]))
+                            preprocessed_hours.append(int(hour.split(":" )[0]))
                 except Exception:
                     pass  # skip logging errors to avoid clutter
 

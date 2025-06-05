@@ -40,7 +40,7 @@ HEATMAP_FOLDER = os.path.join(BASE_DIR, 'heatmaps')
 BARCHART_FOLDER = os.path.join(BASE_DIR, 'barchart')
 LINECHART_FOLDER = os.path.join(BASE_DIR, 'linecharts')
 PIECHART_FOLDER = os.path.join(BASE_DIR, 'piecharts')
-WEATHERCHART_FOLDER = os.path.join(BASE_DIR, 'weather_chart')
+FORECAST_FOLDER = os.path.join(BASE_DIR, 'model_results')
 default_map_generated = False
 
 # Serve Heatmap HTML
@@ -96,15 +96,14 @@ def serve_piechart(filename):
     console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
     return response
 
-# Serve Weather Chart HTML
-@app.route('/weather_chart/<path:filename>')
-def serve_weather_chart(filename):
-    console.print("\n[bold magenta]========== Serving Weather Chart ==========[/bold magenta]")
+# Serve Forecast Chart HTML
+@app.route('/forecast/<path:filename>')
+def serve_forecast_chart(filename):
+    console.print("\n[bold magenta]========== Serving Forecast Chart ==========[/bold magenta]")
     start = time.time()
 
-    weather_folder = os.path.join(os.getcwd(), 'weather_chart')
-    console.print(f"Requested weather chart file: [green]{filename}[/green]")
-    response = send_from_directory(weather_folder, filename)
+    console.print(f"Requested forecast chart file: [green]{filename}[/green]")
+    response = send_from_directory(FORECAST_FOLDER, filename)
 
     duration = time.time() - start
     console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
