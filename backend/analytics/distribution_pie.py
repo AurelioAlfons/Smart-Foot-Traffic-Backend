@@ -129,9 +129,15 @@ def generate_combined_pie_dashboard(date: str) -> str:
             height=500
         )
 
+        # Create folder and set path
         os.makedirs("piecharts", exist_ok=True)
         filename = f"pie_dashboard_{date}.html"
         output_path = os.path.join("piecharts", filename)
+
+        # Use cached file if already exists
+        if os.path.exists(output_path):
+            console.print(f"[green]Chart already exists: {output_path}[/green]")
+            return output_path
 
         fig_html = fig.to_html(full_html=False, include_plotlyjs='cdn')
         full_html = wrap_plotly_chart(fig_html, f"Traffic Distribution Dashboard — {date}")
