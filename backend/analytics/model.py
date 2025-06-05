@@ -3,7 +3,7 @@
 # ----------------------------------------------------
 # - Input: traffic_type only
 # - Forecasts for 9 or 11 locations (based on type)
-# - Uses Prophet to generate daily forecasts
+# - Uses linear regression to generate daily forecasts
 # - Adds observed + linear regression
 # - Single dropdown HTML with all locations
 # ====================================================
@@ -13,7 +13,6 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import numpy as np
-from prophet import Prophet
 from sqlalchemy import create_engine, text
 from sklearn.linear_model import LinearRegression
 import plotly.graph_objects as go
@@ -36,18 +35,15 @@ ALL_LOCATIONS = [
 ]
 VEHICLE_EXCLUDE = {'Footscray Park Gardens', 'Footscray Park Rowing Club'}
 
-# Default time range
 START_DATETIME = "2024-03-04 00:00:00"
 END_DATETIME = "2025-03-04 23:59:00"
 FORECAST_END_DATE = datetime(2026, 12, 31).date()
 
-# DB Connection
 conn_str = (
     f"mysql+mysqlconnector://{DB_CONFIG['user']}:{DB_CONFIG['password']}@"
     f"{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
 )
 engine = create_engine(conn_str)
-
 
 def fetch_data(location, traffic_type):
     query = text("""
@@ -68,22 +64,6 @@ def fetch_data(location, traffic_type):
     df['y'] = df['y'].clip(lower=0)
     return df[['ds', 'y']]
 
-
-def create_prophet_forecast(df):
-    # Aggregate to daily totals
-    df = df.set_index('ds').resample('D').sum().dropna().reset_index()
-
-    # Create and fit the Prophet model
-    model = Prophet(daily_seasonality=True, weekly_seasonality=True, yearly_seasonality=True)
-    model.fit(df)
-
-    # Forecast into the future
-    forecast_days = (FORECAST_END_DATE - df['ds'].max().date()).days
-    future = model.make_future_dataframe(periods=forecast_days)
-    forecast = model.predict(future)
-
-    return forecast[['ds', 'yhat']]
-
 def create_linear_regression(df, future_dates):
     df = df.copy()
     df['timestamp'] = df['ds'].astype(np.int64) // 10 ** 9
@@ -93,7 +73,6 @@ def create_linear_regression(df, future_dates):
     future_ts = (future_dates.astype(np.int64) // 10 ** 9).values.reshape(-1, 1)
     y_pred = model.predict(future_ts)
     return y_pred
-
 
 def generate_forecast_chart(traffic_type: str):
     console.print(f"\n[bold cyan]Generating forecasts for: {traffic_type}[/bold cyan]")
@@ -106,7 +85,6 @@ def generate_forecast_chart(traffic_type: str):
     safe_name = traffic_type.replace(" ", "_").lower()
     output_path = RESULTS_DIR / f"forecast_chart_{safe_name}.html"
 
-    # Skip if file already exists
     if output_path.exists():
         console.print(f"[green]Chart already exists: {output_path}[/green]")
         return
@@ -118,12 +96,11 @@ def generate_forecast_chart(traffic_type: str):
         console.print(f"[yellow]Forecasting: {location}[/yellow]")
         try:
             df = fetch_data(location, traffic_type)
-            forecast = create_prophet_forecast(df)
-            linreg_y = create_linear_regression(df, forecast['ds'])
+            future_dates = pd.date_range(start=df['ds'].max() + pd.Timedelta(days=1), end=FORECAST_END_DATE, freq='D')
+            linreg_y = create_linear_regression(df, future_dates)
 
             visibility = [False] * (2 * len(locations))
             visibility[i * 2 + 0] = True  # Observed
-            # visibility[i * 3 + 1] = True  # Prophet
             visibility[i * 2 + 1] = True  # Linear
 
             buttons.append({
@@ -134,20 +111,14 @@ def generate_forecast_chart(traffic_type: str):
 
             fig.add_trace(go.Scatter(
                 x=df['ds'], y=df['y'], mode='lines+markers',
-                name=f"Observed",
-                visible=(i == 0), line=dict(color='yellow')
+                name="Observed", visible=(i == 0),
+                line=dict(color='black')
             ))
 
-            # fig.add_trace(go.Scatter(
-            #     x=forecast['ds'], y=forecast['yhat'], mode='lines',
-            #     name=f"Prophet Forecast",
-            #     visible=(i == 0), line=dict(color='blue')
-            # ))
-
             fig.add_trace(go.Scatter(
-                x=forecast['ds'], y=linreg_y, mode='lines',
-                name=f"Linear Regression",
-                visible=(i == 0), line=dict(color='black', dash='dash')
+                x=future_dates, y=linreg_y, mode='lines',
+                name="Linear Regression", visible=(i == 0),
+                line=dict(color='red', dash='dash')
             ))
 
         except Exception as e:
@@ -168,15 +139,7 @@ def generate_forecast_chart(traffic_type: str):
             "showactive": True
         }]
     )
-    
 
-    safe_name = traffic_type.replace(" ", "_").lower()
-    output_path = RESULTS_DIR / f"forecast_chart_{safe_name}.html"
-
-    if output_path.exists():
-        console.print(f"[green]Chart already exists: {output_path}[/green]")
-        return
-    
     fig_html = fig.to_html(full_html=False, include_plotlyjs='cdn')
     final_html = wrap_plotly_chart(fig_html, f"{traffic_type} — Forecast Chart")
     with open(output_path, "w", encoding="utf-8") as f:
