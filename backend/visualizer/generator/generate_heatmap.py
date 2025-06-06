@@ -24,10 +24,14 @@ from backend.visualizer.services.map_renderer import render_heatmap_map
 
 console = Console()
 
+# Checks if weather and temperature data exists for the given date
+# Returns a tuple (weather_exists, temperature_exists)
+# If not then assign weather and temperature data in the background
 def check_weather_and_temp_exists(date_filter):
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
+        # Date is assign %s to take user input (date_filter)
         cursor.execute("""
             SELECT
                 MAX(CASE WHEN Weather IS NOT NULL THEN 1 ELSE 0 END),
@@ -42,6 +46,7 @@ def check_weather_and_temp_exists(date_filter):
     except mysql.connector.Error:
         return False, False
 
+# Generates a heatmap HTML file for the given date and time filter
 def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count", quiet=False, df=None):
     start = time.time()
     label = date_filter
@@ -64,6 +69,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
+        # %s = user input value for (type, date, time)
         cursor.execute("""
             SELECT Heatmap_ID FROM heatmaps
             WHERE Traffic_Type = %s AND Date_Filter = %s AND Time_Filter = %s
@@ -152,6 +158,7 @@ def generate_heatmap(date_filter, time_filter, selected_type="Pedestrian Count",
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
+        # Is the time and date when the heatmap was generated
         generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         base_url = os.getenv("BASE_URL", "http://localhost:5000")
