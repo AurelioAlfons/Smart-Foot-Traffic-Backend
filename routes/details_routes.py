@@ -15,7 +15,7 @@ snapshot_bp = Blueprint('snapshot_bp', __name__)
 @snapshot_bp.route('/api/location_snapshot', methods=['POST', 'OPTIONS'])
 def location_snapshot():
     if request.method == 'OPTIONS':
-        return '', 200  # ✅ Handle preflight request for CORS
+        return '', 200  # Handle preflight request for CORS
 
     try:
         data = request.get_json()

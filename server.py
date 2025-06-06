@@ -25,6 +25,7 @@ CORS(app)
 from routes.heatmap_routes import heatmap_bp
 from routes.statistics_routes import stats_bp
 from routes.details_routes import snapshot_bp
+from routes.export_routes import export_bp
 
 # Suppress Werkzeug's default logs
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
@@ -33,6 +34,7 @@ logging.getLogger('werkzeug').setLevel(logging.WARNING)
 app.register_blueprint(heatmap_bp)
 app.register_blueprint(stats_bp)
 app.register_blueprint(snapshot_bp)
+app.register_blueprint(export_bp)
 
 # Folder Paths
 BASE_DIR = os.getcwd()
