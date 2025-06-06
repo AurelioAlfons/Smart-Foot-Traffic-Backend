@@ -1,0 +1,83 @@
+
+    <html>
+    <head>
+        <title>Traffic Analysis Report</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                margin: 40px;
+                color: #000;
+                background-color: #fdfdfd;
+            }
+            h1 {
+                color: #000;
+                font-size: 32px;
+                border-bottom: 2px solid #ccc;
+                padding-bottom: 5px;
+            }
+            h2 {
+                color: #000;
+                font-size: 24px;
+                margin-top: 40px;
+                border-left: 4px solid #000;
+                padding-left: 10px;
+            }
+            ul {
+                list-style: none;
+                padding-left: 0;
+            }
+            li {
+                padding: 4px 0;
+            }
+            .section {
+                margin-top: 30px;
+            }
+            iframe {
+                width: 100%;
+                height: 600px;
+                border: 1px solid #ccc;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Smart Foot Traffic - Analysis Report</h1>
+        <p><strong>Generated on:</strong> 2025-06-06 10:48:58</p>
+
+        <div class="section">
+            <h2>Selected Parameters</h2>
+            <ul>
+                <li><strong>Date:</strong> 2024-05-30</li>
+                <li><strong>Time:</strong> 08:00</li>
+                <li><strong>Traffic Type:</strong> Vehicle Count</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Heatmap</h2>
+            <iframe src="http://localhost:5000/heatmaps/heatmap_2024-05-30_08-00-00_Vehicle_Count.html"></iframe>
+        </div>
+
+        <div class="section">
+            <h2>Bar Chart</h2>
+            <iframe src="http://localhost:5000/barchart/bar_2024-05-30_08-00-00_VehicleCount.html"></iframe>
+        </div>
+
+        <div class="section">
+            <h2>Line Chart</h2>
+            <iframe src="http://localhost:5000/linecharts/line_2024-05-30_VehicleCount.html"></iframe>
+        </div>
+
+        <div class="section">
+            <h2>Pie Chart</h2>
+            <iframe src="http://localhost:5000/piecharts/pie_dashboard_2024-05-30.html"></iframe>
+        </div>
+
+        <div class="section">
+            <h2>Forecast Chart</h2>
+            <iframe src="http://localhost:5000/forecast/forecast_chart_vehicle_count.html"></iframe>
+        </div>
+    </body>
+    </html>
+    

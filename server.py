@@ -111,6 +111,19 @@ def serve_forecast_chart(filename):
     console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
     return response
 
+# Serve Exported HTML Reports
+@app.route('/downloads/<path:filename>')
+def serve_exported_report(filename):
+    console.print("\n[bold magenta]========== Serving Report ==========[/bold magenta]")
+    start = time.time()
+
+    console.print(f"Requested report file: [green]{filename}[/green]")
+    response = send_from_directory(os.path.join(BASE_DIR, 'downloads'), filename)
+
+    duration = time.time() - start
+    console.print(f"[cyan]Time taken: {duration:.2f} seconds[/cyan]")
+    return response
+
 # Health Check
 @app.route('/healthz')
 def health_check():
