@@ -18,6 +18,24 @@ In addition to data processing and serving APIs, the system generates and stores
 ![image](https://github.com/user-attachments/assets/207ab51c-0ae6-4971-a29a-71dfefeee347)
 
 --------------------------------------------------
+Use Case Examples
+
+- Generate a heatmap of cyclist activity at 9:00 AM on weekends to assist city planning.
+- Download a full report for vehicle traffic during summer mornings.
+- Analyze seasonal foot traffic trends near Footscray Library using the line chart.
+
+--------------------------------------------------
+
+Database Schema
+
+The following diagram shows the structure of the MySQL database used for traffic data storage and visualization:
+
+![Database Schema](https://github.com/AurelioAlfons/Smart-Foot-Traffic-Backend/raw/main/Database%20Schema/Smart%20Foot%20Traffic%20-%20Database%20Schema.png)
+
+![Database Structure](https://github.com/AurelioAlfons/Smart-Foot-Traffic-Backend/raw/main/Database%20Schema/Smart%20Foot%20Traffic.png)
+
+--------------------------------------------------
+
 
 Features Implemented
 
@@ -54,8 +72,6 @@ Features Implemented
 
 --------------------------------------------------
 
-How to Run the Backend Terminal Menu
-
 1. Open a terminal in the root of the project directory.
 
 2. Run the menu script based on your operating system:
@@ -71,5 +87,23 @@ How to Run the Backend Terminal Menu
      ```
 
 3. From the menu:
-   - Select option `4` to preprocess and insert cleaned data into the database.
-   - Then select option `2` to run the Flask server.
+   - First, select option `6` to install all required Python libraries from `requirements.txt`.
+   - Then, select option `4` to preprocess and insert cleaned data into the database.
+   - Finally, select option `2` to run the Flask server.
+
+--------------------------------------------------
+
+API Endpoints
+
+| Endpoint                     | Method | Description                                                   |
+|-----------------------------|--------|---------------------------------------------------------------|
+| `/api/summary_stats`        | POST   | Returns summary statistics (JSON)                             |
+| `/api/generate_linechart`   | POST   | Generates a line chart and returns the chart URL              |
+| `/api/generate_piechart`    | POST   | Generates a pie chart dashboard and returns the chart URL     |
+| `/api/generate_forecast`    | POST   | Generates a forecast chart and returns the chart URL          |
+| `/api/generate_heatmap`     | POST   | Generates a filtered heatmap and returns the HTML URL         |
+| `/api/statistics/bar_chart` | GET    | Returns bar chart HTML comparing seasonal/location trends     |
+| `/api/location_snapshot`    | POST   | Returns traffic + weather data for each sensor at a given hour|
+| `/api/download_report`      | GET    | Generates full HTML report combining all charts and heatmaps  |
+
+
